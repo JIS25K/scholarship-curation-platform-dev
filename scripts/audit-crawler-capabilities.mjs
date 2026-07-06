@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { load as loadHtml } from "cheerio";
 import {
   extractNoticeUrlFromLinkNode,
@@ -37,7 +38,8 @@ const DEFAULT_AUDIT_USER_AGENT =
 const AUDIT_USER_AGENT = cleanText(process.env.AUDIT_USER_AGENT ?? DEFAULT_AUDIT_USER_AGENT);
 const CONCURRENCY = Math.max(1, Number(process.env.AUDIT_CONCURRENCY ?? 1));
 const LIMIT = Math.max(0, Number(process.env.AUDIT_LIMIT ?? 0));
-const DETAIL_SAMPLE_SIZE = Math.max(0, Number(process.env.AUDIT_DETAIL_SAMPLE_SIZE ?? 2));
+const DETAIL_SAMPLE_SIZE = Math.min(1, Math.max(0, Number(process.env.AUDIT_DETAIL_SAMPLE_SIZE ?? 1)));
+const DETAIL_CONTENT_MIN_CHARS = Math.max(1, Number(process.env.AUDIT_DETAIL_CONTENT_MIN_CHARS ?? 80));
 const SOURCE_ID_PREFIX = cleanText(process.env.AUDIT_SOURCE_ID_PREFIX ?? "").toLowerCase();
 const SOURCE_ID_ALLOWLIST = new Set(
   String(process.env.AUDIT_SOURCE_ID_ALLOWLIST ?? "")
@@ -327,16 +329,95 @@ function requiresManualNetworkEvidence(activeLinkNode) {
   return isPlaceholderHref(href) && /\b[a-zA-Z_$][\w$]*\s*\(/.test(onclick);
 }
 
-function extractFromListWithMetrics(source, html) {
+const MENU_TEXT_PATTERN =
+  /^(home|english|chinese|login|logout|sitemap|site map|menu|search|intro|about|contact|main|홈|처음|메인|전체메뉴|사이트맵|로그인|로그아웃|검색|english|chinese|학부소개|학과소개|대학소개|교육이념|오시는길|교수소개|구성원|행정실|대학원)$/i;
+const MENU_CONTAINER_SELECTOR =
+  "header, nav, footer, aside, [role='navigation'], .header, .footer, .nav, .navbar, .gnb, .lnb, .snb, .menu, .sitemap, .sidebar";
+const PAGINATION_SELECTOR =
+  ".pagination, .paging, .paginate, .pager, .page, nav[aria-label*='page'], nav[aria-label*='페이지']";
+
+function hasMenuContainer($, node) {
+  return $(node).closest(MENU_CONTAINER_SELECTOR).length > 0;
+}
+
+function isMenuLikeTitle(title) {
+  const normalized = cleanText(title).replace(/\s+/g, " ");
+  return MENU_TEXT_PATTERN.test(normalized) || normalized.length <= 1;
+}
+
+function hasEventUrlEvidence(activeLinkNode) {
+  if (!activeLinkNode?.length) return false;
+  return Boolean(
+    getNodeAttr(activeLinkNode, "onclick") ||
+      getNodeAttr(activeLinkNode, "data-href") ||
+      getNodeAttr(activeLinkNode, "data-url") ||
+      getNodeAttr(activeLinkNode, "data-link") ||
+      /^javascript:/i.test(getNodeAttr(activeLinkNode, "href")),
+  );
+}
+
+function hasBoardEvidence($, itemRoot, activeLinkNode, title, dateText) {
+  if (!itemRoot?.length) return false;
+  const rootText = cleanText(itemRoot.text());
+  const rootName = itemRoot.get(0)?.tagName?.toLowerCase() ?? "";
+  const rootMeta = cleanText(
+    [
+      itemRoot.attr("class"),
+      itemRoot.attr("id"),
+      itemRoot.parent().attr("class"),
+      itemRoot.parent().attr("id"),
+      activeLinkNode?.attr("class"),
+      activeLinkNode?.attr("id"),
+      activeLinkNode?.attr("href"),
+      activeLinkNode?.attr("onclick"),
+    ].join(" "),
+  ).toLowerCase();
+  if (parseNoticeDate(dateText) || parseNoticeDate(rootText) || parseNoticeDate(title)) return true;
+  if (/board|bbs|notice|공지|list|article|view|post|subject|title|wr_|bo_/.test(rootMeta)) return true;
+  if (/작성자|등록일|조회수|번호|제목|첨부|date|writer|author|views?|hits?|no\./i.test(rootText)) return true;
+  if (["tr", "li"].includes(rootName) && itemRoot.find("td, th").length >= 2) return true;
+  if (activeLinkNode?.closest("table, tbody, ul, ol").length && itemRoot.find("a[href]").length >= 1) {
+    return /view|article|board|bbs|notice|mode=view|no=|idx=|seq=|wr_id=|공지/i.test(rootMeta);
+  }
+  return false;
+}
+
+function getPaginationEvidenceCount($, source) {
+  if (!source.listItemSelector) return 0;
+  const listNodes = $(source.listItemSelector);
+  const containers = new Set();
+  listNodes.each((_, node) => {
+    const container = $(node).closest("table, ul, ol, .board, .bbs, .notice, main, article").get(0);
+    if (container) containers.add(container);
+    const parent = container ? $(container).parent().get(0) : null;
+    if (parent) containers.add(parent);
+  });
+  let count = 0;
+  for (const container of containers) {
+    const scope = $(container);
+    count += scope.find(PAGINATION_SELECTOR).length;
+    if (/pageNo|pageIndex|paging|pagination|paginate|next|prev|다음|이전/i.test(scope.text())) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+export function extractFromListWithMetrics(source, html) {
   const $ = loadHtml(html);
-  const nodes = source.listItemSelector ? $(source.listItemSelector) : $("a[href]");
+  const fallbackScanUsed = !source.listItemSelector && !source.adapter;
+  const nodes = source.listItemSelector ? $(source.listItemSelector) : $();
   const results = [];
   const seen = new Set();
   let linkExtractionCount = 0;
   let validDetailUrlCount = 0;
   let manualNetworkEvidenceRequiredCount = 0;
+  let eventUrlEvidenceCount = 0;
   let dateParsedCount = 0;
   let keywordMatchCount = 0;
+  let menuTextCount = 0;
+  let menuContainerCount = 0;
+  let boardEvidenceCount = 0;
   const selectorMatches = {};
   const keywords = source.keywords.length > 0 ? source.keywords : DEFAULT_KEYWORDS;
   const pattern = source.noticeUrlPattern ? new RegExp(source.noticeUrlPattern) : null;
@@ -354,24 +435,35 @@ function extractFromListWithMetrics(source, html) {
         : itemRoot.find("a[href]").first()
       : $("a[href]").eq(index);
     const activeLinkNode = linkNode && linkNode.length ? linkNode : null;
-    const noticeUrl = extractNoticeUrlFromLinkNode(source, activeLinkNode);
-    if (noticeUrl) linkExtractionCount += 1;
-    if (!noticeUrl && requiresManualNetworkEvidence(activeLinkNode)) {
-      manualNetworkEvidenceRequiredCount += 1;
-    }
-    if (!noticeUrl || seen.has(noticeUrl)) return;
-    if (!pattern || pattern.test(noticeUrl)) validDetailUrlCount += 1;
-
-    const title = cleanText(
+    const rawTitle = cleanText(
       itemRoot
         ? source.titleSelector
           ? itemRoot.find(source.titleSelector).first().text()
           : activeLinkNode?.text() ?? itemRoot.text()
         : activeLinkNode?.text() ?? "",
     );
+    if (isMenuLikeTitle(rawTitle)) menuTextCount += 1;
+    if (hasMenuContainer($, node) || activeLinkNode?.closest(MENU_CONTAINER_SELECTOR).length) {
+      menuContainerCount += 1;
+      return;
+    }
+    const dateText = itemRoot ? extractListDateText($, itemRoot, source.dateSelector) : "";
+    const hasNoticeBoardEvidence = hasBoardEvidence($, itemRoot, activeLinkNode, rawTitle, dateText);
+    if (!hasNoticeBoardEvidence) return;
+    boardEvidenceCount += 1;
+    if (hasEventUrlEvidence(activeLinkNode)) eventUrlEvidenceCount += 1;
+    const noticeUrl = extractNoticeUrlFromLinkNode(source, activeLinkNode);
+    if (noticeUrl) linkExtractionCount += 1;
+    if (!noticeUrl && requiresManualNetworkEvidence(activeLinkNode)) {
+      manualNetworkEvidenceRequiredCount += 1;
+    }
+    if (!noticeUrl || seen.has(noticeUrl)) return;
+    if (pattern && !pattern.test(noticeUrl)) return;
+    validDetailUrlCount += 1;
+
+    const title = rawTitle;
     if (!title) return;
 
-    const dateText = itemRoot ? extractListDateText($, itemRoot, source.dateSelector) : "";
     const parsedDate = parseNoticeDate(dateText) ?? parseNoticeDate(title);
     if (parsedDate) dateParsedCount += 1;
     const keywordMatched = keywords.some((keyword) =>
@@ -391,17 +483,36 @@ function extractFromListWithMetrics(source, html) {
       dateText,
       parsedDate: parsedDate ? parsedDate.toISOString().slice(0, 10) : "",
       keywordMatched,
+      boardEvidence: true,
     });
   });
+
+  const menuContaminationCount = menuTextCount + menuContainerCount;
+  const menuContaminationRate =
+    nodes.length > 0 ? Number((menuContaminationCount / nodes.length).toFixed(4)) : 0;
+  const menuContaminationDetected =
+    nodes.length > 0 &&
+    menuContaminationCount >= 3 &&
+    (menuContaminationRate >= 0.35 || (results.length === 0 && menuContaminationRate >= 0.2));
 
   return {
     items: results,
     metrics: {
       listDomItemCount: nodes.length,
       selectorMatches,
+      fallbackScanUsed,
+      fallbackAnchorCount: fallbackScanUsed ? $("a[href]").length : 0,
+      boardEvidenceCount,
+      menuTextCount,
+      menuContainerCount,
+      menuContaminationCount,
+      menuContaminationRate,
+      menuContaminationDetected,
       linkExtractionCount,
       validDetailUrlCount,
       manualNetworkEvidenceRequiredCount,
+      eventUrlEvidenceCount,
+      paginationEvidenceCount: getPaginationEvidenceCount($, source),
       titleExtractCount: results.length,
       parsedDateCount: dateParsedCount,
       keywordMatchCount,
@@ -430,12 +541,27 @@ function detailTitleCandidatesFromHtml(source, html) {
   return [...new Set(candidates.map((candidate) => cleanText(candidate)).filter(Boolean))].slice(0, 8);
 }
 
-async function auditDetails(source, items, stageEvents) {
+export async function auditDetails(source, items, stageEvents) {
   const samples = items.slice(0, DETAIL_SAMPLE_SIZE);
   const detailResults = [];
 
   for (const item of samples) {
     const startedAt = new Date().toISOString();
+    if (!/^https?:\/\//i.test(cleanText(item.noticeUrl))) {
+      detailResults.push({
+        title: item.title,
+        noticeUrl: item.noticeUrl,
+        finalUrl: item.noticeUrl,
+        httpStatus: null,
+        fetchStatus: "skipped",
+        ok: false,
+        identityVerified: false,
+        contentCharCount: 0,
+        contentStatus: "skipped",
+        failureCode: FAILURE_CODES.DETAIL_URL_UNVERIFIED,
+      });
+      continue;
+    }
     try {
       const page = await fetchHtmlWithTrace(item.noticeUrl);
       stageEvents.push(
@@ -463,14 +589,27 @@ async function auditDetails(source, items, stageEvents) {
         item.title,
         detailTitleCandidatesFromHtml(source, page.html),
       );
+      const contentStatus = content.length >= DETAIL_CONTENT_MIN_CHARS ? "success" : "failed";
       detailResults.push({
+        title: item.title,
         noticeUrl: item.noticeUrl,
+        finalUrl: page.finalUrl,
+        httpStatus: page.httpStatus,
+        fetchStatus: "success",
         ok: true,
         contentLength: content.length,
-        empty: content.length < 80,
+        contentCharCount: content.length,
+        contentStatus,
+        empty: content.length < DETAIL_CONTENT_MIN_CHARS,
         identityVerified: identity.verified,
         identityStatus: identity.status,
         identityEvidence: identity.evidence,
+        failureCode:
+          contentStatus === "failed"
+            ? FAILURE_CODES.DETAIL_CONTENT_EMPTY_OR_BOILERPLATE
+            : identity.verified
+              ? ""
+              : FAILURE_CODES.DETAIL_IDENTITY_UNVERIFIED,
       });
     } catch (error) {
       const failureCode = classifyFetchFailure(error, error.httpStatus);
@@ -493,8 +632,15 @@ async function auditDetails(source, items, stageEvents) {
         }),
       );
       detailResults.push({
+        title: item.title,
         noticeUrl: item.noticeUrl,
+        finalUrl: error.finalUrl ?? item.noticeUrl,
+        httpStatus: error.httpStatus ?? null,
+        fetchStatus: "failed",
         ok: false,
+        identityVerified: false,
+        contentCharCount: 0,
+        contentStatus: "failed",
         failureCode,
         error: cleanText(error.message ?? error).slice(0, 240),
       });
@@ -506,9 +652,10 @@ async function auditDetails(source, items, stageEvents) {
 
 function recommendedActionFor(decision, failureCode) {
   if (decision === "adapter_required") return "Implement or repair a source adapter.";
-  if (decision === "supported_with_unverified_identity") {
+  if (decision === "list_supported_detail_unverified") {
     return "Review detail identity evidence before trusting this source as fully verified.";
   }
+  if (decision === "list_supported_detail_failed") return "Fix detail URL resolution or source access before trusting this source.";
   if (decision === "manual_review_required") {
     if (failureCode === FAILURE_CODES.MANUAL_BROWSER_NETWORK_REQUIRED) {
       return "Collect browser Network evidence before implementing an adapter.";
@@ -532,6 +679,12 @@ function manualReviewQuestionFor(failureCode) {
   }
   if (failureCode === FAILURE_CODES.DETAIL_IDENTITY_UNVERIFIED) {
     return "Does the fetched detail page represent the same notice as the list row title?";
+  }
+  if (failureCode === FAILURE_CODES.DETAIL_URL_UNVERIFIED) {
+    return "Can one real public detail notice URL be verified in the browser?";
+  }
+  if (failureCode === FAILURE_CODES.LIST_SELECTOR_MENU_CONTAMINATION) {
+    return "Which selector isolates real notice board rows without header, nav, or footer links?";
   }
   return "";
 }
@@ -576,6 +729,16 @@ async function auditSource(source) {
           linkExtractionCount: adapterItems.filter((item) => item.noticeUrl).length,
           validDetailUrlCount: adapterItems.filter((item) => item.noticeUrl).length,
           manualNetworkEvidenceRequiredCount: 0,
+          eventUrlEvidenceCount: 0,
+          paginationEvidenceCount: adapterItems.length > 0 ? 1 : 0,
+          fallbackScanUsed: false,
+          fallbackAnchorCount: 0,
+          boardEvidenceCount: adapterItems.length,
+          menuTextCount: 0,
+          menuContainerCount: 0,
+          menuContaminationCount: 0,
+          menuContaminationRate: 0,
+          menuContaminationDetected: false,
           titleExtractCount: adapterItems.filter((item) => cleanText(item.title)).length,
           parsedDateCount: adapterItems.filter((item) => parseNoticeDate(item.dateText)).length,
           keywordMatchCount: adapterItems.length,
@@ -667,16 +830,25 @@ async function auditSource(source) {
           source,
           stage: "list_parse",
           status:
-            source.listItemSelector && extracted.metrics.listDomItemCount === 0
+            extracted.metrics.menuContaminationDetected
+              ? "warning"
+              : source.listItemSelector && extracted.metrics.listDomItemCount === 0
               ? "warning"
               : "success",
           startedAt: parseStartedAt,
           metrics: {
             listDomItemCount: extracted.metrics.listDomItemCount,
             selectorMatches: extracted.metrics.selectorMatches,
+            boardEvidenceCount: extracted.metrics.boardEvidenceCount,
+            menuContaminationCount: extracted.metrics.menuContaminationCount,
+            menuContaminationRate: extracted.metrics.menuContaminationRate,
+            fallbackScanUsed: extracted.metrics.fallbackScanUsed,
+            fallbackAnchorCount: extracted.metrics.fallbackAnchorCount,
           },
           failureCode:
-            source.listItemSelector && extracted.metrics.listDomItemCount === 0
+            extracted.metrics.menuContaminationDetected
+              ? FAILURE_CODES.LIST_SELECTOR_MENU_CONTAMINATION
+              : source.listItemSelector && extracted.metrics.listDomItemCount === 0
               ? "LIST_SELECTOR_ZERO_MATCHES"
               : "",
         }),
@@ -696,6 +868,7 @@ async function auditSource(source) {
             detailUrlResolvedCount: extracted.metrics.linkExtractionCount,
             manualNetworkEvidenceRequiredCount:
               extracted.metrics.manualNetworkEvidenceRequiredCount ?? 0,
+            eventUrlEvidenceCount: extracted.metrics.eventUrlEvidenceCount ?? 0,
           },
           failureCode:
             (extracted.metrics.manualNetworkEvidenceRequiredCount ?? 0) > 0 &&
@@ -716,7 +889,7 @@ async function auditSource(source) {
   const paginationStartedAt = new Date().toISOString();
   const paginationVerified =
     Boolean(source.adapter) ||
-    /pageNo|pageIndex|paging|pagination|next|prev/i.test(listHtml) ||
+    Number(extracted.metrics.paginationEvidenceCount ?? 0) > 0 ||
     extracted.items.length <= 25;
   stageEvents.push(
     createStageEvent({
@@ -742,6 +915,10 @@ async function auditSource(source) {
     (item) => item.ok && !item.identityVerified,
   ).length;
   const detailContentEmptyCount = detailResults.filter((item) => item.ok && item.empty).length;
+  const detailContentCharCount = detailResults.reduce(
+    (sum, item) => sum + Number(item.contentCharCount ?? item.contentLength ?? 0),
+    0,
+  );
 
   const contentStartedAt = new Date().toISOString();
   stageEvents.push(
@@ -811,11 +988,15 @@ async function auditSource(source) {
     selectorMatchCount: extracted.metrics.listDomItemCount,
     linkExtractionCount: extracted.metrics.linkExtractionCount,
     validDetailUrlCount: extracted.metrics.validDetailUrlCount,
+    listMenuContaminationDetected: Boolean(extracted.metrics.menuContaminationDetected),
+    fallbackScanUsed: Boolean(extracted.metrics.fallbackScanUsed),
     manualNetworkEvidenceRequiredCount:
       extracted.metrics.manualNetworkEvidenceRequiredCount ?? 0,
     detailFailureCount,
     detailContentEmptyCount,
     detailIdentityUnverifiedCount,
+    detailFetchSuccessCount,
+    detailUrlVerifiedCount: detailVerifiedCount,
     detailSampleCount: detailResults.length,
     parsedDateCount: extracted.metrics.parsedDateCount ?? 0,
     keywordMatchCount: extracted.metrics.keywordMatchCount ?? 0,
@@ -832,6 +1013,8 @@ async function auditSource(source) {
     selectorMatchCount: extracted.metrics.listDomItemCount,
     linkExtractionCount: extracted.metrics.linkExtractionCount,
     validDetailUrlCount: extracted.metrics.validDetailUrlCount,
+    eventUrlEvidenceCount: extracted.metrics.eventUrlEvidenceCount ?? 0,
+    paginationEvidenceCount: extracted.metrics.paginationEvidenceCount ?? 0,
     manualNetworkEvidenceRequiredCount:
       extracted.metrics.manualNetworkEvidenceRequiredCount ?? 0,
     detailFailureCount,
@@ -846,6 +1029,11 @@ async function auditSource(source) {
     profiles,
     failureCode,
     finalCandidateCount,
+    detailSampleCount: detailResults.length,
+    detailFetchSuccessCount,
+    detailUrlVerifiedCount: detailVerifiedCount,
+    detailContentCharCount,
+    minDetailContentCharCount: DETAIL_CONTENT_MIN_CHARS,
   });
   const recommendedAction = recommendedActionFor(decision, failureCode);
   const manualReviewQuestion = manualReviewQuestionFor(failureCode);
@@ -869,7 +1057,8 @@ async function auditSource(source) {
         detailUrlResolved: (extracted.metrics.linkExtractionCount ?? 0) > 0,
         detailUrlVerified: detailVerifiedCount > 0,
         detailIdentityUnverifiedCount,
-        detailContentVerified: detailResults.some((item) => item.ok && !item.empty),
+        detailContentVerified: detailContentCharCount >= DETAIL_CONTENT_MIN_CHARS,
+        detailContentCharCount,
       },
       failureCode,
       evidence: summarizeEvidence({ source, profiles, failureCode, decision, extracted, detailResults }),
@@ -904,6 +1093,8 @@ async function auditSource(source) {
       detailIdentityUnverifiedCount,
       detailFailureCount,
       detailContentEmptyCount,
+      detailContentCharCount,
+      minDetailContentCharCount: DETAIL_CONTENT_MIN_CHARS,
       finalCandidateCount,
     },
     samples: {
@@ -931,10 +1122,13 @@ function summarizeEvidence({ profiles, failureCode, decision, extracted, detailR
     profiles.length ? `profiles=${profiles.join("|")}` : "",
     failureCode ? `failure=${failureCode}` : "",
     `items=${extracted.items.length}`,
+    `boardEvidence=${extracted.metrics.boardEvidenceCount ?? 0}`,
+    `menuContamination=${extracted.metrics.menuContaminationCount ?? 0}`,
     `links=${extracted.metrics.linkExtractionCount ?? 0}`,
     `validUrls=${extracted.metrics.validDetailUrlCount ?? 0}`,
     `manualNetworkEvidence=${extracted.metrics.manualNetworkEvidenceRequiredCount ?? 0}`,
     `detailFailures=${detailResults.filter((item) => !item.ok).length}`,
+    `detailVerified=${detailResults.filter((item) => item.ok && item.identityVerified).length}`,
     `identityUnverified=${detailResults.filter((item) => item.ok && !item.identityVerified).length}`,
     identityEvidence,
   ];
@@ -994,7 +1188,7 @@ function getFailureCodes(source) {
 function getDetailContentCharCount(source) {
   return source.samples.detailResults.reduce((sum, result) => {
     if (!result.ok) return sum;
-    return sum + Number(result.contentLength ?? 0);
+    return sum + Number(result.contentCharCount ?? result.contentLength ?? 0);
   }, 0);
 }
 
@@ -1087,10 +1281,12 @@ function buildUniversitySummaryCsvRows(perSource) {
     "university_slug",
     "source_count",
     "supported_count",
-    "supported_with_unverified_identity_count",
+    "list_supported_detail_unverified_count",
+    "list_supported_detail_failed_count",
     "manual_review_required_count",
     "adapter_required_count",
     "config_or_selector_fix_count",
+    "valid_zero_candidates_count",
     "failed_source_count",
     "failure_codes",
     "access_profiles",
@@ -1117,10 +1313,12 @@ function buildUniversitySummaryCsvRows(perSource) {
         slug,
         sources.length,
         sources.filter((source) => source.decision === "supported").length,
-        sources.filter((source) => source.decision === "supported_with_unverified_identity").length,
+        sources.filter((source) => source.decision === "list_supported_detail_unverified").length,
+        sources.filter((source) => source.decision === "list_supported_detail_failed").length,
         sources.filter((source) => source.decision === "manual_review_required").length,
         sources.filter((source) => source.decision === "adapter_required").length,
         sources.filter((source) => source.decision === "config_or_selector_fix").length,
+        sources.filter((source) => source.decision === "valid_zero_candidates").length,
         sources.filter((source) => source.failureCode).length,
         failures.size > 0 ? [...failures].sort().join("|") : "none",
         profiles.size > 0 ? [...profiles].sort().join("|") : "none",
@@ -1149,8 +1347,8 @@ function buildProfileSummaryMarkdown(perSource) {
     "",
     `Run ID: ${RUN_ID}`,
     "",
-    "| profile | source_count | supported_count | supported_with_unverified_identity_count | manual_review_required_count | adapter_required_count | failure_codes | recommended_action |",
-    "| --- | ---: | ---: | ---: | ---: | ---: | --- | --- |",
+    "| profile | source_count | supported_count | list_supported_detail_unverified_count | list_supported_detail_failed_count | manual_review_required_count | adapter_required_count | failure_codes | recommended_action |",
+    "| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |",
   ];
   for (const [profile, sources] of [...groups.entries()].sort(([left], [right]) => left.localeCompare(right))) {
     const failures = new Set();
@@ -1166,7 +1364,8 @@ function buildProfileSummaryMarkdown(perSource) {
         escapeMarkdownCell(profile),
         sources.length,
         sources.filter((source) => source.decision === "supported").length,
-        sources.filter((source) => source.decision === "supported_with_unverified_identity").length,
+        sources.filter((source) => source.decision === "list_supported_detail_unverified").length,
+        sources.filter((source) => source.decision === "list_supported_detail_failed").length,
         sources.filter((source) => source.decision === "manual_review_required").length,
         sources.filter((source) => source.decision === "adapter_required").length,
         escapeMarkdownCell(failures.size > 0 ? [...failures].sort().join("|") : "none"),
@@ -1425,7 +1624,9 @@ async function run() {
   console.log(`manual_review_required=${manualReviewPath}`);
 }
 
-run().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  run().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}

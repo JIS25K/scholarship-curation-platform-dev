@@ -1,4 +1,9 @@
 import assert from "node:assert/strict";
+import http from "node:http";
+import {
+  auditDetails,
+  extractFromListWithMetrics,
+} from "./audit-crawler-capabilities.mjs";
 import {
   ACCESS_PROFILES,
   FAILURE_CODES,
@@ -16,7 +21,10 @@ const baseSource = {
   sourceName: "Test Source",
   universitySlug: "test",
   sourceLevel: "department",
+  listUrl: "https://department.example.edu/notices",
+  baseUrl: "https://department.example.edu",
   listItemSelector: "tbody tr",
+  keywords: ["scholarship"],
   adapter: "",
 };
 
@@ -56,6 +64,10 @@ assert.equal(
     profiles: postSearchFormWithGetDetailProfiles,
     failureCode: "",
     finalCandidateCount: 1,
+    detailSampleCount: 1,
+    detailFetchSuccessCount: 1,
+    detailUrlVerifiedCount: 1,
+    detailContentCharCount: 120,
   }),
   "supported",
 );
@@ -173,7 +185,7 @@ assert.equal(
     failureCode: "",
     finalCandidateCount: 1,
   }),
-  "supported",
+  "list_supported_detail_unverified",
 );
 
 const matchingDetailHtml = `
@@ -209,7 +221,7 @@ assert.equal(
     failureCode: FAILURE_CODES.DETAIL_IDENTITY_UNVERIFIED,
     finalCandidateCount: 1,
   }),
-  "supported_with_unverified_identity",
+  "list_supported_detail_unverified",
 );
 
 assert.equal(
@@ -229,5 +241,190 @@ assert.equal(
   }),
   "valid_zero_candidates",
 );
+
+const menuOnly = extractFromListWithMetrics(
+  { ...baseSource, listItemSelector: "a[href]", linkSelector: "", titleSelector: "" },
+  `
+    <header><nav>
+      <a href="/">Home</a><a href="/en">English</a><a href="/intro">학부소개</a>
+      <a href="/login">로그인</a><a href="/sitemap">사이트맵</a>
+    </nav></header>
+  `,
+);
+assert.equal(menuOnly.items.length, 0);
+assert.equal(menuOnly.metrics.menuContaminationDetected, true);
+assert.equal(
+  decidePrimaryFailureCode({
+    selectorMatchCount: menuOnly.metrics.listDomItemCount,
+    linkExtractionCount: menuOnly.metrics.linkExtractionCount,
+    validDetailUrlCount: menuOnly.metrics.validDetailUrlCount,
+    listMenuContaminationDetected: menuOnly.metrics.menuContaminationDetected,
+    crawledCount: menuOnly.items.length,
+    hasConfiguredSelector: true,
+    paginationVerified: true,
+  }),
+  FAILURE_CODES.LIST_SELECTOR_MENU_CONTAMINATION,
+);
+assert.equal(
+  makeSourceDecision({
+    profiles: [],
+    failureCode: FAILURE_CODES.LIST_SELECTOR_MENU_CONTAMINATION,
+    finalCandidateCount: 0,
+  }),
+  "config_or_selector_fix",
+);
+
+const boardHtml = `
+  <table class="board-list"><tbody>
+    <tr>
+      <td class="no">1</td>
+      <td class="subject"><a href="/notice/1">2026 Scholarship Application Notice</a></td>
+      <td class="writer">admin</td>
+      <td class="date">2026.07.01</td>
+      <td class="hit">12</td>
+    </tr>
+  </tbody></table>
+  <div class="pagination"><a href="?page=2">2</a></div>
+`;
+const boardSource = {
+  ...baseSource,
+  listItemSelector: "tbody tr",
+  linkSelector: "a[href]",
+  titleSelector: ".subject",
+  dateSelector: ".date",
+};
+const boardExtracted = extractFromListWithMetrics(boardSource, boardHtml);
+assert.equal(boardExtracted.items.length, 1);
+assert.equal(boardExtracted.metrics.boardEvidenceCount, 1);
+assert.equal(boardExtracted.metrics.paginationEvidenceCount, 1);
+
+const unverifiedFailure = decidePrimaryFailureCode({
+  selectorMatchCount: boardExtracted.metrics.listDomItemCount,
+  linkExtractionCount: boardExtracted.metrics.linkExtractionCount,
+  validDetailUrlCount: boardExtracted.metrics.validDetailUrlCount,
+  detailSampleCount: 0,
+  crawledCount: boardExtracted.items.length,
+  keywordMatchCount: boardExtracted.metrics.keywordMatchCount,
+  parsedDateCount: boardExtracted.metrics.parsedDateCount,
+  finalCandidateCount: 1,
+  hasConfiguredSelector: true,
+  paginationVerified: true,
+});
+assert.equal(unverifiedFailure, FAILURE_CODES.DETAIL_URL_UNVERIFIED);
+assert.equal(
+  makeSourceDecision({
+    profiles: [ACCESS_PROFILES.STATIC_HTML_HREF],
+    failureCode: unverifiedFailure,
+    finalCandidateCount: 1,
+  }),
+  "list_supported_detail_unverified",
+);
+
+const onclickOnly = extractFromListWithMetrics(
+  {
+    ...baseSource,
+    sourceId: "korea_999",
+    listItemSelector: "tbody tr",
+    linkSelector: "a[href]",
+    titleSelector: ".subject",
+    dateSelector: ".date",
+  },
+  `
+    <table class="board-list"><tbody>
+      <tr>
+        <td>1</td><td class="subject"><a href="#1" onclick="jf_view('123','456','site')">2026 Scholarship Notice</a></td>
+        <td class="date">2026.07.01</td>
+      </tr>
+    </tbody></table>
+  `,
+);
+assert.equal(onclickOnly.items.length, 0);
+assert.equal(onclickOnly.metrics.manualNetworkEvidenceRequiredCount, 1);
+assert.equal(
+  decidePrimaryFailureCode({
+    selectorMatchCount: onclickOnly.metrics.listDomItemCount,
+    linkExtractionCount: onclickOnly.metrics.linkExtractionCount,
+    validDetailUrlCount: onclickOnly.metrics.validDetailUrlCount,
+    manualNetworkEvidenceRequiredCount: onclickOnly.metrics.manualNetworkEvidenceRequiredCount,
+    crawledCount: onclickOnly.items.length,
+    hasConfiguredSelector: true,
+    paginationVerified: true,
+  }),
+  FAILURE_CODES.MANUAL_BROWSER_NETWORK_REQUIRED,
+);
+
+const server = http.createServer((request, response) => {
+  if (request.url === "/notice/1") {
+    response.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    response.end(`
+      <html><head><title>2026 Scholarship Application Notice</title></head>
+      <body><main><h1>2026 Scholarship Application Notice</h1>
+      <p>This scholarship notice contains application period, eligibility, required documents, and contact details for students.</p>
+      <p>Please read the official notice and submit documents before the deadline.</p></main></body></html>
+    `);
+    return;
+  }
+  response.writeHead(404, { "content-type": "text/html; charset=utf-8" });
+  response.end("<html><title>Not Found</title></html>");
+});
+await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+try {
+  const { port } = server.address();
+  const localSource = {
+    ...boardSource,
+    listUrl: `http://127.0.0.1:${port}/notices`,
+    baseUrl: `http://127.0.0.1:${port}`,
+  };
+  const localExtracted = extractFromListWithMetrics(localSource, boardHtml);
+  const detailResults = await auditDetails(localSource, localExtracted.items, []);
+  assert.equal(detailResults.length, 1);
+  assert.equal(detailResults[0].fetchStatus, "success");
+  assert.equal(detailResults[0].identityVerified, true);
+  assert.ok(detailResults[0].contentCharCount >= 80);
+  assert.equal(
+    makeSourceDecision({
+      profiles: [ACCESS_PROFILES.STATIC_HTML_HREF],
+      failureCode: "",
+      finalCandidateCount: 1,
+      detailSampleCount: detailResults.length,
+      detailFetchSuccessCount: 1,
+      detailUrlVerifiedCount: 1,
+      detailContentCharCount: detailResults[0].contentCharCount,
+    }),
+    "supported",
+  );
+
+  const failedDetails = await auditDetails(
+    localSource,
+    [{ ...localExtracted.items[0], noticeUrl: `http://127.0.0.1:${port}/missing` }],
+    [],
+  );
+  assert.equal(failedDetails[0].fetchStatus, "failed");
+  const detailFailedCode = decidePrimaryFailureCode({
+    selectorMatchCount: 1,
+    linkExtractionCount: 1,
+    validDetailUrlCount: 1,
+    detailFailureCount: 1,
+    detailSampleCount: 1,
+    crawledCount: 1,
+    keywordMatchCount: 1,
+    parsedDateCount: 1,
+    finalCandidateCount: 1,
+    hasConfiguredSelector: true,
+    paginationVerified: true,
+  });
+  assert.equal(detailFailedCode, FAILURE_CODES.DETAIL_FETCH_FAILED);
+  assert.equal(
+    makeSourceDecision({
+      profiles: [ACCESS_PROFILES.STATIC_HTML_HREF],
+      failureCode: detailFailedCode,
+      finalCandidateCount: 1,
+      detailSampleCount: 1,
+    }),
+    "list_supported_detail_failed",
+  );
+} finally {
+  await new Promise((resolve) => server.close(resolve));
+}
 
 console.log("crawler_observability_tests=passed");

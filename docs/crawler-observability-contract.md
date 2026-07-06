@@ -157,7 +157,7 @@ Stages:
 
 These are intentionally separate. A string that looks like a URL is not proof that a detail page is reachable or correct. HTTP 200 alone is not enough to verify detail identity.
 
-If the detail fetch succeeds but title identity cannot be verified, set `detail_url_verified` to false or warning evidence and classify the source as `supported_with_unverified_identity` rather than `adapter_required`, unless separate access-control or browser-network evidence requires manual review.
+If the detail fetch succeeds but title identity cannot be verified, set `detail_url_verified` to false or warning evidence and classify the source as `list_supported_detail_unverified` rather than `adapter_required`, unless separate access-control or browser-network evidence requires manual review.
 
 Do not mark detail URLs verified for:
 
@@ -177,8 +177,10 @@ Known example:
 
 Decision meanings:
 
-- `supported`: the current crawler path resolved, fetched, and verified sampled detail identity.
-- `supported_with_unverified_identity`: the current crawler path fetched detail pages, but sampled detail identity was not confirmed by title matching. This is not an adapter requirement.
+- `supported`: the current crawler path found at least one real notice row, resolved a GET detail URL, fetched at least one detail page, verified list/detail title identity, and extracted minimum detail body content.
+- `list_supported_detail_unverified`: the list row appears crawlable, but detail URL identity or body content was not verified. This is not an adapter requirement by itself.
+- `list_supported_detail_failed`: the list row appears crawlable, but sampled detail fetch failed.
+- `config_or_selector_fix`: selectors or URL patterns need repair, including menu/header/footer contamination such as `LIST_SELECTOR_MENU_CONTAMINATION`.
 - `adapter_required`: a public source-specific endpoint, XHR, POST-detail flow, or client-rendered navigation requires source-specific implementation.
 - `manual_review_required`: browser Network, access policy, CAPTCHA/login, bot blocking, or other manual evidence is needed before implementation.
 

@@ -184,7 +184,7 @@ URL verification terms:
 - `detail_url_verified`: the audit fetched a sample detail page and the list title matched the detail page title, heading, or title-like body text after normalization.
 - `detail_content_verified`: the fetched detail page contained enough meaningful text for extraction.
 
-HTTP 200 alone does not verify a detail URL. If title comparison is unavailable or uncertain, keep `detail_url_verified` false/warning and use `supported_with_unverified_identity` unless stronger evidence requires `manual_review_required`.
+HTTP 200 alone does not verify a detail URL. If title comparison is unavailable or uncertain, keep `detail_url_verified` false/warning and use `list_supported_detail_unverified` unless stronger evidence requires `manual_review_required`.
 
 Do not treat `href="#1"`, `javascript:void(0)`, or unresolved `onclick` handlers as verified detail URLs. For example, Korea University portal links that call `jf_view(article_id, board_id, site_id)` require browser Network evidence because the browser performs POST, receives a redirect, and lands on an encoded final URL.
 
@@ -214,7 +214,7 @@ Require manual review when:
 - TLS/certificate behavior is source-specific and needs policy approval
 - the browser Network panel is needed to identify a public endpoint
 
-Use `supported_with_unverified_identity` when:
+Use `list_supported_detail_unverified` when:
 
 - detail fetch succeeds through the current crawler path
 - there is no evidence that an adapter is needed
