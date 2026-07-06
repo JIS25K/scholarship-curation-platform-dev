@@ -27,6 +27,9 @@ const REQUEST_RETRY_BACKOFF_MS = Math.max(
   200,
   Number(process.env.CRAWL_RETRY_BACKOFF_MS ?? 1_000),
 );
+const DEFAULT_CRAWL_USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36";
+const CRAWL_USER_AGENT = cleanText(process.env.CRAWL_USER_AGENT ?? DEFAULT_CRAWL_USER_AGENT);
 const DETAIL_FETCH_ENABLED = process.env.CRAWL_DETAIL_FETCH !== "false";
 const LOOKBACK_DAYS = Number(process.env.CRAWL_LOOKBACK_DAYS ?? 31);
 const ALLOW_UNDATED = process.env.CRAWL_ALLOW_UNDATED === "true";
@@ -132,6 +135,32 @@ function toBoolean(value, defaultValue = true) {
 
 function cleanText(value) {
   return String(value ?? "").replace(/\s+/g, " ").trim();
+}
+
+function serializeCrawlerError(error, depth = 0) {
+  if (!error || depth > 4) return null;
+  const cause = error.cause ? serializeCrawlerError(error.cause, depth + 1) : null;
+  return {
+    name: cleanText(error.name),
+    message: cleanText(error.message ?? error),
+    code: cleanText(error.code),
+    cause,
+  };
+}
+
+function flattenErrorChain(errorDetails) {
+  const chain = [];
+  let current = errorDetails;
+  while (current) {
+    chain.push(
+      [current.name, current.code, current.message]
+        .filter(Boolean)
+        .join(": ")
+        .slice(0, 240),
+    );
+    current = current.cause;
+  }
+  return chain.filter(Boolean);
 }
 
 function deriveUniversitySlug(sourceId, fallback = "") {
@@ -319,8 +348,7 @@ async function fetchHtml(url) {
         signal: controller.signal,
         dispatcher: shouldAllowInsecureTls ? INSECURE_TLS_DISPATCHER : undefined,
         headers: {
-          "user-agent":
-            "Mozilla/5.0 (compatible; ScholarshipNoticeBot/1.0; +https://example.org/bot)",
+          "user-agent": CRAWL_USER_AGENT,
           accept: "text/html,application/xhtml+xml",
         },
       });
@@ -486,9 +514,12 @@ async function enrichDetail(source, item) {
       detailDate,
     };
   } catch (error) {
+    const errorDetails = serializeCrawlerError(error);
     return {
       ...item,
-      detailFetchError: String(error?.message ?? error),
+      detailFetchError: errorDetails?.message ?? String(error?.message ?? error),
+      detailFetchErrorDetails: errorDetails,
+      detailFetchErrorChain: flattenErrorChain(errorDetails),
     };
   }
 }
@@ -642,6 +673,7 @@ async function run() {
         error: "",
       };
     } catch (error) {
+      const errorDetails = serializeCrawlerError(error);
       return {
         sourceId: source.sourceId,
         universitySlug: source.universitySlug,
@@ -651,7 +683,9 @@ async function run() {
         sourceLevel: source.sourceLevel,
         collegeName: source.collegeName,
         sourceName: source.sourceName,
-        error: String(error?.message ?? error),
+        error: errorDetails?.message ?? String(error?.message ?? error),
+        errorDetails,
+        errorChain: flattenErrorChain(errorDetails),
         detailItems: [],
         matched: [],
       };
@@ -673,6 +707,8 @@ async function run() {
         matchedCount: 0,
         newCount: 0,
         error: result.error,
+        errorDetails: result.errorDetails,
+        errorChain: result.errorChain,
       });
       console.log(`source=${result.sourceId} error=${result.error}`);
       continue;
@@ -727,6 +763,7 @@ async function run() {
       allowUndated: ALLOW_UNDATED,
       sourceConcurrency: SOURCE_CONCURRENCY,
       ignoreSeen: IGNORE_SEEN,
+      userAgent: CRAWL_USER_AGENT,
       sourceLevelFilterCount:
         SOURCE_LEVEL_ALLOWLIST.size > 0 ? SOURCE_LEVEL_ALLOWLIST.size : "all",
       collegeFilterCount:
