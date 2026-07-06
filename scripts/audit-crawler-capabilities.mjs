@@ -14,7 +14,7 @@ import {
   decidePrimaryFailureCode,
   extractDetailTitleCandidatesFromHtml,
   FAILURE_CODES,
-  inferAccessProfiles,
+  inferAccessProfileDetails,
   makeSourceDecision,
   verifyDetailTitleIdentity,
 } from "../lib/crawler-observability.mjs";
@@ -824,7 +824,7 @@ async function auditSource(source) {
     hasConfiguredSelector: Boolean(source.listItemSelector),
     paginationVerified,
   });
-  const profiles = inferAccessProfiles({
+  const profileDetails = inferAccessProfileDetails({
     source,
     html: listHtml,
     httpStatus: listPage?.httpStatus ?? null,
@@ -840,6 +840,8 @@ async function auditSource(source) {
     detailAccessMode: source.detailAccessMode,
     browserNetworkEvidence: source.browserNetworkEvidence,
   });
+  const profiles = profileDetails.profiles;
+  const profileEvidence = profileDetails.profileEvidence;
   const decision = makeSourceDecision({
     profiles,
     failureCode,
@@ -858,6 +860,7 @@ async function auditSource(source) {
       startedAt: finalStartedAt,
       metrics: {
         accessProfiles: profiles,
+        profileEvidence,
         failureCode,
         decision,
         recommendedAction,
@@ -885,6 +888,7 @@ async function auditSource(source) {
     startedAt: sourceStartedAt,
     endedAt: new Date().toISOString(),
     accessProfiles: profiles,
+    profileEvidence,
     failureCode,
     decision,
     capabilityStatus: decision,
@@ -1173,6 +1177,76 @@ function buildProfileSummaryMarkdown(perSource) {
   return `${lines.join("\n")}\n`;
 }
 
+function getFormPostRedirectEvidence(source) {
+  return source.profileEvidence?.FORM_POST_REDIRECT ?? null;
+}
+
+function buildFormPostRedirectEvidenceCsvRows(perSource) {
+  const csvHeader = [
+    "run_id",
+    "source_id",
+    "source_name",
+    "university_slug",
+    "source_level",
+    "decision",
+    "failure_code",
+    "evidence_type",
+    "reason",
+    "evidence_value",
+  ];
+  const rows = perSource
+    .filter((source) => source.accessProfiles.includes("FORM_POST_REDIRECT"))
+    .map((source) => {
+      const evidence = getFormPostRedirectEvidence(source);
+      return [
+        RUN_ID,
+        source.sourceId,
+        source.sourceName,
+        source.universitySlug,
+        source.sourceLevel,
+        source.decision,
+        source.failureCode || "none",
+        evidence?.evidence_type || "missing",
+        evidence?.reason || "missing",
+        evidence?.evidence_value || "missing",
+      ]
+        .map((cell) => escapeCsvCell(cell))
+        .join(",");
+    });
+  return [csvHeader.join(","), ...rows];
+}
+
+function buildFormPostRedirectEvidenceMarkdown(perSource) {
+  const sources = perSource.filter((source) => source.accessProfiles.includes("FORM_POST_REDIRECT"));
+  const byEvidenceType = countBy(sources, (source) => getFormPostRedirectEvidence(source)?.evidence_type || "missing");
+  const lines = [
+    "# FORM_POST_REDIRECT Evidence Summary",
+    "",
+    `Run ID: ${RUN_ID}`,
+    "",
+    "| evidence_type | source_count |",
+    "| --- | ---: |",
+  ];
+  for (const [evidenceType, count] of Object.entries(byEvidenceType).sort(([left], [right]) =>
+    left.localeCompare(right),
+  )) {
+    lines.push(`| ${escapeMarkdownCell(evidenceType)} | ${count} |`);
+  }
+  lines.push("", "| source_id | decision | evidence_type | reason | evidence_value |");
+  lines.push("| --- | --- | --- | --- | --- |");
+  for (const source of sources.sort((left, right) => left.sourceId.localeCompare(right.sourceId))) {
+    const evidence = getFormPostRedirectEvidence(source);
+    lines.push(
+      `| ${escapeMarkdownCell(source.sourceId)} | ${escapeMarkdownCell(source.decision)} | ${escapeMarkdownCell(
+        evidence?.evidence_type || "missing",
+      )} | ${escapeMarkdownCell(evidence?.reason || "missing")} | ${escapeMarkdownCell(
+        evidence?.evidence_value || "missing",
+      )} |`,
+    );
+  }
+  return `${lines.join("\n")}\n`;
+}
+
 function withoutStageEvents(source) {
   const copy = { ...source };
   delete copy.stageEvents;
@@ -1278,6 +1352,14 @@ async function run() {
     resolvedOutputDir,
     `capability-audit-profile-summary-${kstDate}-${RUN_ID}.md`,
   );
+  const datedFormPostRedirectCsvPath = path.join(
+    resolvedOutputDir,
+    `capability-audit-form-post-redirect-evidence-${kstDate}-${RUN_ID}.csv`,
+  );
+  const datedFormPostRedirectMarkdownPath = path.join(
+    resolvedOutputDir,
+    `capability-audit-form-post-redirect-evidence-${kstDate}-${RUN_ID}.md`,
+  );
   const latestPath = path.join(resolvedOutputDir, "capability-audit-latest.json");
   const latestCsvPath = path.join(resolvedOutputDir, "capability-audit-latest.csv");
   const latestUniversityCsvPath = path.join(
@@ -1288,6 +1370,14 @@ async function run() {
     resolvedOutputDir,
     "capability-audit-profile-summary-latest.md",
   );
+  const latestFormPostRedirectCsvPath = path.join(
+    resolvedOutputDir,
+    "capability-audit-form-post-redirect-evidence-latest.csv",
+  );
+  const latestFormPostRedirectMarkdownPath = path.join(
+    resolvedOutputDir,
+    "capability-audit-form-post-redirect-evidence-latest.md",
+  );
   const failedPath = path.join(resolvedOutputDir, "failed-sources-latest.json");
   const needsAdapterPath = path.join(resolvedOutputDir, "needs-adapter-latest.json");
   const manualReviewPath = path.join(resolvedOutputDir, "manual-review-required-latest.json");
@@ -1295,6 +1385,8 @@ async function run() {
   const sourceCsv = `\uFEFF${buildSourceCsvRows(perSource).join("\r\n")}`;
   const universityCsv = `\uFEFF${buildUniversitySummaryCsvRows(perSource).join("\r\n")}`;
   const profileMarkdown = buildProfileSummaryMarkdown(perSource);
+  const formPostRedirectCsv = `\uFEFF${buildFormPostRedirectEvidenceCsvRows(perSource).join("\r\n")}`;
+  const formPostRedirectMarkdown = buildFormPostRedirectEvidenceMarkdown(perSource);
 
   fs.writeFileSync(datedPath, JSON.stringify(payload, null, 2), "utf8");
   fs.writeFileSync(latestPath, JSON.stringify(payload, null, 2), "utf8");
@@ -1311,6 +1403,10 @@ async function run() {
   fs.writeFileSync(latestUniversityCsvPath, universityCsv, "utf8");
   fs.writeFileSync(datedProfileMarkdownPath, profileMarkdown, "utf8");
   fs.writeFileSync(latestProfileMarkdownPath, profileMarkdown, "utf8");
+  fs.writeFileSync(datedFormPostRedirectCsvPath, formPostRedirectCsv, "utf8");
+  fs.writeFileSync(latestFormPostRedirectCsvPath, formPostRedirectCsv, "utf8");
+  fs.writeFileSync(datedFormPostRedirectMarkdownPath, formPostRedirectMarkdown, "utf8");
+  fs.writeFileSync(latestFormPostRedirectMarkdownPath, formPostRedirectMarkdown, "utf8");
 
   console.log(`audit_json=${datedPath}`);
   console.log(`audit_csv=${datedCsvPath}`);
@@ -1319,6 +1415,10 @@ async function run() {
   console.log(`university_summary_latest=${latestUniversityCsvPath}`);
   console.log(`profile_summary_md=${datedProfileMarkdownPath}`);
   console.log(`profile_summary_latest=${latestProfileMarkdownPath}`);
+  console.log(`form_post_redirect_evidence_csv=${datedFormPostRedirectCsvPath}`);
+  console.log(`form_post_redirect_evidence_latest_csv=${latestFormPostRedirectCsvPath}`);
+  console.log(`form_post_redirect_evidence_md=${datedFormPostRedirectMarkdownPath}`);
+  console.log(`form_post_redirect_evidence_latest_md=${latestFormPostRedirectMarkdownPath}`);
   console.log(`audit_latest=${latestPath}`);
   console.log(`failed_sources=${failedPath}`);
   console.log(`needs_adapter=${needsAdapterPath}`);

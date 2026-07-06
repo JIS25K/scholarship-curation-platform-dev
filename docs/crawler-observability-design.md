@@ -159,6 +159,10 @@ Generated files:
 - `capability-audit-university-summary-latest.csv`: latest university summary.
 - `capability-audit-profile-summary-YYYYMMDD-RUNID.md`: dated access profile Markdown summary.
 - `capability-audit-profile-summary-latest.md`: latest access profile Markdown summary.
+- `capability-audit-form-post-redirect-evidence-YYYYMMDD-RUNID.csv`: dated FORM_POST_REDIRECT evidence rows.
+- `capability-audit-form-post-redirect-evidence-latest.csv`: latest FORM_POST_REDIRECT evidence rows.
+- `capability-audit-form-post-redirect-evidence-YYYYMMDD-RUNID.md`: dated FORM_POST_REDIRECT evidence summary.
+- `capability-audit-form-post-redirect-evidence-latest.md`: latest FORM_POST_REDIRECT evidence summary.
 - `failed-sources-latest.json`: sources with a primary failure code.
 - `needs-adapter-latest.json`: sources that need source-specific adapters.
 - `manual-review-required-latest.json`: sources requiring human browser/network review.
@@ -185,6 +189,8 @@ HTTP 200 alone does not verify a detail URL. If title comparison is unavailable 
 Do not treat `href="#1"`, `javascript:void(0)`, or unresolved `onclick` handlers as verified detail URLs. For example, Korea University portal links that call `jf_view(article_id, board_id, site_id)` require browser Network evidence because the browser performs POST, receives a redirect, and lands on an encoded final URL.
 
 Do not infer `FORM_POST_REDIRECT` from any `method="post"` form in the list HTML. Assign it only when source metadata, adapter metadata/execution, browser Network evidence, or a concrete placeholder-link plus article-id plus POST-action structure proves that detail access itself requires POST and redirect.
+
+Each access profile includes `profileEvidence` in JSON output. For `FORM_POST_REDIRECT`, the evidence summary CSV/Markdown must make the cause auditable by source and by `evidence_type`.
 
 ## Adapter Decision Criteria
 

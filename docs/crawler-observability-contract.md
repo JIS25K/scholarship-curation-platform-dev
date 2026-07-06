@@ -29,6 +29,10 @@ Files:
 - `capability-audit-university-summary-latest.csv`
 - `capability-audit-profile-summary-YYYYMMDD-RUNID.md`
 - `capability-audit-profile-summary-latest.md`
+- `capability-audit-form-post-redirect-evidence-YYYYMMDD-RUNID.csv`
+- `capability-audit-form-post-redirect-evidence-latest.csv`
+- `capability-audit-form-post-redirect-evidence-YYYYMMDD-RUNID.md`
+- `capability-audit-form-post-redirect-evidence-latest.md`
 - `failed-sources-latest.json`
 - `needs-adapter-latest.json`
 - `manual-review-required-latest.json`
@@ -65,7 +69,21 @@ Required source CSV columns:
 
 Status-like columns must use explicit values such as `success`, `warning`, `failed`, `skipped`, or `manual_review_required`; do not leave them blank. Optional text fields should use `none` when no action, adapter, manual question, failure code, or profile applies.
 
-The university summary CSV groups source counts, decisions, failure codes, and access profiles by `university_slug`. The profile summary Markdown table groups the same run by access profile. Neither artifact may store full raw HTML, cookies, authorization headers, session IDs, credentials, or CAPTCHA/login bypass data.
+The university summary CSV groups source counts, decisions, failure codes, and access profiles by `university_slug`. The profile summary Markdown table groups the same run by access profile. The FORM_POST_REDIRECT evidence CSV/Markdown groups sources by direct evidence type. Neither artifact may store full raw HTML, cookies, authorization headers, session IDs, credentials, or CAPTCHA/login bypass data.
+
+`profileEvidence` maps each access profile to a concise reason:
+
+```json
+{
+  "FORM_POST_REDIRECT": {
+    "reason": "source_config.detail_access_mode=form_post_redirect",
+    "evidence_type": "source_config",
+    "evidence_value": "form_post_redirect"
+  }
+}
+```
+
+Every `FORM_POST_REDIRECT` source must have direct evidence type `source_config`, `browser_network_evidence`, `adapter_capability`, or `parser_evidence`. General POST forms, generic onclick handlers, pagination controls, search forms, and JavaScript function names are not valid FORM_POST_REDIRECT evidence by themselves.
 
 ## Source Summary Schema
 
@@ -77,6 +95,7 @@ Each `perSource` entry includes:
 - `adapter`
 - `listUrl`
 - `accessProfiles`
+- `profileEvidence`
 - `failureCode`
 - `decision`
 - `capabilityStatus`

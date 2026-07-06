@@ -5,6 +5,7 @@ import {
   classifyFetchFailure,
   decidePrimaryFailureCode,
   extractDetailTitleCandidatesFromHtml,
+  inferAccessProfileDetails,
   inferAccessProfiles,
   makeSourceDecision,
   verifyDetailTitleIdentity,
@@ -57,6 +58,26 @@ assert.equal(
     finalCandidateCount: 1,
   }),
   "supported",
+);
+
+assert.ok(
+  !inferAccessProfiles({
+    source: baseSource,
+    html: '<table><tr><td><a href="/notice/1" onclick="trackClick()">Scholarship Notice</a></td></tr></table>',
+    selectorMatchCount: 1,
+    linkExtractionCount: 1,
+    validDetailUrlCount: 1,
+  }).includes(ACCESS_PROFILES.FORM_POST_REDIRECT),
+);
+
+assert.ok(
+  !inferAccessProfiles({
+    source: baseSource,
+    html: '<nav class="pagination"><a href="?page=2">2</a></nav><table><tr><td><a href="/notice/1">Scholarship Notice</a></td></tr></table>',
+    selectorMatchCount: 1,
+    linkExtractionCount: 1,
+    validDetailUrlCount: 1,
+  }).includes(ACCESS_PROFILES.FORM_POST_REDIRECT),
 );
 
 assert.ok(
@@ -133,14 +154,17 @@ assert.equal(
   "manual_review_required",
 );
 
-assert.ok(
-  inferAccessProfiles({
+const formPostRedirectDetails = inferAccessProfileDetails({
     source: { ...baseSource, detailAccessMode: "form_post_redirect" },
     html: '<table><tbody><tr><td><a href="#1" onclick="view(123)">Scholarship</a></td></tr></tbody></table>',
     selectorMatchCount: 1,
     linkExtractionCount: 0,
     validDetailUrlCount: 0,
-  }).includes(ACCESS_PROFILES.FORM_POST_REDIRECT),
+});
+assert.ok(formPostRedirectDetails.profiles.includes(ACCESS_PROFILES.FORM_POST_REDIRECT));
+assert.equal(
+  formPostRedirectDetails.profileEvidence.FORM_POST_REDIRECT.evidence_type,
+  "source_config",
 );
 
 assert.equal(
