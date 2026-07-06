@@ -86,6 +86,7 @@ The audit uses these stages:
 - `URL_RESOLUTION_FAILED`
 - `DETAIL_FETCH_FAILED`
 - `DETAIL_CONTENT_EMPTY_OR_BOILERPLATE`
+- `DETAIL_IDENTITY_UNVERIFIED`
 - `ZERO_RECENT_NOTICES`
 - `FILTERED_OUT_BY_DATE`
 - `FILTERED_OUT_BY_KEYWORD`
@@ -176,10 +177,14 @@ Status-like columns should never be blank. Use explicit values such as `success`
 URL verification terms:
 
 - `detail_url_resolved`: the list DOM or adapter produced a detail URL string.
-- `detail_url_verified`: the audit fetched a sample detail page and the response was reachable through the crawler path.
+- `detail_url_verified`: the audit fetched a sample detail page and the list title matched the detail page title, heading, or title-like body text after normalization.
 - `detail_content_verified`: the fetched detail page contained enough meaningful text for extraction.
 
+HTTP 200 alone does not verify a detail URL. If title comparison is unavailable or uncertain, keep `detail_url_verified` false/warning and use `supported_with_unverified_identity` unless stronger evidence requires `manual_review_required`.
+
 Do not treat `href="#1"`, `javascript:void(0)`, or unresolved `onclick` handlers as verified detail URLs. For example, Korea University portal links that call `jf_view(article_id, board_id, site_id)` require browser Network evidence because the browser performs POST, receives a redirect, and lands on an encoded final URL.
+
+Do not infer `FORM_POST_REDIRECT` from any `method="post"` form in the list HTML. Assign it only when source metadata, adapter metadata/execution, browser Network evidence, or a concrete placeholder-link plus article-id plus POST-action structure proves that detail access itself requires POST and redirect.
 
 ## Adapter Decision Criteria
 
@@ -192,7 +197,7 @@ Use config/selector repair when:
 Add a source adapter when:
 
 - the source uses JSON/XHR APIs
-- list/detail navigation depends on form POST or event handlers
+- list/detail navigation has direct evidence of requiring form POST, redirect, or event handlers
 - pagination cannot be represented by static selectors
 - a public endpoint must be called with structured parameters
 
@@ -202,6 +207,12 @@ Require manual review when:
 - bot/rate-limit blocking appears
 - TLS/certificate behavior is source-specific and needs policy approval
 - the browser Network panel is needed to identify a public endpoint
+
+Use `supported_with_unverified_identity` when:
+
+- detail fetch succeeds through the current crawler path
+- there is no evidence that an adapter is needed
+- the sampled detail page identity could not be confirmed by normalized title matching
 
 ## Manual Test Checklist
 

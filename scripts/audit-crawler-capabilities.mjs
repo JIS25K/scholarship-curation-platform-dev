@@ -12,9 +12,11 @@ import {
   createRunId,
   createStageEvent,
   decidePrimaryFailureCode,
+  extractDetailTitleCandidatesFromHtml,
   FAILURE_CODES,
   inferAccessProfiles,
   makeSourceDecision,
+  verifyDetailTitleIdentity,
 } from "../lib/crawler-observability.mjs";
 
 const DEFAULT_KEYWORDS = [
@@ -149,6 +151,8 @@ function readSourceConfig(csvPath) {
       noticeUrlPattern: cleanText(row[index.notice_url_pattern]),
       keywords: parseList(row[index.keywords]),
       adapter: cleanText(row[index.adapter]),
+      detailAccessMode: cleanText(row[index.detail_access_mode]),
+      browserNetworkEvidence: cleanText(row[index.browser_network_evidence] ?? row[index.evidence_metadata]),
       enabled: toBoolean(row[index.enabled], true),
     }))
     .filter((source) => source.sourceId && source.sourceName && source.listUrl && source.enabled);
@@ -413,6 +417,19 @@ function detailContentFromHtml(source, html) {
   return cleanText($("article, main, .content, .board-view, .view, body").first().text());
 }
 
+function detailTitleCandidatesFromHtml(source, html) {
+  const $ = loadHtml(html);
+  const candidates = [
+    $("title").first().text(),
+    $("h1, h2, h3").first().text(),
+    $(".title, .subject, .heading, .view-title, .board-title").first().text(),
+  ];
+  if (source.titleSelector) candidates.push($(source.titleSelector).first().text());
+  if (source.detailContentSelector) candidates.push($(source.detailContentSelector).first().text().slice(0, 240));
+  candidates.push(...extractDetailTitleCandidatesFromHtml(html));
+  return [...new Set(candidates.map((candidate) => cleanText(candidate)).filter(Boolean))].slice(0, 8);
+}
+
 async function auditDetails(source, items, stageEvents) {
   const samples = items.slice(0, DETAIL_SAMPLE_SIZE);
   const detailResults = [];
@@ -442,11 +459,18 @@ async function auditDetails(source, items, stageEvents) {
       );
 
       const content = detailContentFromHtml(source, page.html);
+      const identity = verifyDetailTitleIdentity(
+        item.title,
+        detailTitleCandidatesFromHtml(source, page.html),
+      );
       detailResults.push({
         noticeUrl: item.noticeUrl,
         ok: true,
         contentLength: content.length,
         empty: content.length < 80,
+        identityVerified: identity.verified,
+        identityStatus: identity.status,
+        identityEvidence: identity.evidence,
       });
     } catch (error) {
       const failureCode = classifyFetchFailure(error, error.httpStatus);
@@ -482,6 +506,9 @@ async function auditDetails(source, items, stageEvents) {
 
 function recommendedActionFor(decision, failureCode) {
   if (decision === "adapter_required") return "Implement or repair a source adapter.";
+  if (decision === "supported_with_unverified_identity") {
+    return "Review detail identity evidence before trusting this source as fully verified.";
+  }
   if (decision === "manual_review_required") {
     if (failureCode === FAILURE_CODES.MANUAL_BROWSER_NETWORK_REQUIRED) {
       return "Collect browser Network evidence before implementing an adapter.";
@@ -502,6 +529,9 @@ function manualReviewQuestionFor(failureCode) {
   }
   if (failureCode === FAILURE_CODES.BOT_BLOCKED_OR_RATE_LIMITED) {
     return "Is the source intentionally blocking automated access or rate-limiting public requests?";
+  }
+  if (failureCode === FAILURE_CODES.DETAIL_IDENTITY_UNVERIFIED) {
+    return "Does the fetched detail page represent the same notice as the list row title?";
   }
   return "";
 }
@@ -706,7 +736,11 @@ async function auditSource(source) {
       ? await auditDetails(source, extracted.items, stageEvents)
       : [];
   const detailFailureCount = detailResults.filter((item) => !item.ok).length;
-  const detailVerifiedCount = detailResults.filter((item) => item.ok).length;
+  const detailFetchSuccessCount = detailResults.filter((item) => item.ok).length;
+  const detailVerifiedCount = detailResults.filter((item) => item.ok && item.identityVerified).length;
+  const detailIdentityUnverifiedCount = detailResults.filter(
+    (item) => item.ok && !item.identityVerified,
+  ).length;
   const detailContentEmptyCount = detailResults.filter((item) => item.ok && item.empty).length;
 
   const contentStartedAt = new Date().toISOString();
@@ -718,17 +752,33 @@ async function auditSource(source) {
       status:
         detailResults.length === 0
           ? "skipped"
+          : detailIdentityUnverifiedCount > 0
+            ? "warning"
           : detailContentEmptyCount > 0
             ? "warning"
             : "success",
       startedAt: contentStartedAt,
       metrics: {
         detailSampleCount: detailResults.length,
+        detailFetchSuccessCount,
         detailUrlVerifiedCount: detailVerifiedCount,
+        detailIdentityUnverifiedCount,
         detailContentEmptyCount,
       },
       failureCode:
-        detailContentEmptyCount > 0 ? "DETAIL_CONTENT_EMPTY_OR_BOILERPLATE" : "",
+        detailContentEmptyCount > 0
+          ? FAILURE_CODES.DETAIL_CONTENT_EMPTY_OR_BOILERPLATE
+          : detailIdentityUnverifiedCount > 0
+            ? FAILURE_CODES.DETAIL_IDENTITY_UNVERIFIED
+            : "",
+      evidence:
+        detailIdentityUnverifiedCount > 0
+          ? detailResults
+              .filter((item) => item.ok && !item.identityVerified)
+              .map((item) => item.identityEvidence)
+              .slice(0, 2)
+              .join(" ")
+          : "",
     }),
   );
 
@@ -765,6 +815,8 @@ async function auditSource(source) {
       extracted.metrics.manualNetworkEvidenceRequiredCount ?? 0,
     detailFailureCount,
     detailContentEmptyCount,
+    detailIdentityUnverifiedCount,
+    detailSampleCount: detailResults.length,
     parsedDateCount: extracted.metrics.parsedDateCount ?? 0,
     keywordMatchCount: extracted.metrics.keywordMatchCount ?? 0,
     finalCandidateCount,
@@ -785,6 +837,8 @@ async function auditSource(source) {
     detailFailureCount,
     adapterName: source.adapter,
     fetchFailureCode,
+    detailAccessMode: source.detailAccessMode,
+    browserNetworkEvidence: source.browserNetworkEvidence,
   });
   const decision = makeSourceDecision({
     profiles,
@@ -811,6 +865,7 @@ async function auditSource(source) {
         finalCandidateCount,
         detailUrlResolved: (extracted.metrics.linkExtractionCount ?? 0) > 0,
         detailUrlVerified: detailVerifiedCount > 0,
+        detailIdentityUnverifiedCount,
         detailContentVerified: detailResults.some((item) => item.ok && !item.empty),
       },
       failureCode,
@@ -839,8 +894,10 @@ async function auditSource(source) {
       ...extracted.metrics,
       crawledCount: extracted.items.length,
       detailSampleCount: detailResults.length,
+      detailFetchSuccessCount,
       detailUrlResolvedCount: extracted.metrics.linkExtractionCount ?? 0,
       detailUrlVerifiedCount: detailVerifiedCount,
+      detailIdentityUnverifiedCount,
       detailFailureCount,
       detailContentEmptyCount,
       finalCandidateCount,
@@ -859,6 +916,12 @@ async function auditSource(source) {
 }
 
 function summarizeEvidence({ profiles, failureCode, decision, extracted, detailResults }) {
+  const identityEvidence = detailResults
+    .filter((item) => item.ok && !item.identityVerified)
+    .map((item) => item.identityEvidence)
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(" ");
   const parts = [
     `decision=${decision}`,
     profiles.length ? `profiles=${profiles.join("|")}` : "",
@@ -868,6 +931,8 @@ function summarizeEvidence({ profiles, failureCode, decision, extracted, detailR
     `validUrls=${extracted.metrics.validDetailUrlCount ?? 0}`,
     `manualNetworkEvidence=${extracted.metrics.manualNetworkEvidenceRequiredCount ?? 0}`,
     `detailFailures=${detailResults.filter((item) => !item.ok).length}`,
+    `identityUnverified=${detailResults.filter((item) => item.ok && !item.identityVerified).length}`,
+    identityEvidence,
   ];
   return parts.filter(Boolean).join(" ");
 }
@@ -943,6 +1008,7 @@ function getDetailUrlVerifiedStatus(source) {
   const verifiedCount = Number(source.metrics.detailUrlVerifiedCount ?? 0);
   const sampleCount = Number(source.metrics.detailSampleCount ?? 0);
   if (verifiedCount > 0) return "success";
+  if (Number(source.metrics.detailIdentityUnverifiedCount ?? 0) > 0) return "warning";
   return statusFromCount(verifiedCount, sampleCount);
 }
 
@@ -1017,6 +1083,7 @@ function buildUniversitySummaryCsvRows(perSource) {
     "university_slug",
     "source_count",
     "supported_count",
+    "supported_with_unverified_identity_count",
     "manual_review_required_count",
     "adapter_required_count",
     "config_or_selector_fix_count",
@@ -1046,6 +1113,7 @@ function buildUniversitySummaryCsvRows(perSource) {
         slug,
         sources.length,
         sources.filter((source) => source.decision === "supported").length,
+        sources.filter((source) => source.decision === "supported_with_unverified_identity").length,
         sources.filter((source) => source.decision === "manual_review_required").length,
         sources.filter((source) => source.decision === "adapter_required").length,
         sources.filter((source) => source.decision === "config_or_selector_fix").length,
@@ -1077,8 +1145,8 @@ function buildProfileSummaryMarkdown(perSource) {
     "",
     `Run ID: ${RUN_ID}`,
     "",
-    "| profile | source_count | supported_count | manual_review_required_count | adapter_required_count | failure_codes | recommended_action |",
-    "| --- | ---: | ---: | ---: | ---: | --- | --- |",
+    "| profile | source_count | supported_count | supported_with_unverified_identity_count | manual_review_required_count | adapter_required_count | failure_codes | recommended_action |",
+    "| --- | ---: | ---: | ---: | ---: | ---: | --- | --- |",
   ];
   for (const [profile, sources] of [...groups.entries()].sort(([left], [right]) => left.localeCompare(right))) {
     const failures = new Set();
@@ -1094,6 +1162,7 @@ function buildProfileSummaryMarkdown(perSource) {
         escapeMarkdownCell(profile),
         sources.length,
         sources.filter((source) => source.decision === "supported").length,
+        sources.filter((source) => source.decision === "supported_with_unverified_identity").length,
         sources.filter((source) => source.decision === "manual_review_required").length,
         sources.filter((source) => source.decision === "adapter_required").length,
         escapeMarkdownCell(failures.size > 0 ? [...failures].sort().join("|") : "none"),

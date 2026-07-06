@@ -94,6 +94,7 @@ Important metrics:
 - `manualNetworkEvidenceRequiredCount`
 - `detailUrlResolvedCount`
 - `detailUrlVerifiedCount`
+- `detailIdentityUnverifiedCount`
 - `detailContentEmptyCount`
 - `finalCandidateCount`
 
@@ -132,10 +133,12 @@ Stages:
 ## Verification Terms
 
 - `detail_url_resolved`: the crawler produced a detail URL string from DOM or adapter data.
-- `detail_url_verified`: the crawler fetched a sample detail page through a valid public GET or registered adapter path.
+- `detail_url_verified`: the crawler fetched a sample detail page through a valid public GET or registered adapter path and the list title sufficiently matched the detail page title, heading, or title-like body text after normalization.
 - `detail_content_verified`: the fetched detail page had enough meaningful text for extraction.
 
-These are intentionally separate. A string that looks like a URL is not proof that a detail page is reachable or correct.
+These are intentionally separate. A string that looks like a URL is not proof that a detail page is reachable or correct. HTTP 200 alone is not enough to verify detail identity.
+
+If the detail fetch succeeds but title identity cannot be verified, set `detail_url_verified` to false or warning evidence and classify the source as `supported_with_unverified_identity` rather than `adapter_required`, unless separate access-control or browser-network evidence requires manual review.
 
 Do not mark detail URLs verified for:
 
@@ -151,6 +154,15 @@ Known example:
 - The POST returns a `302` redirect to a final URL containing `enc`.
 - Until that request method, payload, and redirect chain are captured from the browser Network panel, classify the source as `MANUAL_BROWSER_NETWORK_REQUIRED` rather than `detail_url_verified`.
 
+`FORM_POST_REDIRECT` must only be assigned when direct evidence shows that detail access itself needs POST and redirect. Valid evidence includes `detail_access_mode=form_post_redirect` source metadata, adapter metadata or execution proving POST-to-redirect detail access, a placeholder detail link tied to an article id and concrete POST action, or user-provided browser Network evidence. A search form or ordinary board form using `method="post"` elsewhere in the list HTML is not enough.
+
+Decision meanings:
+
+- `supported`: the current crawler path resolved, fetched, and verified sampled detail identity.
+- `supported_with_unverified_identity`: the current crawler path fetched detail pages, but sampled detail identity was not confirmed by title matching. This is not an adapter requirement.
+- `adapter_required`: a public source-specific endpoint, XHR, POST-detail flow, or client-rendered navigation requires source-specific implementation.
+- `manual_review_required`: browser Network, access policy, CAPTCHA/login, bot blocking, or other manual evidence is needed before implementation.
+
 ## Failure Codes
 
 - `URL_DEAD_DNS`
@@ -164,6 +176,7 @@ Known example:
 - `URL_RESOLUTION_FAILED`
 - `DETAIL_FETCH_FAILED`
 - `DETAIL_CONTENT_EMPTY_OR_BOILERPLATE`
+- `DETAIL_IDENTITY_UNVERIFIED`
 - `ZERO_RECENT_NOTICES`
 - `FILTERED_OUT_BY_DATE`
 - `FILTERED_OUT_BY_KEYWORD`

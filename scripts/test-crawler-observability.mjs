@@ -4,8 +4,10 @@ import {
   FAILURE_CODES,
   classifyFetchFailure,
   decidePrimaryFailureCode,
+  extractDetailTitleCandidatesFromHtml,
   inferAccessProfiles,
   makeSourceDecision,
+  verifyDetailTitleIdentity,
 } from "../lib/crawler-observability.mjs";
 
 const baseSource = {
@@ -33,6 +35,28 @@ assert.deepEqual(
     validDetailUrlCount: 1,
   }),
   [ACCESS_PROFILES.STATIC_HTML_HREF],
+);
+
+const postSearchFormWithGetDetailProfiles = inferAccessProfiles({
+  source: baseSource,
+  html: `
+    <form method="post" action="/search"><input name="keyword"></form>
+    <table><tbody><tr><td><a href="/notice?mode=view&articleNo=123">Scholarship Notice</a></td></tr></tbody></table>
+  `,
+  httpStatus: 200,
+  charset: "utf-8",
+  selectorMatchCount: 1,
+  linkExtractionCount: 1,
+  validDetailUrlCount: 1,
+});
+assert.ok(!postSearchFormWithGetDetailProfiles.includes(ACCESS_PROFILES.FORM_POST_REDIRECT));
+assert.equal(
+  makeSourceDecision({
+    profiles: postSearchFormWithGetDetailProfiles,
+    failureCode: "",
+    finalCandidateCount: 1,
+  }),
+  "supported",
 );
 
 assert.ok(
@@ -88,12 +112,61 @@ assert.equal(
 );
 
 assert.equal(
+  decidePrimaryFailureCode({
+    selectorMatchCount: 1,
+    linkExtractionCount: 0,
+    validDetailUrlCount: 0,
+    manualNetworkEvidenceRequiredCount: 1,
+    crawledCount: 0,
+    hasConfiguredSelector: true,
+    paginationVerified: true,
+  }),
+  FAILURE_CODES.MANUAL_BROWSER_NETWORK_REQUIRED,
+);
+
+assert.equal(
   makeSourceDecision({
     profiles: [ACCESS_PROFILES.STATIC_HTML_EVENT_URL],
     failureCode: FAILURE_CODES.MANUAL_BROWSER_NETWORK_REQUIRED,
     finalCandidateCount: 0,
   }),
   "manual_review_required",
+);
+
+const matchingDetailHtml = `
+  <html>
+    <head><title>2026학년도 1학기 성적우수 장학금 신청 안내</title></head>
+    <body><h1>2026학년도 1학기 성적우수 장학금 신청 안내</h1></body>
+  </html>
+`;
+assert.equal(
+  verifyDetailTitleIdentity(
+    "2026학년도 1학기 성적우수 장학금 신청 안내",
+    extractDetailTitleCandidatesFromHtml(matchingDetailHtml),
+  ).verified,
+  true,
+);
+
+const mismatchingDetailHtml = `
+  <html>
+    <head><title>학사일정 변경 안내</title></head>
+    <body><h1>학사일정 변경 안내</h1></body>
+  </html>
+`;
+const mismatchingIdentity = verifyDetailTitleIdentity(
+  "2026학년도 1학기 성적우수 장학금 신청 안내",
+  extractDetailTitleCandidatesFromHtml(mismatchingDetailHtml),
+);
+assert.equal(mismatchingIdentity.verified, false);
+assert.equal(mismatchingIdentity.status, "title_mismatch");
+
+assert.equal(
+  makeSourceDecision({
+    profiles: [ACCESS_PROFILES.STATIC_HTML_HREF],
+    failureCode: FAILURE_CODES.DETAIL_IDENTITY_UNVERIFIED,
+    finalCandidateCount: 1,
+  }),
+  "supported_with_unverified_identity",
 );
 
 assert.equal(
