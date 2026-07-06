@@ -133,6 +133,25 @@ assert.equal(
   "manual_review_required",
 );
 
+assert.ok(
+  inferAccessProfiles({
+    source: { ...baseSource, detailAccessMode: "form_post_redirect" },
+    html: '<table><tbody><tr><td><a href="#1" onclick="view(123)">Scholarship</a></td></tr></tbody></table>',
+    selectorMatchCount: 1,
+    linkExtractionCount: 0,
+    validDetailUrlCount: 0,
+  }).includes(ACCESS_PROFILES.FORM_POST_REDIRECT),
+);
+
+assert.equal(
+  makeSourceDecision({
+    profiles: [ACCESS_PROFILES.FORM_POST_REDIRECT],
+    failureCode: "",
+    finalCandidateCount: 1,
+  }),
+  "supported",
+);
+
 const matchingDetailHtml = `
   <html>
     <head><title>2026학년도 1학기 성적우수 장학금 신청 안내</title></head>
