@@ -110,6 +110,10 @@ Important metrics:
 - `selectorMatches`
 - `linkExtractionCount`
 - `validDetailUrlCount`
+- `rawNavigationEvidenceCount`
+- `resolvedDetailUrlCount`
+- `contaminatedCandidateCount`
+- `contaminatedCandidateLeakCount`
 - `manualNetworkEvidenceRequiredCount`
 - `detailUrlResolvedCount`
 - `detailUrlVerifiedCount`
@@ -151,13 +155,31 @@ Stages:
 
 ## Verification Terms
 
-- `detail_url_resolved`: the crawler produced a detail URL string from DOM or adapter data.
-- `detail_url_verified`: the crawler fetched a sample detail page through a valid public GET or registered adapter path and the list title sufficiently matched the detail page title, heading, or title-like body text after normalization.
-- `detail_content_verified`: the fetched detail page had enough meaningful text for extraction.
+- `rawNavigationEvidenceCount`: candidate rows with raw navigation evidence such as anchors, events, or data-url attributes.
+- `resolvedDetailUrlCount` / `detailUrlResolvedCount`: candidates resolved to valid auditable detail URLs after source URL-pattern filtering. This must not count menu links or rejected raw navigation hints.
+- `validDetailUrlCount`: final detail URL candidates eligible for audit sampling.
+- `detail_url_verified`: the crawler fetched a sample detail page through a valid public GET or registered adapter path and a clean list title strongly matched the detail page title or heading after normalization.
+- `detail_content_verified`: the fetched detail page had enough meaningful text from a detail body selector, not only body-wide layout text.
 
 These are intentionally separate. A string that looks like a URL is not proof that a detail page is reachable or correct. HTTP 200 alone is not enough to verify detail identity.
 
 If the detail fetch succeeds but title identity cannot be verified, set `detail_url_verified` to false or warning evidence and classify the source as `list_supported_detail_unverified` rather than `adapter_required`, unless separate access-control or browser-network evidence requires manual review.
+
+Candidate samples separate raw card text from extracted title evidence:
+
+- `rawListText`: the complete list row or card text.
+- `listTitle`: the extracted notice title from the title selector or title anchor.
+- `listTitleQuality`: `clean`, `contaminated`, or `missing`.
+- `titleExtractionEvidence`: selector or anchor evidence used to obtain `listTitle`.
+- `detailTitle`: title or heading extracted from the sampled detail page.
+- `identityComparisonMode`: exact, prefix-stripped, site-suffix-stripped, mismatch, or weak raw-list containment.
+- `detailBodySelector`, `detailBodyCharCount`, `detailBodyQuality`: evidence for body extraction.
+
+Menu contamination is also split into observation and leakage:
+
+- `menuContaminationObserved`: menu/header/footer/common navigation exists on the page.
+- `contaminatedCandidateCount`: contaminated candidates encountered before final filtering.
+- `contaminatedCandidateLeakCount`: contaminated candidates that entered the final detail candidate set. Any leak blocks `supported`.
 
 Do not mark detail URLs verified for:
 
@@ -177,7 +199,7 @@ Known example:
 
 Decision meanings:
 
-- `supported`: the current crawler path found at least one real notice row, resolved a GET detail URL, fetched at least one detail page, verified list/detail title identity, and extracted minimum detail body content.
+- `supported`: the current crawler path found at least one real notice row, resolved a GET detail URL, fetched at least one detail page, verified a clean list title against the detail title with strong identity evidence, extracted minimum detail body content from a detail body selector, and proved contaminated candidates did not enter the final candidate set.
 - `list_supported_detail_unverified`: the list row appears crawlable, but detail URL identity or body content was not verified. This is not an adapter requirement by itself.
 - `list_supported_detail_failed`: the list row appears crawlable, but sampled detail fetch failed.
 - `config_or_selector_fix`: selectors or URL patterns need repair, including menu/header/footer contamination such as `LIST_SELECTOR_MENU_CONTAMINATION`.
@@ -194,7 +216,9 @@ Decision meanings:
 - `BOT_BLOCKED_OR_RATE_LIMITED`
 - `AUTH_OR_CAPTCHA_REQUIRED`
 - `LIST_SELECTOR_ZERO_MATCHES`
+- `LIST_SELECTOR_MENU_CONTAMINATION`
 - `URL_RESOLUTION_FAILED`
+- `DETAIL_URL_UNVERIFIED`
 - `DETAIL_FETCH_FAILED`
 - `DETAIL_CONTENT_EMPTY_OR_BOILERPLATE`
 - `DETAIL_IDENTITY_UNVERIFIED`

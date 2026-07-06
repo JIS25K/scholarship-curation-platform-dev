@@ -68,6 +68,7 @@ assert.equal(
     detailFetchSuccessCount: 1,
     detailUrlVerifiedCount: 1,
     detailContentCharCount: 120,
+    cleanDetailSampleCount: 1,
   }),
   "supported",
 );
@@ -297,6 +298,43 @@ const boardExtracted = extractFromListWithMetrics(boardSource, boardHtml);
 assert.equal(boardExtracted.items.length, 1);
 assert.equal(boardExtracted.metrics.boardEvidenceCount, 1);
 assert.equal(boardExtracted.metrics.paginationEvidenceCount, 1);
+assert.equal(boardExtracted.items[0].listTitle, "2026 Scholarship Application Notice");
+assert.equal(boardExtracted.items[0].listTitleQuality, "clean");
+assert.equal(boardExtracted.metrics.detailUrlResolvedCount ?? boardExtracted.metrics.validDetailUrlCount, 1);
+
+const contaminatedCardHtml = `
+  <ul class="notice-list">
+    <li class="card board">
+      <a href="/notice/2">
+        <span>General Notice</span>
+        <strong>2026 Industry Foundation Scholarship Selection</strong>
+        <span>Campus Views 174 Created 2026.07.03 Period 2026.07.03 ~ 2026.07.08 Student Support Team</span>
+      </a>
+    </li>
+  </ul>
+`;
+const contaminatedCardSource = {
+  ...baseSource,
+  listItemSelector: ".notice-list li",
+  linkSelector: "a[href]",
+  titleSelector: "a[href]",
+  dateSelector: "",
+};
+const contaminatedExtracted = extractFromListWithMetrics(contaminatedCardSource, contaminatedCardHtml);
+assert.equal(contaminatedExtracted.items.length, 1);
+assert.equal(contaminatedExtracted.items[0].listTitleQuality, "contaminated");
+assert.equal(contaminatedExtracted.metrics.contaminatedCandidateLeakCount, 1);
+assert.equal(
+  verifyDetailTitleIdentity(
+    contaminatedExtracted.items[0].listTitle,
+    ["2026 Industry Foundation Scholarship Selection"],
+    {
+      rawListText: contaminatedExtracted.items[0].rawListText,
+      listTitleQuality: contaminatedExtracted.items[0].listTitleQuality,
+    },
+  ).verified,
+  false,
+);
 
 const unverifiedFailure = decidePrimaryFailureCode({
   selectorMatchCount: boardExtracted.metrics.listDomItemCount,
@@ -364,6 +402,16 @@ const server = http.createServer((request, response) => {
     `);
     return;
   }
+  if (request.url === "/notice/2") {
+    response.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    response.end(`
+      <html><head><title>2026 Industry Foundation Scholarship Selection</title></head>
+      <body><article><h1>2026 Industry Foundation Scholarship Selection</h1>
+      <p>This detail page has a real scholarship body with eligibility, application method, schedule, documents, and contact information.</p>
+      <p>The text is long enough to be treated as meaningful notice body content.</p></article></body></html>
+    `);
+    return;
+  }
   response.writeHead(404, { "content-type": "text/html; charset=utf-8" });
   response.end("<html><title>Not Found</title></html>");
 });
@@ -390,8 +438,69 @@ try {
       detailFetchSuccessCount: 1,
       detailUrlVerifiedCount: 1,
       detailContentCharCount: detailResults[0].contentCharCount,
+      cleanDetailSampleCount: 1,
     }),
     "supported",
+  );
+
+  const menuPlusBoardHtml = `
+    <header><nav><a href="/">Home</a><a href="/login">Login</a><a href="/about">About</a></nav></header>
+    ${boardHtml}
+  `;
+  const menuPlusBoardExtracted = extractFromListWithMetrics(localSource, menuPlusBoardHtml);
+  assert.equal(menuPlusBoardExtracted.metrics.menuContaminationObserved, true);
+  assert.equal(menuPlusBoardExtracted.metrics.contaminatedCandidateLeakCount, 0);
+  const menuPlusBoardDetails = await auditDetails(localSource, menuPlusBoardExtracted.items, []);
+  assert.equal(menuPlusBoardDetails[0].identityVerified, true);
+  assert.equal(
+    makeSourceDecision({
+      profiles: [ACCESS_PROFILES.STATIC_HTML_HREF],
+      failureCode: "",
+      finalCandidateCount: 1,
+      detailSampleCount: 1,
+      detailFetchSuccessCount: 1,
+      detailUrlVerifiedCount: 1,
+      detailContentCharCount: menuPlusBoardDetails[0].contentCharCount,
+      cleanDetailSampleCount: 1,
+      contaminatedCandidateLeakCount: 0,
+    }),
+    "supported",
+  );
+
+  const contaminatedDetails = await auditDetails(
+    localSource,
+    contaminatedExtracted.items.map((item) => ({
+      ...item,
+      noticeUrl: `http://127.0.0.1:${port}/notice/2`,
+    })),
+    [],
+  );
+  assert.equal(contaminatedDetails[0].identityVerified, false);
+  assert.equal(contaminatedDetails[0].identityComparisonMode, "list_title_quality_failed");
+  const contaminatedFailure = decidePrimaryFailureCode({
+    selectorMatchCount: contaminatedExtracted.metrics.listDomItemCount,
+    linkExtractionCount: contaminatedExtracted.metrics.linkExtractionCount,
+    validDetailUrlCount: contaminatedExtracted.metrics.validDetailUrlCount,
+    contaminatedCandidateLeakCount: contaminatedExtracted.metrics.contaminatedCandidateLeakCount,
+    detailSampleCount: contaminatedDetails.length,
+    detailFetchSuccessCount: 1,
+    detailUrlVerifiedCount: 0,
+    detailIdentityUnverifiedCount: 1,
+    crawledCount: 1,
+    keywordMatchCount: 1,
+    parsedDateCount: 1,
+    finalCandidateCount: 1,
+    hasConfiguredSelector: true,
+    paginationVerified: true,
+  });
+  assert.equal(contaminatedFailure, FAILURE_CODES.DETAIL_IDENTITY_UNVERIFIED);
+  assert.equal(
+    makeSourceDecision({
+      profiles: [ACCESS_PROFILES.STATIC_HTML_HREF],
+      failureCode: contaminatedFailure,
+      finalCandidateCount: 1,
+    }),
+    "list_supported_detail_unverified",
   );
 
   const failedDetails = await auditDetails(

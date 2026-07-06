@@ -174,7 +174,16 @@ Important distinction:
 - `detail_url_verified`: the crawler fetched a detail page and confirmed that the list title sufficiently matches the detail page title, heading, or title-like body text after normalization.
 - `detail_content_verified`: the fetched detail page contained meaningful extractable text.
 
-Do not treat HTTP 200 alone as a verified detail URL. Classify a source as `supported` only when at least one real notice row resolves to a GET detail URL, the detail fetch succeeds, list/detail title identity matches, and extracted detail content meets the minimum length. If the list is crawlable but detail identity or body content is not verified, classify it as `list_supported_detail_unverified`; if the sampled detail fetch fails, classify it as `list_supported_detail_failed`.
+Do not treat HTTP 200 alone as a verified detail URL. Classify a source as `supported` only when at least one real notice row resolves to a GET detail URL, the sampled candidate has `listTitleQuality=clean`, the detail fetch succeeds, the clean list title strongly matches the detail title, extracted detail content comes from a detail body selector and meets the minimum length, and `contaminatedCandidateLeakCount=0`. If the list is crawlable but detail identity, clean title evidence, or body content is not verified, classify it as `list_supported_detail_unverified`; if the sampled detail fetch fails, classify it as `list_supported_detail_failed`.
+
+The audit writes a status examples report in addition to the source CSV and JSON:
+
+- `capability-audit-status-examples-<date>-<run_id>.csv`
+- `capability-audit-status-examples-<date>-<run_id>.md`
+- `capability-audit-status-examples-latest.csv`
+- `capability-audit-status-examples-latest.md`
+
+Each row includes raw navigation counts, valid/resolved detail URL counts, contaminated candidate counts, sampled raw list text, sampled clean title evidence, detail title, identity comparison mode, body selector, and body character count.
 
 Do not treat placeholder event links as verified URLs. Korea University portal-style rows with `href="#1"` and `onclick="jf_view(article_id, board_id, site_id)"` require browser Network evidence because the browser uses POST and redirect before reaching the final encoded detail URL. This audit should classify that structure as `MANUAL_BROWSER_NETWORK_REQUIRED` instead of synthesizing a fake detail URL.
 
