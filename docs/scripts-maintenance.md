@@ -9,7 +9,7 @@ These scripts support recurring crawler operations or incident diagnosis.
 - `scripts/summarize-crawled-feedback.mjs`
   - Aggregates review outcomes from Supabase for feedback-loop tuning.
 - `scripts/merge-notice-source-configs.mjs`
-  - Rebuilds `data/notice-sources.csv` from per-university source files.
+  - Verifies that the canonical crawler source file, `data/notice-sources.csv`, keeps the required operational columns and unique source IDs.
 - `scripts/report-dead-link-candidates.mjs`
   - Categorizes failed sources into dead/blocked/timeout candidates.
 

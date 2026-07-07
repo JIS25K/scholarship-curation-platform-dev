@@ -4,7 +4,7 @@ import path from "node:path";
 const inputPath =
   process.argv[2] ??
   String.raw`C:\Users\user\OneDrive - 고려대학교\문서\ExportBlock-c86b65d3-6893-416a-91cf-7b98b827aa4f-Part-1\ewha-departments csv 35b628091bc080c1af41c8673aaa3501_all.csv`;
-const outputPath = process.argv[3] ?? "data/notice-sources.csv";
+const outputPath = process.argv[3] ?? "data/notice-sources-ewha.csv";
 
 function parseCsv(text) {
   const rows = [];

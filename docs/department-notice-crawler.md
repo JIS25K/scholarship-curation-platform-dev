@@ -4,7 +4,9 @@
 
 ## 1) 입력 파일 준비
 
-`data/notice-sources.csv`에 공지 목록 페이지 정보를 넣습니다.
+`data/notice-sources.csv`에 공지 목록 페이지 정보를 넣습니다. 이 파일이 audit와 운영
+크롤러가 함께 사용하는 단일 canonical 설정입니다. 대학별 실행은 별도 CSV 파일이 아니라
+`CRAWL_SOURCE_ID_PREFIX`로 제한합니다.
 
 - 필수 컬럼: `source_id`, `source_name`, `list_url`
 - 선택 컬럼:
@@ -108,6 +110,9 @@ node scripts/crawl-scholarship-notices.mjs data/notice-sources.csv exports/notic
 
 운영 표준:
 
+- `data/notice-sources.csv`를 단일 source of truth로 유지합니다. 대학별 `notice-sources-*.csv`
+  파일은 과거 import/분석 산출물로만 취급하고, daily/baseline 운영 워크플로 입력으로
+  사용하지 않습니다.
 - 그룹별 실행 시 반드시 `CRAWL_SOURCE_ID_PREFIX`를 함께 지정해 소스 혼입을 방지합니다.
 - 예시:
   - 중앙대: `cau_`
@@ -130,7 +135,8 @@ node scripts/crawl-scholarship-notices.mjs data/notice-sources.csv exports/notic
 Daily 워크플로:
 
 - KST 오전 8시 자동 실행 (`UTC 23:00`)
-- 이화/고려/연세를 각각 크롤링 후 정제
+- 중앙대/이화여대/한양대/홍익대/경희대/고려대/성균관대/서울시립대/연세대를
+  단일 설정 파일과 prefix 필터로 각각 크롤링 후 정제
 - Slack으로 **통합 1개 메시지** 전송
 - 결과물은 workflow artifact(`scholarship-notice-daily`)로 업로드
 - 수동 실행 시 옵션:

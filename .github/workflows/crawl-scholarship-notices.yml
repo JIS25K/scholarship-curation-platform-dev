@@ -59,6 +59,7 @@ jobs:
           npm run tune:skku-notices
           npm run tune:uos-notices
           npm run tune:yonsei-notices
+          npm run merge:notice-sources
 
       - name: Run Ewha crawler
         env:
@@ -95,7 +96,7 @@ jobs:
           CRAWL_ALLOW_INSECURE_TLS_HOSTS: "econ.cau.ac.kr"
           CRAWL_SOURCE_ID_PREFIX: "cau_"
           CRAWL_IGNORE_SEEN: ${{ github.event.inputs.ignore_seen || 'false' }}
-        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources-cau.csv exports/notices/cau .crawler/cau-daily-state.json
+        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources.csv exports/notices/cau .crawler/cau-daily-state.json
 
       - name: Clean CAU crawl results
         run: |
@@ -116,7 +117,7 @@ jobs:
           CRAWL_SOURCE_CONCURRENCY: "8"
           CRAWL_SOURCE_ID_PREFIX: "korea_"
           CRAWL_IGNORE_SEEN: ${{ github.event.inputs.ignore_seen || 'false' }}
-        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources-korea.csv exports/notices/korea .crawler/korea-daily-state.json
+        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources.csv exports/notices/korea .crawler/korea-daily-state.json
 
       - name: Clean Korea crawl results
         run: |
@@ -137,7 +138,7 @@ jobs:
           CRAWL_SOURCE_CONCURRENCY: "8"
           CRAWL_SOURCE_ID_PREFIX: "khu_"
           CRAWL_IGNORE_SEEN: ${{ github.event.inputs.ignore_seen || 'false' }}
-        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources-khu.csv exports/notices/khu .crawler/khu-daily-state.json
+        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources.csv exports/notices/khu .crawler/khu-daily-state.json
 
       - name: Clean KHU crawl results
         run: |
@@ -158,7 +159,7 @@ jobs:
           CRAWL_SOURCE_CONCURRENCY: "8"
           CRAWL_SOURCE_ID_PREFIX: "hanyang_"
           CRAWL_IGNORE_SEEN: ${{ github.event.inputs.ignore_seen || 'false' }}
-        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources-hanyang.csv exports/notices/hanyang .crawler/hanyang-daily-state.json
+        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources.csv exports/notices/hanyang .crawler/hanyang-daily-state.json
 
       - name: Clean Hanyang crawl results
         run: |
@@ -179,7 +180,7 @@ jobs:
           CRAWL_SOURCE_CONCURRENCY: "8"
           CRAWL_SOURCE_ID_PREFIX: "hongik_"
           CRAWL_IGNORE_SEEN: ${{ github.event.inputs.ignore_seen || 'false' }}
-        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources-hongik.csv exports/notices/hongik .crawler/hongik-daily-state.json
+        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources.csv exports/notices/hongik .crawler/hongik-daily-state.json
 
       - name: Clean Hongik crawl results
         run: |
@@ -200,7 +201,7 @@ jobs:
           CRAWL_SOURCE_CONCURRENCY: "8"
           CRAWL_SOURCE_ID_PREFIX: "yonsei_"
           CRAWL_IGNORE_SEEN: ${{ github.event.inputs.ignore_seen || 'false' }}
-        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources-yonsei.csv exports/notices/yonsei .crawler/yonsei-daily-state.json
+        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources.csv exports/notices/yonsei .crawler/yonsei-daily-state.json
 
       - name: Clean Yonsei crawl results
         run: |
@@ -221,7 +222,7 @@ jobs:
           CRAWL_SOURCE_CONCURRENCY: "8"
           CRAWL_SOURCE_ID_PREFIX: "skku_"
           CRAWL_IGNORE_SEEN: ${{ github.event.inputs.ignore_seen || 'false' }}
-        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources-skku.csv exports/notices/skku .crawler/skku-daily-state.json
+        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources.csv exports/notices/skku .crawler/skku-daily-state.json
 
       - name: Clean SKKU crawl results
         run: |
@@ -245,7 +246,7 @@ jobs:
           CRAWL_RETRY_BACKOFF_MS: "1200"
           CRAWL_SOURCE_ID_PREFIX: "uos_"
           CRAWL_IGNORE_SEEN: ${{ github.event.inputs.ignore_seen || 'false' }}
-        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources-uos.csv exports/notices/uos .crawler/uos-daily-state.json
+        run: node scripts/crawl-scholarship-notices.mjs data/notice-sources.csv exports/notices/uos .crawler/uos-daily-state.json
 
       - name: Clean UOS crawl results
         run: |

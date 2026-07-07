@@ -137,7 +137,7 @@ const lines = [
 
 const resolvedOutput = path.resolve(outputPath);
 fs.mkdirSync(path.dirname(resolvedOutput), { recursive: true });
-fs.writeFileSync(resolvedOutput, `\uFEFF${lines.join("\r\n")}`, "utf8");
+fs.writeFileSync(resolvedOutput, `${lines.join("\r\n")}\r\n`, "utf8");
 
 console.log(`rows=${body.length}`);
 console.log(`tuned_fields=${tunedCount}`);

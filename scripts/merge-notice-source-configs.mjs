@@ -1,29 +1,19 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
 
-const OUTPUT_PATH = path.join(root, "data", "notice-sources.csv");
-const SOURCES = [
-  { file: path.join(root, "data", "notice-sources.csv"), includePrefixes: ["ewha_"] },
-  { file: path.join(root, "data", "notice-sources-uos.csv"), includePrefixes: ["uos_"] },
-  { file: path.join(root, "data", "notice-sources-cau.csv"), includePrefixes: ["cau_"] },
-  { file: path.join(root, "data", "notice-sources-hanyang.csv"), includePrefixes: ["hanyang_"] },
-  { file: path.join(root, "data", "notice-sources-hongik.csv"), includePrefixes: ["hongik_"] },
-  { file: path.join(root, "data", "notice-sources-khu.csv"), includePrefixes: ["khu_"] },
-  { file: path.join(root, "data", "notice-sources-korea.csv"), includePrefixes: ["korea_"] },
-  { file: path.join(root, "data", "notice-sources-skku.csv"), includePrefixes: ["skku_"] },
-  { file: path.join(root, "data", "notice-sources-yonsei.csv"), includePrefixes: ["yonsei_"] },
-];
-
-const HEADER = [
+const CANONICAL_PATH = path.resolve(process.argv[2] ?? path.join(root, "data", "notice-sources.csv"));
+const EXPECTED_PREFIXES = ["cau", "ewha", "hanyang", "hongik", "khu", "korea", "skku", "uos", "yonsei"];
+const REQUIRED_COLUMNS = [
   "source_id",
   "university_slug",
   "university_id",
   "college_id",
   "department_id",
+  "org_unit_id",
   "college_name",
   "department_name",
   "source_level",
@@ -64,9 +54,8 @@ function parseCsv(text) {
       continue;
     }
 
-    if (ch === "\"") {
-      inQuotes = true;
-    } else if (ch === ",") {
+    if (ch === "\"") inQuotes = true;
+    else if (ch === ",") {
       row.push(field);
       field = "";
     } else if (ch === "\n") {
@@ -87,85 +76,67 @@ function parseCsv(text) {
   return rows;
 }
 
-function escapeCsv(value) {
-  const text = String(value ?? "");
-  const escaped = text.replace(/"/g, "\"\"");
-  if (/[",\n\r]/.test(escaped)) return `"${escaped}"`;
-  return escaped;
-}
-
-function normalize(value) {
+function cleanText(value) {
   return String(value ?? "").trim();
 }
 
-function deriveUniversitySlug(sourceId, fallback = "") {
-  const normalizedId = normalize(sourceId).toLowerCase();
-  if (normalizedId.includes("_")) return normalizedId.split("_")[0];
-  return normalize(fallback).toLowerCase();
+function fail(message) {
+  console.error(message);
+  process.exitCode = 1;
 }
 
-function deriveDepartmentName(sourceName, sourceLevel = "department", fallback = "") {
-  if (normalize(sourceLevel).toLowerCase() !== "department") {
-    return normalize(fallback);
-  }
-  const normalizedFallback = normalize(fallback);
-  if (normalizedFallback) return normalizedFallback;
-
-  const normalizedSourceName = normalize(sourceName);
-  if (!normalizedSourceName) return "";
-  const pieces = normalizedSourceName.split(/\s+/);
-  if (pieces.length <= 1) return normalizedSourceName;
-  return pieces.slice(1).join(" ").trim();
-}
-
-function readRows(filePath, includePrefixes) {
-  const raw = readFileSync(filePath, "utf8").replace(/^\uFEFF/, "");
+function loadCanonicalRows(csvPath) {
+  const raw = readFileSync(csvPath, "utf8").replace(/^\uFEFF/, "");
   const table = parseCsv(raw);
-  if (table.length === 0) return [];
+  if (table.length === 0) throw new Error(`Source CSV is empty: ${csvPath}`);
 
   const [header, ...body] = table;
   const index = Object.fromEntries(header.map((name, i) => [name, i]));
-  if (index.source_id == null) return [];
+  const rows = body
+    .filter((cells) => cells.some((cell) => cleanText(cell)))
+    .map((cells) => Object.fromEntries(header.map((name, i) => [name, cleanText(cells[i])])));
 
-  return body
-    .filter((cells) => cells.some((cell) => normalize(cell) !== ""))
-    .map((cells) => {
-      const row = {};
-      for (const column of HEADER) {
-        row[column] = cells[index[column]] ?? "";
-      }
-      row.university_slug = deriveUniversitySlug(row.source_id, row.university_slug);
-      row.source_level = normalize(row.source_level) || "department";
-      row.department_name = deriveDepartmentName(
-        row.source_name,
-        row.source_level,
-        row.department_name,
-      );
-      return row;
-    })
-    .filter((row) => includePrefixes.some((prefix) => normalize(row.source_id).startsWith(prefix)));
+  return { header, index, rows };
 }
 
-const merged = [];
-const seen = new Set();
+const { header, index, rows } = loadCanonicalRows(CANONICAL_PATH);
 
-for (const source of SOURCES) {
-  const rows = readRows(source.file, source.includePrefixes);
-  for (const row of rows) {
-    const sourceId = normalize(row.source_id);
-    if (!sourceId || seen.has(sourceId)) continue;
-    seen.add(sourceId);
-    merged.push(row);
+for (const column of REQUIRED_COLUMNS) {
+  if (!(column in index)) fail(`missing_required_column=${column}`);
+}
+
+const seenSourceIds = new Set();
+const duplicateSourceIds = new Set();
+const prefixCounts = Object.fromEntries(EXPECTED_PREFIXES.map((prefix) => [prefix, 0]));
+const missingRequiredRows = [];
+
+for (const row of rows) {
+  const sourceId = cleanText(row.source_id);
+  const prefix = sourceId.includes("_") ? sourceId.split("_")[0] : "";
+  if (!sourceId || !row.source_name || !row.list_url) {
+    missingRequiredRows.push(sourceId || "(blank)");
   }
+  if (seenSourceIds.has(sourceId)) duplicateSourceIds.add(sourceId);
+  seenSourceIds.add(sourceId);
+  if (prefix in prefixCounts) prefixCounts[prefix] += 1;
 }
 
-merged.sort((a, b) => normalize(a.source_id).localeCompare(normalize(b.source_id), "en"));
+if (duplicateSourceIds.size > 0) {
+  fail(`duplicate_source_ids=${[...duplicateSourceIds].sort().join("|")}`);
+}
+if (missingRequiredRows.length > 0) {
+  fail(`missing_required_row_values=${missingRequiredRows.slice(0, 20).join("|")}`);
+}
 
-const lines = [
-  HEADER.join(","),
-  ...merged.map((row) => HEADER.map((column) => escapeCsv(row[column])).join(",")),
-];
-writeFileSync(OUTPUT_PATH, `\uFEFF${lines.join("\r\n")}`, "utf8");
+const unexpectedPrefixes = [...new Set(rows.map((row) => cleanText(row.source_id).split("_")[0]))]
+  .filter((prefix) => prefix && !EXPECTED_PREFIXES.includes(prefix))
+  .sort();
+if (unexpectedPrefixes.length > 0) {
+  fail(`unexpected_prefixes=${unexpectedPrefixes.join("|")}`);
+}
 
-console.log(`rows=${merged.length}`);
-console.log(`output=${OUTPUT_PATH}`);
+console.log(`canonical_source_config=${CANONICAL_PATH}`);
+console.log(`rows=${rows.length}`);
+console.log(`columns=${header.length}`);
+console.log(`prefix_counts=${JSON.stringify(prefixCounts)}`);
+console.log("mode=verify_only");
