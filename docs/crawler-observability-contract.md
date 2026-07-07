@@ -159,7 +159,9 @@ Stages:
 - `resolvedDetailUrlCount` / `detailUrlResolvedCount`: candidates resolved to valid auditable detail URLs after source URL-pattern filtering. This must not count menu links or rejected raw navigation hints.
 - `validDetailUrlCount`: final detail URL candidates eligible for audit sampling.
 - `detail_url_verified`: the crawler fetched a sample detail page through a valid public GET or registered adapter path and a clean list title strongly matched the detail page title or heading after normalization.
-- `detail_content_verified`: the fetched detail page had enough meaningful text from a detail body selector, not only body-wide layout text.
+- `detail_content_verified`: the fetched detail page had meaningful text from a specific body selector,
+  enough text from a generic container, or at least one body image. Short legitimate notices and
+  image-only notices are not empty-content failures.
 
 These are intentionally separate. A string that looks like a URL is not proof that a detail page is reachable or correct. HTTP 200 alone is not enough to verify detail identity.
 
@@ -179,7 +181,8 @@ Menu contamination is also split into observation and leakage:
 
 - `menuContaminationObserved`: menu/header/footer/common navigation exists on the page.
 - `contaminatedCandidateCount`: contaminated candidates encountered before final filtering.
-- `contaminatedCandidateLeakCount`: contaminated candidates that entered the final detail candidate set. Any leak blocks `supported`.
+- `contaminatedCandidateLeakCount`: contaminated candidates that entered the final detail candidate set.
+  The parser now rejects these candidates before final filtering.
 
 Do not mark detail URLs verified for:
 
@@ -199,9 +202,13 @@ Known example:
 
 Decision meanings:
 
-- `supported`: the current crawler path found at least one real notice row, resolved a GET detail URL, fetched at least one detail page, verified a clean list title against the detail title with strong identity evidence, extracted minimum detail body content from a detail body selector, and proved contaminated candidates did not enter the final candidate set.
+- `supported`: the current crawler path found at least one real notice row, resolved a detail URL, fetched
+  at least one detail page, verified list/detail identity, extracted meaningful body text or body media,
+  and proved contaminated candidates did not enter the final candidate set. Pagination evidence remains
+  observable but is not required for current-page crawling.
 - `list_supported_detail_unverified`: the list row appears crawlable, but detail URL identity or body content was not verified. This is not an adapter requirement by itself.
 - `list_supported_detail_failed`: the list row appears crawlable, but sampled detail fetch failed.
+- `valid_zero_candidates`: the list parser and URL resolver worked, but no current item passed the scholarship keyword/date filters. This is not a parser or adapter failure.
 - `config_or_selector_fix`: selectors or URL patterns need repair, including menu/header/footer contamination such as `LIST_SELECTOR_MENU_CONTAMINATION`.
 - `adapter_required`: a public source-specific endpoint, XHR, POST-detail flow, or client-rendered navigation requires source-specific implementation.
 - `manual_review_required`: browser Network, access policy, CAPTCHA/login, bot blocking, or other manual evidence is needed before implementation.
