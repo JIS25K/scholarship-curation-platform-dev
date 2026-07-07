@@ -170,6 +170,20 @@ Baseline 워크플로:
 INGEST_DRY_RUN=true node scripts/ingest-notices-to-supabase.mjs exports/notices/daily/scholarship-notices-daily-latest.csv
 ```
 
+### v2 정규화 스키마
+
+`crawled_notices`는 현재 관리자 검수 호환을 위한 staging 테이블로 유지합니다. 운영형 provenance,
+중복, 수정/삭제, 자산, 실행 이력 보존은 v2 스키마에서 담당합니다.
+
+- 설계 문서: `docs/crawler-db-schema-v2.md`
+- migration: `sql/create-crawler-normalized-schema-v2.sql`
+- 핵심 테이블: `crawler_notice_sources`, `crawler_notices`, `crawler_notice_occurrences`,
+  `crawler_notice_targets`, `crawler_notice_assets`, `crawler_runs`
+
+다음 ingest 전환 작업에서는 기존 `ignoreDuplicates` 중심 upsert 대신 v2 테이블에
+source/run/notice/occurrence/target/asset을 각각 upsert하고, `crawled_notices`는 필요 시
+검수 화면 compatibility projection으로 유지합니다.
+
 ## 5-2) 어드민 검수 + AI 초안 생성
 
 어드민 메뉴 `수집 공지 검수`(`/admin/crawled-notices`)에서 `status='new'` 공지를 확인하고 장학금으로 승격합니다.

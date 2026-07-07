@@ -38,6 +38,12 @@ export type OrganizationKindType = "학과" | "학교" | "재단" | "기타";
 export type OrgRequestStatusType = "pending" | "approved" | "rejected";
 /** org_units 노드 유형 (표시/필터용, 부모-자식 전이 강제 없음) */
 export type OrgUnitType = "university" | "college" | "division" | "department";
+export type CrawlerSourceLevel = "university" | "college" | "division" | "department";
+export type CrawlerNoticeReviewStatus = "new" | "promoted" | "rejected" | "ignored";
+export type CrawlerRunMode = "daily" | "baseline" | "audit" | "manual" | "backfill";
+export type CrawlerRunStatus = "running" | "succeeded" | "failed" | "partial" | "cancelled";
+export type CrawlerAssetKind = "image" | "attachment";
+export type CrawlerAssetStatus = "referenced" | "stored" | "extracted" | "failed" | "ignored";
 
 // ── Database 타입 ─────────────────────────────────────────────────────────
 
@@ -311,6 +317,393 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["crawled_notices"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_notice_sources: {
+        Row: {
+          id: number;
+          source_key: string;
+          university_slug: string | null;
+          source_level: CrawlerSourceLevel;
+          source_name: string;
+          configured_url: string;
+          effective_url: string | null;
+          base_url: string | null;
+          parser_config: Json;
+          adapter_code: string | null;
+          enabled: boolean;
+          health: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          source_key: string;
+          university_slug?: string | null;
+          source_level?: CrawlerSourceLevel;
+          source_name: string;
+          configured_url: string;
+          effective_url?: string | null;
+          base_url?: string | null;
+          parser_config?: Json;
+          adapter_code?: string | null;
+          enabled?: boolean;
+          health?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_notice_sources"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_source_targets: {
+        Row: {
+          source_id: number;
+          org_unit_id: number;
+          priority: number;
+          created_at: string;
+        };
+        Insert: {
+          source_id: number;
+          org_unit_id: number;
+          priority?: number;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_source_targets"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_notices: {
+        Row: {
+          id: number;
+          canonical_key: string;
+          canonical_url: string | null;
+          native_post_id: string | null;
+          title: string;
+          body_text: string | null;
+          body_html: string | null;
+          posted_at: string | null;
+          content_hash: string | null;
+          review_status: CrawlerNoticeReviewStatus;
+          scholarship_id: number | null;
+          first_seen_at: string;
+          last_seen_at: string;
+          deleted_at: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          canonical_key: string;
+          canonical_url?: string | null;
+          native_post_id?: string | null;
+          title: string;
+          body_text?: string | null;
+          body_html?: string | null;
+          posted_at?: string | null;
+          content_hash?: string | null;
+          review_status?: CrawlerNoticeReviewStatus;
+          scholarship_id?: number | null;
+          first_seen_at?: string;
+          last_seen_at?: string;
+          deleted_at?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_notices"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_notice_url_aliases: {
+        Row: {
+          id: number;
+          notice_id: number;
+          source_id: number | null;
+          url: string;
+          url_hash: string;
+          first_seen_at: string;
+          last_seen_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          notice_id: number;
+          source_id?: number | null;
+          url: string;
+          first_seen_at?: string;
+          last_seen_at?: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_notice_url_aliases"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_runs: {
+        Row: {
+          id: string;
+          started_at: string;
+          ended_at: string | null;
+          mode: CrawlerRunMode;
+          git_sha: string | null;
+          config_hash: string | null;
+          parser_version: string | null;
+          status: CrawlerRunStatus;
+          totals: Json;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          started_at?: string;
+          ended_at?: string | null;
+          mode: CrawlerRunMode;
+          git_sha?: string | null;
+          config_hash?: string | null;
+          parser_version?: string | null;
+          status?: CrawlerRunStatus;
+          totals?: Json;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_runs"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_notice_occurrences: {
+        Row: {
+          id: number;
+          notice_id: number;
+          source_id: number;
+          crawl_run_id: string | null;
+          discovered_url: string;
+          discovered_url_hash: string;
+          final_url: string | null;
+          native_post_id: string | null;
+          list_title: string | null;
+          raw_list_text: string | null;
+          list_posted_at: string | null;
+          detail_fetched_at: string | null;
+          content_hash: string | null;
+          first_seen_at: string;
+          last_seen_at: string;
+          deleted_at: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          notice_id: number;
+          source_id: number;
+          crawl_run_id?: string | null;
+          discovered_url: string;
+          final_url?: string | null;
+          native_post_id?: string | null;
+          list_title?: string | null;
+          raw_list_text?: string | null;
+          list_posted_at?: string | null;
+          detail_fetched_at?: string | null;
+          content_hash?: string | null;
+          first_seen_at?: string;
+          last_seen_at?: string;
+          deleted_at?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_notice_occurrences"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_notice_targets: {
+        Row: {
+          notice_id: number;
+          org_unit_id: number;
+          source_id: number | null;
+          confidence: number;
+          evidence: Json;
+          created_at: string;
+        };
+        Insert: {
+          notice_id: number;
+          org_unit_id: number;
+          source_id?: number | null;
+          confidence?: number;
+          evidence?: Json;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_notice_targets"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_notice_assets: {
+        Row: {
+          id: number;
+          notice_id: number;
+          occurrence_id: number | null;
+          asset_kind: CrawlerAssetKind;
+          source_url: string;
+          source_url_hash: string;
+          storage_bucket: string | null;
+          storage_key: string | null;
+          filename: string | null;
+          mime: string | null;
+          sha256: string | null;
+          width: number | null;
+          height: number | null;
+          position: number | null;
+          alt: string | null;
+          caption: string | null;
+          extracted_text: string | null;
+          status: CrawlerAssetStatus;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          notice_id: number;
+          occurrence_id?: number | null;
+          asset_kind: CrawlerAssetKind;
+          source_url: string;
+          storage_bucket?: string | null;
+          storage_key?: string | null;
+          filename?: string | null;
+          mime?: string | null;
+          sha256?: string | null;
+          width?: number | null;
+          height?: number | null;
+          position?: number | null;
+          alt?: string | null;
+          caption?: string | null;
+          extracted_text?: string | null;
+          status?: CrawlerAssetStatus;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_notice_assets"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_keyword_matches: {
+        Row: {
+          id: number;
+          notice_id: number;
+          rule_version: string;
+          keyword: string;
+          field: string;
+          offset_start: number | null;
+          offset_end: number | null;
+          score: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          notice_id: number;
+          rule_version: string;
+          keyword: string;
+          field: string;
+          offset_start?: number | null;
+          offset_end?: number | null;
+          score?: number | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_keyword_matches"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_source_results: {
+        Row: {
+          run_id: string;
+          source_id: number;
+          decision: string;
+          counts: Json;
+          strategy_code: string | null;
+          adapter_code: string | null;
+          elapsed_ms: number | null;
+          error_count: number;
+          primary_failure_code: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          run_id: string;
+          source_id: number;
+          decision: string;
+          counts?: Json;
+          strategy_code?: string | null;
+          adapter_code?: string | null;
+          elapsed_ms?: number | null;
+          error_count?: number;
+          primary_failure_code?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_source_results"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_audit_results: {
+        Row: {
+          id: number;
+          run_id: string | null;
+          source_id: number;
+          decision: string;
+          failure_code: string | null;
+          access_profile: Json;
+          sample: Json;
+          evidence: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          run_id?: string | null;
+          source_id: number;
+          decision: string;
+          failure_code?: string | null;
+          access_profile?: Json;
+          sample?: Json;
+          evidence?: Json;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_audit_results"]["Insert"]>;
+        Relationships: [];
+      };
+
+      crawler_errors: {
+        Row: {
+          id: number;
+          run_id: string | null;
+          source_id: number | null;
+          notice_id: number | null;
+          occurrence_id: number | null;
+          stage: string;
+          error_class: string | null;
+          http_status: number | null;
+          retry_count: number;
+          message: string;
+          details: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          run_id?: string | null;
+          source_id?: number | null;
+          notice_id?: number | null;
+          occurrence_id?: number | null;
+          stage: string;
+          error_class?: string | null;
+          http_status?: number | null;
+          retry_count?: number;
+          message: string;
+          details?: Json;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crawler_errors"]["Insert"]>;
         Relationships: [];
       };
 
@@ -623,3 +1016,15 @@ export type UniversityDepartment = Database["public"]["Tables"]["university_depa
 export type OrgUnit = Database["public"]["Tables"]["org_units"]["Row"];
 export type OrgUnitAlias = Database["public"]["Tables"]["org_unit_aliases"]["Row"];
 export type ScholarshipTargetUnit = Database["public"]["Tables"]["scholarship_target_units"]["Row"];
+export type CrawlerNoticeSource = Database["public"]["Tables"]["crawler_notice_sources"]["Row"];
+export type CrawlerSourceTarget = Database["public"]["Tables"]["crawler_source_targets"]["Row"];
+export type CrawlerNotice = Database["public"]["Tables"]["crawler_notices"]["Row"];
+export type CrawlerNoticeUrlAlias = Database["public"]["Tables"]["crawler_notice_url_aliases"]["Row"];
+export type CrawlerNoticeOccurrence = Database["public"]["Tables"]["crawler_notice_occurrences"]["Row"];
+export type CrawlerNoticeTarget = Database["public"]["Tables"]["crawler_notice_targets"]["Row"];
+export type CrawlerNoticeAsset = Database["public"]["Tables"]["crawler_notice_assets"]["Row"];
+export type CrawlerKeywordMatch = Database["public"]["Tables"]["crawler_keyword_matches"]["Row"];
+export type CrawlerRun = Database["public"]["Tables"]["crawler_runs"]["Row"];
+export type CrawlerSourceResult = Database["public"]["Tables"]["crawler_source_results"]["Row"];
+export type CrawlerAuditResult = Database["public"]["Tables"]["crawler_audit_results"]["Row"];
+export type CrawlerError = Database["public"]["Tables"]["crawler_errors"]["Row"];
