@@ -1,11 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import { load as loadHtml } from "cheerio";
 import { Agent as UndiciAgent } from "undici";
 import {
-  extractNoticeUrlFromLinkNode,
   getListAdapter,
+  normalizePublicAccessUrl,
 } from "../lib/crawler-adapters/index.mjs";
+import { parseNoticeList } from "../lib/crawler-parsers/list-parser.mjs";
+import { parseNoticeDetail } from "../lib/crawler-parsers/detail-parser.mjs";
+import { applyOfficialSourceFallbacks } from "../lib/crawler-source-fallbacks.mjs";
 
 const DEFAULT_KEYWORDS = [
   "장학",
@@ -183,55 +185,6 @@ function deriveDepartmentName(sourceName, sourceLevel = "department", fallback =
   return pieces.slice(1).join(" ").trim();
 }
 
-function extractDateLikeText(text) {
-  const cleaned = cleanText(text);
-  if (!cleaned) return "";
-
-  const patterns = [
-    /(\d{4}\s*[./-]\s*\d{1,2}\s*[./-]\s*\d{1,2})/,
-    /(\d{4}\s*년\s*\d{1,2}\s*월\s*\d{1,2}\s*일)/,
-    /(\d{2}\s*[./-]\s*\d{1,2}\s*[./-]\s*\d{1,2})/,
-  ];
-
-  for (const pattern of patterns) {
-    const match = cleaned.match(pattern);
-    if (match) return cleanText(match[1]);
-  }
-
-  return "";
-}
-
-function extractListDateText(itemRoot, dateSelector) {
-  const candidates = [];
-  const seen = new Set();
-
-  const pushCandidate = (value) => {
-    const text = cleanText(value);
-    if (!text || seen.has(text)) return;
-    seen.add(text);
-    candidates.push(text);
-  };
-
-  if (dateSelector) {
-    itemRoot.find(dateSelector).each((_, node) => {
-      pushCandidate(itemRoot.find(node).text());
-    });
-  }
-
-  itemRoot.find("time, td, span, div").each((index, node) => {
-    if (index > 40) return false;
-    pushCandidate(itemRoot.find(node).text());
-    return undefined;
-  });
-
-  for (const candidate of candidates) {
-    const dateLike = extractDateLikeText(candidate);
-    if (dateLike) return dateLike;
-  }
-
-  return "";
-}
-
 function readSourceConfig(csvPath) {
   const raw = fs.readFileSync(path.resolve(csvPath), "utf8").replace(/^\uFEFF/, "");
   const table = parseCsv(raw);
@@ -248,7 +201,7 @@ function readSourceConfig(csvPath) {
     }
   }
 
-  return body
+  const sources = body
     .filter((row) => row.some((cell) => cleanText(cell)))
     .map((row) => {
       const sourceLevel = cleanText(row[index.source_level]) || "department";
@@ -278,13 +231,14 @@ function readSourceConfig(csvPath) {
     };
     })
     .filter((source) => source.sourceId && source.sourceName && source.listUrl && source.enabled);
+  return applyOfficialSourceFallbacks(sources);
 }
 
 function normalizeCharset(value) {
   const normalized = cleanText(value).toLowerCase().replace(/^['"]|['"]$/g, "");
   if (!normalized) return "";
   if (normalized === "utf8") return "utf-8";
-  if (["cp949", "ms949", "ks_c_5601-1987"].includes(normalized)) return "euc-kr";
+  if (["euc_kr", "cp949", "ms949", "ks_c_5601-1987"].includes(normalized)) return "euc-kr";
   return normalized;
 }
 
@@ -325,13 +279,37 @@ function decodeHtmlBuffer(buffer, headerCharset) {
     }
   }
 
-  return new TextDecoder("utf-8").decode(buffer);
+  const lossyCandidates = uniqueCandidates.flatMap((charset) => {
+    try {
+      const html = new TextDecoder(charset).decode(buffer);
+      return [{ html, replacementCount: (html.match(/�/g) ?? []).length }];
+    } catch {
+      return [];
+    }
+  });
+  return (
+    lossyCandidates.sort((left, right) => left.replacementCount - right.replacementCount)[0]?.html ??
+    new TextDecoder("utf-8").decode(buffer)
+  );
+}
+
+function resolvePublicAccessUrl(value) {
+  try {
+    const url = new URL(normalizePublicAccessUrl(value));
+    if (/\.uos\.ac\.kr$/i.test(url.hostname) && /\/korNotice\//i.test(url.pathname)) {
+      url.searchParams.set("identified", "anonymous");
+    }
+    return url.toString();
+  } catch {
+    return value;
+  }
 }
 
 async function fetchHtml(url) {
+  const requestUrl = resolvePublicAccessUrl(url);
   let parsedUrl = null;
   try {
-    parsedUrl = new URL(url);
+    parsedUrl = new URL(requestUrl);
   } catch {
     parsedUrl = null;
   }
@@ -344,7 +322,7 @@ async function fetchHtml(url) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
-      const response = await fetch(url, {
+      const response = await fetch(requestUrl, {
         signal: controller.signal,
         dispatcher: shouldAllowInsecureTls ? INSECURE_TLS_DISPATCHER : undefined,
         headers: {
@@ -370,65 +348,6 @@ async function fetchHtml(url) {
     }
   }
   throw lastError ?? new Error("fetch failed");
-}
-
-function extractFromList(source, html) {
-  const $ = loadHtml(html);
-  const results = [];
-  const seen = new Set();
-
-  const pushResult = (node, index) => {
-    const itemRoot = node ? $(node) : null;
-    const linkNode = itemRoot
-      ? source.linkSelector
-        ? itemRoot.find(source.linkSelector).first()
-        : itemRoot.find("a[href]").first()
-      : null;
-    const fallbackLinkNode = !itemRoot ? $("a[href]").eq(index) : null;
-    const activeLinkNode = linkNode && linkNode.length ? linkNode : fallbackLinkNode;
-
-    const noticeUrl = extractNoticeUrlFromLinkNode(source, activeLinkNode);
-    if (!noticeUrl || seen.has(noticeUrl)) return;
-
-    const titleRaw = itemRoot
-      ? source.titleSelector
-        ? itemRoot.find(source.titleSelector).first().text()
-        : activeLinkNode?.text() ?? itemRoot.text()
-      : activeLinkNode?.text() ?? "";
-    const title = cleanText(titleRaw);
-    if (!title) return;
-
-    const dateText = itemRoot ? extractListDateText(itemRoot, source.dateSelector) : "";
-
-    seen.add(noticeUrl);
-    results.push({
-      sourceId: source.sourceId,
-      universitySlug: source.universitySlug,
-      universityId: source.universityId,
-      collegeId: source.collegeId,
-      departmentId: source.departmentId,
-      collegeName: source.collegeName,
-      departmentName: source.departmentName,
-      sourceLevel: source.sourceLevel,
-      sourceName: source.sourceName,
-      listUrl: source.listUrl,
-      noticeUrl,
-      title,
-      dateText,
-    });
-  };
-
-  if (source.listItemSelector) {
-    $(source.listItemSelector).each((index, node) => pushResult(node, index));
-  } else {
-    $("a[href]").each((index) => pushResult(null, index));
-  }
-
-  if (source.noticeUrlPattern) {
-    const pattern = new RegExp(source.noticeUrlPattern);
-    return results.filter((item) => pattern.test(item.noticeUrl));
-  }
-  return results;
 }
 
 function containsScholarshipKeyword(text, keywords) {
@@ -501,17 +420,17 @@ async function enrichDetail(source, item) {
 
   try {
     const detailHtml = await fetchHtml(item.noticeUrl);
-    const $detail = loadHtml(detailHtml);
-    const content = source.detailContentSelector
-      ? cleanText($detail(source.detailContentSelector).first().text())
-      : "";
-    const detailDate = source.detailDateSelector
-      ? cleanText($detail(source.detailDateSelector).first().text())
-      : "";
+    const parsedDetail = parseNoticeDetail(source, detailHtml, item.noticeUrl, {
+      expectedTitle: item.listTitle ?? item.title,
+    });
     return {
       ...item,
-      content,
-      detailDate,
+      content: parsedDetail.content,
+      detailDate: parsedDetail.detailDate,
+      detailTitle: parsedDetail.title,
+      detailBodySelector: parsedDetail.bodySelector,
+      detailBodyQuality: parsedDetail.bodyQuality,
+      images: parsedDetail.images,
     };
   } catch (error) {
     const errorDetails = serializeCrawlerError(error);
@@ -598,6 +517,7 @@ async function run() {
       const listAdapter = getListAdapter(source.adapter);
       let listItems;
       let detailItems = [];
+      let parserMetrics = null;
       if (listAdapter) {
         // 어댑터 소스: 목록 API가 제목/날짜/본문 요약을 모두 제공하므로
         // 기본 HTML 파싱과 개별 상세 요청을 건너뜁니다.
@@ -609,10 +529,16 @@ async function run() {
           }),
           MAX_ITEMS_PER_SOURCE,
         );
+        parserMetrics = {
+          parserStrategy: `ADAPTER:${source.adapter}`,
+          parserRecovered: false,
+        };
         detailItems = listItems;
       } else {
         const listHtml = await fetchHtml(source.listUrl);
-        listItems = trimItems(extractFromList(source, listHtml), MAX_ITEMS_PER_SOURCE);
+        const parsedList = parseNoticeList(source, listHtml);
+        parserMetrics = parsedList.metrics;
+        listItems = trimItems(parsedList.items, MAX_ITEMS_PER_SOURCE);
         if (DETAIL_FETCH_ENABLED) {
           for (const item of listItems) {
             // Small pacing to reduce load on university websites.
@@ -670,6 +596,7 @@ async function run() {
         sourceName: source.sourceName,
         detailItems,
         matched,
+        parserMetrics,
         error: "",
       };
     } catch (error) {
@@ -735,6 +662,8 @@ async function run() {
       sourceLevel: result.sourceLevel,
       collegeName: result.collegeName,
       sourceName: result.sourceName,
+      parserStrategy: result.parserMetrics?.parserStrategy ?? "none",
+      parserRecovered: Boolean(result.parserMetrics?.parserRecovered),
       crawledCount: result.detailItems.length,
       matchedCount: result.matched.length,
       newCount: newlyDiscovered.length,

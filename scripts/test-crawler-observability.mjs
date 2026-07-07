@@ -33,6 +33,16 @@ assert.equal(
   FAILURE_CODES.BOT_BLOCKED_OR_RATE_LIMITED,
 );
 
+const nestedTlsError = new TypeError("fetch failed", {
+  cause: Object.assign(new Error("unable to verify the first certificate"), {
+    code: "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+  }),
+});
+assert.equal(
+  classifyFetchFailure(nestedTlsError),
+  FAILURE_CODES.TLS_OR_CERTIFICATE_EXCEPTION,
+);
+
 assert.deepEqual(
   inferAccessProfiles({
     source: baseSource,
@@ -216,6 +226,29 @@ const mismatchingIdentity = verifyDetailTitleIdentity(
 assert.equal(mismatchingIdentity.verified, false);
 assert.equal(mismatchingIdentity.status, "title_mismatch");
 
+const khuCategoryPrefixIdentity = verifyDetailTitleIdentity(
+  "공통 2026-2학기 교내장학 신청 안내",
+  ["[장학] 2026-2학기 교내장학 신청 안내"],
+);
+assert.equal(khuCategoryPrefixIdentity.verified, true);
+assert.equal(khuCategoryPrefixIdentity.comparisonMode, "notice_prefix_stripped_exact");
+
+assert.equal(
+  verifyDetailTitleIdentity(
+    "공통 [학생지원센터(장학)] 2026-2학기 교내장학 신청 안내",
+    ["[장학] [학생지원센터(장학)] 2026-2학기 교내장학 신청 안내"],
+  ).verified,
+  true,
+);
+
+assert.equal(
+  verifyDetailTitleIdentity(
+    "공통 세계기후경제포럼 - 「2026 세계기후경제포럼 청년 아이디어톤」 국제학생 모집",
+    ["세계기후경제포럼 - 「2026 세계기후경제포럼 청년 아이디어톤」 국제학생 모집"],
+  ).verified,
+  true,
+);
+
 assert.equal(
   makeSourceDecision({
     profiles: [ACCESS_PROFILES.STATIC_HTML_HREF],
@@ -240,7 +273,25 @@ assert.equal(
     failureCode: FAILURE_CODES.ZERO_RECENT_NOTICES,
     finalCandidateCount: 0,
   }),
-  "valid_zero_candidates",
+  "no_posts_detected",
+);
+
+assert.equal(
+  makeSourceDecision({
+    profiles: [ACCESS_PROFILES.JSON_XHR_API],
+    failureCode: FAILURE_CODES.FILTERED_OUT_BY_KEYWORD,
+    finalCandidateCount: 0,
+  }),
+  "posts_found_no_scholarship",
+);
+
+assert.equal(
+  makeSourceDecision({
+    profiles: [ACCESS_PROFILES.STATIC_HTML_HREF],
+    failureCode: FAILURE_CODES.FILTERED_OUT_BY_KEYWORD,
+    finalCandidateCount: 0,
+  }),
+  "posts_found_no_scholarship",
 );
 
 const menuOnly = extractFromListWithMetrics(
@@ -321,16 +372,16 @@ const contaminatedCardSource = {
   dateSelector: "",
 };
 const contaminatedExtracted = extractFromListWithMetrics(contaminatedCardSource, contaminatedCardHtml);
-assert.equal(contaminatedExtracted.items.length, 1);
-assert.equal(contaminatedExtracted.items[0].listTitleQuality, "contaminated");
-assert.equal(contaminatedExtracted.metrics.contaminatedCandidateLeakCount, 1);
+assert.equal(contaminatedExtracted.items.length, 0);
+assert.equal(contaminatedExtracted.metrics.contaminatedCandidateCount, 1);
+assert.equal(contaminatedExtracted.metrics.contaminatedCandidateLeakCount, 0);
 assert.equal(
   verifyDetailTitleIdentity(
-    contaminatedExtracted.items[0].listTitle,
+    "General Notice 2026 Industry Foundation Scholarship Selection Campus Views 174 Created 2026.07.03",
     ["2026 Industry Foundation Scholarship Selection"],
     {
-      rawListText: contaminatedExtracted.items[0].rawListText,
-      listTitleQuality: contaminatedExtracted.items[0].listTitleQuality,
+      rawListText: "General Notice 2026 Industry Foundation Scholarship Selection Campus Views 174 Created 2026.07.03",
+      listTitleQuality: "contaminated",
     },
   ).verified,
   false,
@@ -475,32 +526,31 @@ try {
     })),
     [],
   );
-  assert.equal(contaminatedDetails[0].identityVerified, false);
-  assert.equal(contaminatedDetails[0].identityComparisonMode, "list_title_quality_failed");
+  assert.equal(contaminatedDetails.length, 0);
   const contaminatedFailure = decidePrimaryFailureCode({
     selectorMatchCount: contaminatedExtracted.metrics.listDomItemCount,
     linkExtractionCount: contaminatedExtracted.metrics.linkExtractionCount,
     validDetailUrlCount: contaminatedExtracted.metrics.validDetailUrlCount,
     contaminatedCandidateLeakCount: contaminatedExtracted.metrics.contaminatedCandidateLeakCount,
-    detailSampleCount: contaminatedDetails.length,
-    detailFetchSuccessCount: 1,
+    detailSampleCount: 0,
+    detailFetchSuccessCount: 0,
     detailUrlVerifiedCount: 0,
-    detailIdentityUnverifiedCount: 1,
-    crawledCount: 1,
-    keywordMatchCount: 1,
-    parsedDateCount: 1,
-    finalCandidateCount: 1,
+    detailIdentityUnverifiedCount: 0,
+    crawledCount: 0,
+    keywordMatchCount: 0,
+    parsedDateCount: 0,
+    finalCandidateCount: 0,
     hasConfiguredSelector: true,
     paginationVerified: true,
   });
-  assert.equal(contaminatedFailure, FAILURE_CODES.DETAIL_IDENTITY_UNVERIFIED);
+  assert.equal(contaminatedFailure, FAILURE_CODES.ZERO_RECENT_NOTICES);
   assert.equal(
     makeSourceDecision({
       profiles: [ACCESS_PROFILES.STATIC_HTML_HREF],
       failureCode: contaminatedFailure,
-      finalCandidateCount: 1,
+      finalCandidateCount: 0,
     }),
-    "list_supported_detail_unverified",
+    "no_posts_detected",
   );
 
   const failedDetails = await auditDetails(

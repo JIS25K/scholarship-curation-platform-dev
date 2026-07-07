@@ -1,11 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { load as loadHtml } from "cheerio";
 import {
-  extractNoticeUrlFromLinkNode,
   getListAdapter,
+  normalizePublicAccessUrl,
 } from "../lib/crawler-adapters/index.mjs";
+import { parseNoticeList } from "../lib/crawler-parsers/list-parser.mjs";
+import { parseNoticeDetail } from "../lib/crawler-parsers/detail-parser.mjs";
+import { applyOfficialSourceFallbacks } from "../lib/crawler-source-fallbacks.mjs";
 import {
   cleanText,
   classifyFetchFailure,
@@ -13,40 +15,11 @@ import {
   createRunId,
   createStageEvent,
   decidePrimaryFailureCode,
-  extractDetailTitleCandidatesFromHtml,
   FAILURE_CODES,
   inferAccessProfileDetails,
   makeSourceDecision,
   verifyDetailTitleIdentity,
 } from "../lib/crawler-observability.mjs";
-
-const DEFAULT_KEYWORDS = [
-  "scholarship",
-  "tuition",
-  "financial aid",
-  "fellowship",
-  "grant",
-];
-const TITLE_CONTAMINATION_PATTERN =
-  /\b(?:view|views|hits?|writer|author|date|period|created|updated|조회수|작성일|등록일|기간|작성자|부서|담당|신촌|국제)\b|조회수\s*\d+|\d{4}[./-]\d{1,2}[./-]\d{1,2}\s*[~～-]/iu;
-const DETAIL_BODY_SELECTOR_CANDIDATES = [
-  "article",
-  "main article",
-  ".board-view .content",
-  ".board-view .view-content",
-  ".board-view",
-  ".view-content",
-  ".view_cont",
-  ".view-con",
-  ".bbs_view",
-  ".board_view",
-  ".view",
-  ".board",
-  ".article-body",
-  ".article-content",
-  ".content",
-  "main",
-];
 
 const INPUT_CSV_PATH = process.argv[2] ?? "data/notice-sources.csv";
 const OUTPUT_DIR = process.argv[3] ?? "exports/notices/diagnostics";
@@ -70,6 +43,24 @@ const SOURCE_ID_ALLOWLIST = new Set(
 const FALLBACK_CHARSET = process.env.AUDIT_FALLBACK_CHARSET ?? "utf-8";
 const RUN_AT = new Date().toISOString();
 const RUN_ID = createRunId(new Date(RUN_AT));
+const DEFAULT_AUDIT_KEYWORDS = [
+  "장학",
+  "장학금",
+  "학자금",
+  "등록금",
+  "scholarship",
+  "tuition",
+  "financial aid",
+  "fellowship",
+];
+
+function matchesSourceKeywords(source, item) {
+  const keywords = source.keywords.length > 0 ? source.keywords : DEFAULT_AUDIT_KEYWORDS;
+  const searchable = cleanText(
+    [item.title, item.dateText, item.detailDate, item.content].filter(Boolean).join(" "),
+  ).toLowerCase();
+  return keywords.some((keyword) => searchable.includes(cleanText(keyword).toLowerCase()));
+}
 
 function parseCsv(text) {
   const rows = [];
@@ -149,7 +140,7 @@ function readSourceConfig(csvPath) {
     if (!(column in index)) throw new Error(`Missing required CSV column: ${column}`);
   }
 
-  return body
+  const sources = body
     .filter((row) => row.some((cell) => cleanText(cell)))
     .map((row) => ({
       sourceConfigFile: path.resolve(csvPath),
@@ -178,13 +169,14 @@ function readSourceConfig(csvPath) {
       enabled: toBoolean(row[index.enabled], true),
     }))
     .filter((source) => source.sourceId && source.sourceName && source.listUrl && source.enabled);
+  return applyOfficialSourceFallbacks(sources);
 }
 
 function normalizeCharset(value) {
   const normalized = cleanText(value).toLowerCase().replace(/^['"]|['"]$/g, "");
   if (!normalized) return "";
   if (normalized === "utf8") return "utf-8";
-  if (["cp949", "ms949", "ks_c_5601-1987"].includes(normalized)) return "euc-kr";
+  if (["euc_kr", "cp949", "ms949", "ks_c_5601-1987"].includes(normalized)) return "euc-kr";
   return normalized;
 }
 
@@ -222,13 +214,34 @@ function decodeHtmlBuffer(buffer, headerCharset) {
     }
   }
 
-  return {
-    html: new TextDecoder("utf-8").decode(buffer),
-    charset: "utf-8",
-  };
+  const lossyCandidates = [...new Set(candidates)].flatMap((charset) => {
+    try {
+      const html = new TextDecoder(charset).decode(buffer);
+      return [{ html, charset, replacementCount: (html.match(/�/g) ?? []).length }];
+    } catch {
+      return [];
+    }
+  });
+  const best = lossyCandidates.sort(
+    (left, right) => left.replacementCount - right.replacementCount,
+  )[0];
+  return best ?? { html: new TextDecoder("utf-8").decode(buffer), charset: "utf-8" };
+}
+
+function resolvePublicAccessUrl(value) {
+  try {
+    const url = new URL(normalizePublicAccessUrl(value));
+    if (/\.uos\.ac\.kr$/i.test(url.hostname) && /\/korNotice\//i.test(url.pathname)) {
+      url.searchParams.set("identified", "anonymous");
+    }
+    return url.toString();
+  } catch {
+    return value;
+  }
 }
 
 async function fetchHtmlWithTrace(url) {
+  const requestUrl = resolvePublicAccessUrl(url);
   let lastError = null;
   let lastStatus = null;
   let finalUrl = url;
@@ -238,7 +251,7 @@ async function fetchHtmlWithTrace(url) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
-      const response = await fetch(url, {
+      const response = await fetch(requestUrl, {
         signal: controller.signal,
         headers: {
           "user-agent": AUDIT_USER_AGENT,
@@ -300,342 +313,8 @@ function parseNoticeDate(rawText) {
   return null;
 }
 
-function extractDateLikeText(text) {
-  const cleaned = cleanText(text);
-  const match =
-    cleaned.match(/(\d{4}\s*[./-]\s*\d{1,2}\s*[./-]\s*\d{1,2})/) ??
-    cleaned.match(/(\d{2}\s*[./-]\s*\d{1,2}\s*[./-]\s*\d{1,2})/);
-  return match ? cleanText(match[1]) : "";
-}
-
-function extractListDateText($, itemRoot, dateSelector) {
-  const candidates = [];
-  const seen = new Set();
-  const push = (value) => {
-    const text = cleanText(value);
-    if (!text || seen.has(text)) return;
-    seen.add(text);
-    candidates.push(text);
-  };
-  if (dateSelector) {
-    itemRoot.find(dateSelector).each((_, node) => push($(node).text()));
-  }
-  itemRoot.find("time, td, span, div").each((index, node) => {
-    if (index > 40) return false;
-    push($(node).text());
-    return undefined;
-  });
-  for (const candidate of candidates) {
-    const dateLike = extractDateLikeText(candidate);
-    if (dateLike) return dateLike;
-  }
-  return "";
-}
-
-function getNodeAttr(node, name) {
-  return cleanText(node?.attr?.(name));
-}
-
-function isPlaceholderHref(value) {
-  const href = cleanText(value);
-  return !href || /^#/i.test(href) || /^javascript:/i.test(href);
-}
-
-function requiresManualNetworkEvidence(activeLinkNode) {
-  const onclick = getNodeAttr(activeLinkNode, "onclick");
-  if (!onclick) return false;
-  const href = getNodeAttr(activeLinkNode, "href");
-  if (/\bjf_view\s*\(/i.test(onclick)) return true;
-  return isPlaceholderHref(href) && /\b[a-zA-Z_$][\w$]*\s*\(/.test(onclick);
-}
-
-const MENU_TEXT_PATTERN =
-  /^(home|english|chinese|login|logout|sitemap|site map|menu|search|intro|about|contact|main|홈|처음|메인|전체메뉴|사이트맵|로그인|로그아웃|검색|english|chinese|학부소개|학과소개|대학소개|교육이념|오시는길|교수소개|구성원|행정실|대학원)$/i;
-const MENU_CONTAINER_SELECTOR =
-  "header, nav, footer, aside, [role='navigation'], .header, .footer, .nav, .navbar, .gnb, .lnb, .snb, .menu, .sitemap, .sidebar";
-const PAGINATION_SELECTOR =
-  ".pagination, .paging, .paginate, .pager, .page, nav[aria-label*='page'], nav[aria-label*='페이지']";
-
-function hasMenuContainer($, node) {
-  return $(node).closest(MENU_CONTAINER_SELECTOR).length > 0;
-}
-
-function isMenuLikeTitle(title) {
-  const normalized = cleanText(title).replace(/\s+/g, " ");
-  return MENU_TEXT_PATTERN.test(normalized) || normalized.length <= 1;
-}
-
-function hasEventUrlEvidence(activeLinkNode) {
-  if (!activeLinkNode?.length) return false;
-  return Boolean(
-    getNodeAttr(activeLinkNode, "onclick") ||
-      getNodeAttr(activeLinkNode, "data-href") ||
-      getNodeAttr(activeLinkNode, "data-url") ||
-      getNodeAttr(activeLinkNode, "data-link") ||
-      /^javascript:/i.test(getNodeAttr(activeLinkNode, "href")),
-  );
-}
-
-function getNodeSelectorEvidence(source, itemRoot, activeLinkNode, titleNode) {
-  if (source.titleSelector && titleNode?.length) return `title_selector:${source.titleSelector}`;
-  if (source.linkSelector && activeLinkNode?.length) return `link_selector:${source.linkSelector}`;
-  if (activeLinkNode?.length) return "anchor_text:first_a_href";
-  if (itemRoot?.length) return `list_item_selector:${source.listItemSelector}`;
-  return "missing";
-}
-
-function classifyListTitleQuality({ listTitle, rawListText, titleNode, activeLinkNode }) {
-  const title = cleanText(listTitle);
-  if (!title) return "missing";
-  const raw = cleanText(rawListText);
-  const titleFromAnchor = activeLinkNode?.length && cleanText(activeLinkNode.text()) === title;
-  const titleFromDedicatedNode = titleNode?.length && cleanText(titleNode.text()) === title;
-  const rawLongerThanTitle = raw.length > 0 && raw.length > title.length + 60;
-  if (TITLE_CONTAMINATION_PATTERN.test(title)) return "contaminated";
-  if (!titleFromAnchor && !titleFromDedicatedNode && rawLongerThanTitle) return "contaminated";
-  if (title.length > 160 && rawLongerThanTitle) return "contaminated";
-  return "clean";
-}
-
-function detailTitleFromCandidates(candidates) {
-  return cleanText(candidates.find(Boolean) ?? "");
-}
-
-function hasBoardEvidence($, itemRoot, activeLinkNode, title, dateText) {
-  if (!itemRoot?.length) return false;
-  const rootText = cleanText(itemRoot.text());
-  const rootName = itemRoot.get(0)?.tagName?.toLowerCase() ?? "";
-  const rootMeta = cleanText(
-    [
-      itemRoot.attr("class"),
-      itemRoot.attr("id"),
-      itemRoot.parent().attr("class"),
-      itemRoot.parent().attr("id"),
-      activeLinkNode?.attr("class"),
-      activeLinkNode?.attr("id"),
-      activeLinkNode?.attr("href"),
-      activeLinkNode?.attr("onclick"),
-    ].join(" "),
-  ).toLowerCase();
-  if (parseNoticeDate(dateText) || parseNoticeDate(rootText) || parseNoticeDate(title)) return true;
-  if (/board|bbs|notice|공지|list|article|view|post|subject|title|wr_|bo_/.test(rootMeta)) return true;
-  if (/작성자|등록일|조회수|번호|제목|첨부|date|writer|author|views?|hits?|no\./i.test(rootText)) return true;
-  if (["tr", "li"].includes(rootName) && itemRoot.find("td, th").length >= 2) return true;
-  if (activeLinkNode?.closest("table, tbody, ul, ol").length && itemRoot.find("a[href]").length >= 1) {
-    return /view|article|board|bbs|notice|mode=view|no=|idx=|seq=|wr_id=|공지/i.test(rootMeta);
-  }
-  return false;
-}
-
-function getPaginationEvidenceCount($, source) {
-  if (!source.listItemSelector) return 0;
-  const listNodes = $(source.listItemSelector);
-  const containers = new Set();
-  listNodes.each((_, node) => {
-    const container = $(node).closest("table, ul, ol, .board, .bbs, .notice, main, article").get(0);
-    if (container) containers.add(container);
-    const parent = container ? $(container).parent().get(0) : null;
-    if (parent) containers.add(parent);
-  });
-  let count = 0;
-  for (const container of containers) {
-    const scope = $(container);
-    count += scope.find(PAGINATION_SELECTOR).length;
-    if (/pageNo|pageIndex|paging|pagination|paginate|next|prev|다음|이전/i.test(scope.text())) {
-      count += 1;
-    }
-  }
-  return count;
-}
-
 export function extractFromListWithMetrics(source, html) {
-  const $ = loadHtml(html);
-  const fallbackScanUsed = !source.listItemSelector && !source.adapter;
-  const nodes = source.listItemSelector ? $(source.listItemSelector) : $();
-  const results = [];
-  const seen = new Set();
-  let linkExtractionCount = 0;
-  let validDetailUrlCount = 0;
-  let manualNetworkEvidenceRequiredCount = 0;
-  let eventUrlEvidenceCount = 0;
-  let dateParsedCount = 0;
-  let keywordMatchCount = 0;
-  let menuTextCount = 0;
-  let menuContainerCount = 0;
-  let boardEvidenceCount = 0;
-  let rawNavigationEvidenceCount = 0;
-  let resolvedDetailUrlCount = 0;
-  let contaminatedCandidateCount = 0;
-  let contaminatedCandidateLeakCount = 0;
-  const selectorMatches = {};
-  const keywords = source.keywords.length > 0 ? source.keywords : DEFAULT_KEYWORDS;
-  const pattern = source.noticeUrlPattern ? new RegExp(source.noticeUrlPattern) : null;
-
-  if (source.listItemSelector) selectorMatches[source.listItemSelector] = nodes.length;
-  if (source.linkSelector) selectorMatches[source.linkSelector] = $(source.linkSelector).length;
-  if (source.titleSelector) selectorMatches[source.titleSelector] = $(source.titleSelector).length;
-  if (source.dateSelector) selectorMatches[source.dateSelector] = $(source.dateSelector).length;
-
-  nodes.each((index, node) => {
-    const itemRoot = source.listItemSelector ? $(node) : null;
-    const linkNode = itemRoot
-      ? source.linkSelector
-        ? itemRoot.find(source.linkSelector).first()
-        : itemRoot.find("a[href]").first()
-      : $("a[href]").eq(index);
-    const activeLinkNode = linkNode && linkNode.length ? linkNode : null;
-    const titleNode = itemRoot && source.titleSelector ? itemRoot.find(source.titleSelector).first() : null;
-    const rawListText = cleanText(itemRoot ? itemRoot.text() : activeLinkNode?.text() ?? "");
-    const listTitle = cleanText(
-      titleNode && titleNode.length
-        ? titleNode.text()
-        : activeLinkNode?.text() ?? "",
-    );
-    const listTitleQuality = classifyListTitleQuality({
-      listTitle,
-      rawListText,
-      titleNode,
-      activeLinkNode,
-    });
-    const titleExtractionEvidence = getNodeSelectorEvidence(source, itemRoot, activeLinkNode, titleNode);
-    if (isMenuLikeTitle(listTitle || rawListText)) menuTextCount += 1;
-    if (hasMenuContainer($, node) || activeLinkNode?.closest(MENU_CONTAINER_SELECTOR).length) {
-      menuContainerCount += 1;
-      return;
-    }
-    const dateText = itemRoot ? extractListDateText($, itemRoot, source.dateSelector) : "";
-    const hasNoticeBoardEvidence = hasBoardEvidence($, itemRoot, activeLinkNode, listTitle || rawListText, dateText);
-    if (!hasNoticeBoardEvidence) return;
-    boardEvidenceCount += 1;
-    if (hasEventUrlEvidence(activeLinkNode)) {
-      eventUrlEvidenceCount += 1;
-      rawNavigationEvidenceCount += 1;
-    }
-    if (listTitleQuality !== "clean") contaminatedCandidateCount += 1;
-    const noticeUrl = extractNoticeUrlFromLinkNode(source, activeLinkNode);
-    if (noticeUrl) {
-      linkExtractionCount += 1;
-      resolvedDetailUrlCount += 1;
-    }
-    if (!noticeUrl && requiresManualNetworkEvidence(activeLinkNode)) {
-      manualNetworkEvidenceRequiredCount += 1;
-    }
-    if (!noticeUrl || seen.has(noticeUrl)) return;
-    if (pattern && !pattern.test(noticeUrl)) return;
-    validDetailUrlCount += 1;
-    if (listTitleQuality !== "clean") contaminatedCandidateLeakCount += 1;
-
-    if (!listTitle) return;
-
-    const parsedDate = parseNoticeDate(dateText) ?? parseNoticeDate(listTitle);
-    if (parsedDate) dateParsedCount += 1;
-    const keywordMatched = keywords.some((keyword) =>
-      cleanText([listTitle, rawListText, dateText].filter(Boolean).join(" "))
-        .toLowerCase()
-        .includes(keyword.toLowerCase()),
-    );
-    if (keywordMatched) keywordMatchCount += 1;
-
-    seen.add(noticeUrl);
-    results.push({
-      sourceId: source.sourceId,
-      sourceName: source.sourceName,
-      listUrl: source.listUrl,
-      noticeUrl,
-      title: listTitle,
-      rawListText,
-      listTitle,
-      listTitleQuality,
-      titleExtractionEvidence,
-      dateText,
-      parsedDate: parsedDate ? parsedDate.toISOString().slice(0, 10) : "",
-      keywordMatched,
-      boardEvidence: true,
-      contaminatedCandidate: listTitleQuality !== "clean",
-    });
-  });
-
-  const menuContaminationCount = menuTextCount + menuContainerCount;
-  const menuContaminationRate =
-    nodes.length > 0 ? Number((menuContaminationCount / nodes.length).toFixed(4)) : 0;
-  const pageMenuContaminationCount = $(MENU_CONTAINER_SELECTOR).find("a[href]").length;
-  const menuContaminationDetected =
-    nodes.length > 0 &&
-    menuContaminationCount >= 3 &&
-    (menuContaminationRate >= 0.35 || (results.length === 0 && menuContaminationRate >= 0.2));
-
-  return {
-    items: results,
-    metrics: {
-      listDomItemCount: nodes.length,
-      selectorMatches,
-      fallbackScanUsed,
-      fallbackAnchorCount: fallbackScanUsed ? $("a[href]").length : 0,
-      boardEvidenceCount,
-      menuTextCount,
-      menuContainerCount,
-      menuContaminationCount,
-      menuContaminationRate,
-      menuContaminationDetected,
-      menuContaminationObserved: pageMenuContaminationCount > 0 || menuContaminationCount > 0,
-      pageMenuContaminationCount,
-      rawNavigationEvidenceCount,
-      resolvedDetailUrlCount,
-      linkExtractionCount,
-      validDetailUrlCount,
-      manualNetworkEvidenceRequiredCount,
-      eventUrlEvidenceCount,
-      contaminatedCandidateCount,
-      contaminatedCandidateLeakCount,
-      paginationEvidenceCount: getPaginationEvidenceCount($, source),
-      titleExtractCount: results.length,
-      parsedDateCount: dateParsedCount,
-      keywordMatchCount,
-    },
-  };
-}
-
-function detailContentFromHtml(source, html) {
-  const $ = loadHtml(html);
-  if (source.detailContentSelector) {
-    const content = cleanText($(source.detailContentSelector).first().text());
-    return {
-      content,
-      selector: source.detailContentSelector,
-      quality: content.length >= DETAIL_CONTENT_MIN_CHARS ? "clean" : "empty_or_boilerplate",
-    };
-  }
-  for (const selector of DETAIL_BODY_SELECTOR_CANDIDATES) {
-    const node = $(selector).first();
-    if (!node.length) continue;
-    const content = cleanText(node.text());
-    if (content.length >= DETAIL_CONTENT_MIN_CHARS) {
-      return {
-        content,
-        selector,
-        quality: selector === "main" ? "layout_risk" : "clean",
-      };
-    }
-  }
-  const bodyText = cleanText($("body").first().text());
-  return {
-    content: bodyText,
-    selector: "body",
-    quality: bodyText.length >= DETAIL_CONTENT_MIN_CHARS ? "layout_risk" : "empty_or_boilerplate",
-  };
-}
-
-function detailTitleCandidatesFromHtml(source, html) {
-  const $ = loadHtml(html);
-  const candidates = [
-    $("h1, h2, h3").first().text(),
-    $(".title, .subject, .heading, .view-title, .board-title").first().text(),
-    $("title").first().text(),
-  ];
-  if (source.titleSelector) candidates.push($(source.titleSelector).first().text());
-  if (source.detailContentSelector) candidates.push($(source.detailContentSelector).first().text().slice(0, 240));
-  candidates.push(...extractDetailTitleCandidatesFromHtml(html));
-  return [...new Set(candidates.map((candidate) => cleanText(candidate)).filter(Boolean))].slice(0, 8);
+  return parseNoticeList(source, html);
 }
 
 export async function auditDetails(source, items, stageEvents) {
@@ -668,6 +347,56 @@ export async function auditDetails(source, items, stageEvents) {
       });
       continue;
     }
+    const adapterContent = cleanText(item.content);
+    const adapterImages = Array.isArray(item.images) ? item.images : [];
+    if (
+      source.adapter &&
+      (adapterContent.length >= DETAIL_CONTENT_MIN_CHARS || adapterImages.length > 0)
+    ) {
+      stageEvents.push(
+        createStageEvent({
+          runId: RUN_ID,
+          source,
+          stage: "detail_fetch",
+          status: "success",
+          startedAt,
+          metrics: {
+            adapterName: source.adapter,
+            finalUrl: item.noticeUrl,
+            responseContentType: "adapter/json",
+            responseByteLength: Buffer.byteLength(String(item.bodyHtml ?? item.content ?? "")),
+          },
+          evidence: "detail title and body supplied by registered source adapter",
+        }),
+      );
+      detailResults.push({
+        title: item.title,
+        rawListText: item.rawListText ?? item.title,
+        listTitle: item.listTitle ?? item.title,
+        listTitleQuality: item.listTitleQuality ?? "clean",
+        titleExtractionEvidence: item.titleExtractionEvidence ?? "adapter_payload",
+        noticeUrl: item.noticeUrl,
+        finalUrl: item.noticeUrl,
+        httpStatus: 200,
+        fetchStatus: "success",
+        ok: true,
+        detailTitle: item.title,
+        identityComparisonMode: "adapter_payload_title",
+        contentLength: adapterContent.length,
+        contentCharCount: adapterContent.length,
+        contentStatus: "success",
+        empty: false,
+        detailBodySelector: "adapter_payload",
+        detailBodyCharCount: adapterContent.length,
+        detailBodyQuality: "clean",
+        images: adapterImages,
+        identityVerified: true,
+        identityStatus: "verified",
+        identityEvidence: "The registered adapter supplied the list title and corresponding detail payload together.",
+        failureCode: "",
+      });
+      continue;
+    }
     try {
       const page = await fetchHtmlWithTrace(item.noticeUrl);
       stageEvents.push(
@@ -690,9 +419,16 @@ export async function auditDetails(source, items, stageEvents) {
         }),
       );
 
-      const detailTitleCandidates = detailTitleCandidatesFromHtml(source, page.html);
-      const detailTitle = detailTitleFromCandidates(detailTitleCandidates);
-      const detailBody = detailContentFromHtml(source, page.html);
+      const parsedDetail = parseNoticeDetail(source, page.html, page.finalUrl || item.noticeUrl, {
+        expectedTitle: item.listTitle ?? item.title,
+      });
+      const detailTitleCandidates = parsedDetail.titleCandidates;
+      const detailTitle = parsedDetail.title;
+      const detailBody = {
+        content: parsedDetail.content,
+        selector: parsedDetail.bodySelector,
+        quality: parsedDetail.bodyQuality,
+      };
       const identity = verifyDetailTitleIdentity(
         item.listTitle ?? item.title,
         detailTitleCandidates,
@@ -701,10 +437,14 @@ export async function auditDetails(source, items, stageEvents) {
           listTitleQuality: item.listTitleQuality,
         },
       );
-      const contentStatus =
-        detailBody.content.length >= DETAIL_CONTENT_MIN_CHARS && detailBody.quality === "clean"
-          ? "success"
-          : "failed";
+      const hasSpecificBodySelector = !["body", "main", ".content", "heuristic-container"].includes(
+        detailBody.selector,
+      );
+      const hasSubstantiveText =
+        detailBody.content.length >= DETAIL_CONTENT_MIN_CHARS ||
+        (hasSpecificBodySelector && detailBody.content.length >= 20);
+      const hasSubstantiveMedia = parsedDetail.images.length > 0;
+      const contentStatus = hasSubstantiveText || hasSubstantiveMedia ? "success" : "failed";
       detailResults.push({
         title: item.listTitle ?? item.title,
         rawListText: item.rawListText ?? "",
@@ -721,10 +461,11 @@ export async function auditDetails(source, items, stageEvents) {
         contentLength: detailBody.content.length,
         contentCharCount: detailBody.content.length,
         contentStatus,
-        empty: detailBody.content.length < DETAIL_CONTENT_MIN_CHARS || detailBody.quality !== "clean",
+        empty: contentStatus === "failed",
         detailBodySelector: detailBody.selector,
         detailBodyCharCount: detailBody.content.length,
         detailBodyQuality: detailBody.quality,
+        images: parsedDetail.images,
         identityVerified: identity.verified,
         identityStatus: identity.status,
         identityEvidence: identity.evidence,
@@ -796,6 +537,12 @@ function recommendedActionFor(decision, failureCode) {
     return "Review access and network behavior manually.";
   }
   if (decision === "config_or_selector_fix") return "Fix source selectors or URL pattern.";
+  if (decision === "posts_found_no_scholarship") {
+    return "Crawler parsed posts, but no scholarship keyword candidate was found.";
+  }
+  if (decision === "no_posts_detected") {
+    return "Crawler found no posts on the configured board; verify whether the board is empty or the URL is wrong.";
+  }
   if (decision === "valid_zero_candidates") return "No crawler change needed unless source content changed.";
   return "Supported by current crawler path.";
 }
@@ -840,6 +587,10 @@ async function auditSource(source) {
         allowUndated: true,
         maxItems: 25,
       });
+      adapterItems = adapterItems.map((item) => ({
+        ...item,
+        keywordMatched: matchesSourceKeywords(source, item),
+      }));
       stageEvents.push(
         createStageEvent({
           runId: RUN_ID,
@@ -880,7 +631,7 @@ async function auditSource(source) {
           pageMenuContaminationCount: 0,
           titleExtractCount: adapterItems.filter((item) => cleanText(item.title)).length,
           parsedDateCount: adapterItems.filter((item) => parseNoticeDate(item.dateText)).length,
-          keywordMatchCount: adapterItems.length,
+          keywordMatchCount: adapterItems.filter((item) => item.keywordMatched).length,
         },
       };
     } catch (error) {
@@ -903,6 +654,13 @@ async function auditSource(source) {
     try {
       listPage = await fetchHtmlWithTrace(source.listUrl);
       listHtml = listPage.html;
+      if (
+        /postRedirectForm[\s\S]{0,800}(?:sso|Auth\.eps)|failureCause['"]?\s+value=['"]unauthorized/iu.test(
+          listHtml,
+        )
+      ) {
+        fetchFailureCode = FAILURE_CODES.AUTH_OR_CAPTCHA_REQUIRED;
+      }
       stageEvents.push(
         createStageEvent({
           runId: RUN_ID,
@@ -1049,6 +807,12 @@ async function auditSource(source) {
     }),
   );
 
+  const finalCandidates = extracted.items.filter((item) => item.keywordMatched !== false);
+  const finalCandidateCount = finalCandidates.length;
+  const finalContaminatedCandidateCount = finalCandidates.filter(
+    (item) => item.listTitleQuality === "contaminated",
+  ).length;
+
   const detailResults =
     DETAIL_SAMPLE_SIZE > 0 && extracted.items.length > 0
       ? await auditDetails(source, extracted.items, stageEvents)
@@ -1108,7 +872,6 @@ async function auditSource(source) {
     }),
   );
 
-  const finalCandidateCount = extracted.items.filter((item) => item.keywordMatched !== false).length;
   const filterStartedAt = new Date().toISOString();
   stageEvents.push(
     createStageEvent({
@@ -1126,7 +889,7 @@ async function auditSource(source) {
         parsedDateCount: extracted.metrics.parsedDateCount ?? 0,
         keywordMatchCount: extracted.metrics.keywordMatchCount ?? 0,
         finalCandidateCount,
-        contaminatedCandidateLeakCount: extracted.metrics.contaminatedCandidateLeakCount ?? 0,
+        contaminatedCandidateLeakCount: finalContaminatedCandidateCount,
       },
       failureCode:
         extracted.items.length > 0 && finalCandidateCount === 0 ? "FILTERED_OUT_BY_KEYWORD" : "",
@@ -1148,12 +911,13 @@ async function auditSource(source) {
     detailFetchSuccessCount,
     detailUrlVerifiedCount: detailVerifiedCount,
     detailSampleCount: detailResults.length,
-    contaminatedCandidateLeakCount: extracted.metrics.contaminatedCandidateLeakCount ?? 0,
+    contaminatedCandidateLeakCount: finalContaminatedCandidateCount,
     parsedDateCount: extracted.metrics.parsedDateCount ?? 0,
     keywordMatchCount: extracted.metrics.keywordMatchCount ?? 0,
     finalCandidateCount,
     crawledCount: extracted.items.length,
     hasConfiguredSelector: Boolean(source.listItemSelector),
+    explicitEmptyStateDetected: Boolean(extracted.metrics.explicitEmptyStateDetected),
     paginationVerified,
   });
   const profileDetails = inferAccessProfileDetails({
@@ -1185,7 +949,7 @@ async function auditSource(source) {
     detailUrlVerifiedCount: detailVerifiedCount,
     detailContentCharCount,
     cleanDetailSampleCount,
-    contaminatedCandidateLeakCount: extracted.metrics.contaminatedCandidateLeakCount ?? 0,
+    contaminatedCandidateLeakCount: finalContaminatedCandidateCount,
     minDetailContentCharCount: DETAIL_CONTENT_MIN_CHARS,
   });
   const recommendedAction = recommendedActionFor(decision, failureCode);
@@ -1213,7 +977,7 @@ async function auditSource(source) {
         detailContentVerified: detailContentCharCount >= DETAIL_CONTENT_MIN_CHARS,
         detailContentCharCount,
         cleanDetailSampleCount,
-        contaminatedCandidateLeakCount: extracted.metrics.contaminatedCandidateLeakCount ?? 0,
+        contaminatedCandidateLeakCount: finalContaminatedCandidateCount,
       },
       failureCode,
       evidence: summarizeEvidence({ source, profiles, failureCode, decision, extracted, detailResults }),
@@ -1228,6 +992,8 @@ async function auditSource(source) {
     universitySlug: source.universitySlug,
     sourceLevel: source.sourceLevel,
     listUrl: source.listUrl,
+    configuredListUrl: source.configuredListUrl || source.listUrl,
+    fallbackSourceId: source.fallbackSourceId || "",
     adapter: source.adapter,
     startedAt: sourceStartedAt,
     endedAt: new Date().toISOString(),
@@ -1252,6 +1018,7 @@ async function auditSource(source) {
       detailContentCharCount,
       minDetailContentCharCount: DETAIL_CONTENT_MIN_CHARS,
       finalCandidateCount,
+      contaminatedCandidateLeakCount: finalContaminatedCandidateCount,
     },
     samples: {
       notices: extracted.items.slice(0, 5).map((item) => ({
@@ -1383,6 +1150,8 @@ function buildSourceCsvRows(perSource) {
     "university_slug",
     "source_level",
     "adapter",
+    "fallback_source_id",
+    "configured_list_url",
     "list_url",
     "list_fetch_status",
     "list_parse_status",
@@ -1397,6 +1166,8 @@ function buildSourceCsvRows(perSource) {
     "detail_content_char_count",
     "pagination_status",
     "access_profiles",
+    "parser_strategy",
+    "parser_recovered",
     "capability_status",
     "recommended_action",
     "manual_review_question",
@@ -1414,6 +1185,7 @@ function buildSourceCsvRows(perSource) {
     "identity_comparison_mode",
     "detail_body_selector",
     "detail_body_char_count",
+    "detail_image_count",
   ];
   const csvRows = perSource.map((source) => {
     const itemMatchCount = Number(source.metrics.listDomItemCount ?? 0);
@@ -1429,6 +1201,8 @@ function buildSourceCsvRows(perSource) {
       source.universitySlug || "unknown",
       source.sourceLevel || "unknown",
       source.adapter || "none",
+      source.fallbackSourceId || "none",
+      source.configuredListUrl || source.listUrl,
       source.listUrl,
       getAggregateStageStatus(source, "list_fetch"),
       getAggregateStageStatus(source, "list_parse"),
@@ -1443,6 +1217,8 @@ function buildSourceCsvRows(perSource) {
       getDetailContentCharCount(source),
       getAggregateStageStatus(source, "pagination_check"),
       source.accessProfiles.length > 0 ? source.accessProfiles.join("|") : "none",
+      source.metrics.parserStrategy || "none",
+      source.metrics.parserRecovered ? "true" : "false",
       source.capabilityStatus || "unknown",
       source.recommendedAction || "none",
       source.manualReviewQuestion || "none",
@@ -1460,6 +1236,7 @@ function buildSourceCsvRows(perSource) {
       detail.identityComparisonMode || "none",
       detail.detailBodySelector || "none",
       detail.detailBodyCharCount ?? detail.contentCharCount ?? 0,
+      detail.images?.length ?? 0,
     ];
     return row.map((cell) => escapeCsvCell(cell)).join(",");
   });
@@ -1477,6 +1254,8 @@ function buildUniversitySummaryCsvRows(perSource) {
     "manual_review_required_count",
     "adapter_required_count",
     "config_or_selector_fix_count",
+    "posts_found_no_scholarship_count",
+    "no_posts_detected_count",
     "valid_zero_candidates_count",
     "failed_source_count",
     "failure_codes",
@@ -1509,6 +1288,8 @@ function buildUniversitySummaryCsvRows(perSource) {
         sources.filter((source) => source.decision === "manual_review_required").length,
         sources.filter((source) => source.decision === "adapter_required").length,
         sources.filter((source) => source.decision === "config_or_selector_fix").length,
+        sources.filter((source) => source.decision === "posts_found_no_scholarship").length,
+        sources.filter((source) => source.decision === "no_posts_detected").length,
         sources.filter((source) => source.decision === "valid_zero_candidates").length,
         sources.filter((source) => source.failureCode).length,
         failures.size > 0 ? [...failures].sort().join("|") : "none",

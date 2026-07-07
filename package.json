@@ -31,6 +31,7 @@
     "audit:crawler-capabilities": "node scripts/audit-crawler-capabilities.mjs",
     "test:crawler-observability": "node scripts/test-crawler-observability.mjs",
     "test:crawler-adapters": "node scripts/test-crawler-adapters.mjs",
+    "test:crawler-parsers": "node scripts/test-crawler-parsers.mjs",
     "diagnose:sources": "node scripts/diagnose-notice-sources.mjs",
     "clean:notices": "node scripts/clean-crawled-notices.mjs",
     "merge:notices": "node scripts/merge-cleaned-notices.mjs",
