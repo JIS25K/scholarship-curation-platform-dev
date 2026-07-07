@@ -226,6 +226,29 @@ const mismatchingIdentity = verifyDetailTitleIdentity(
 assert.equal(mismatchingIdentity.verified, false);
 assert.equal(mismatchingIdentity.status, "title_mismatch");
 
+const khuCategoryPrefixIdentity = verifyDetailTitleIdentity(
+  "공통 2026-2학기 교내장학 신청 안내",
+  ["[장학] 2026-2학기 교내장학 신청 안내"],
+);
+assert.equal(khuCategoryPrefixIdentity.verified, true);
+assert.equal(khuCategoryPrefixIdentity.comparisonMode, "notice_prefix_stripped_exact");
+
+assert.equal(
+  verifyDetailTitleIdentity(
+    "공통 [학생지원센터(장학)] 2026-2학기 교내장학 신청 안내",
+    ["[장학] [학생지원센터(장학)] 2026-2학기 교내장학 신청 안내"],
+  ).verified,
+  true,
+);
+
+assert.equal(
+  verifyDetailTitleIdentity(
+    "공통 세계기후경제포럼 - 「2026 세계기후경제포럼 청년 아이디어톤」 국제학생 모집",
+    ["세계기후경제포럼 - 「2026 세계기후경제포럼 청년 아이디어톤」 국제학생 모집"],
+  ).verified,
+  true,
+);
+
 assert.equal(
   makeSourceDecision({
     profiles: [ACCESS_PROFILES.STATIC_HTML_HREF],

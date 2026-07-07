@@ -60,6 +60,28 @@ assert.equal(anchorRecovered.items.length, 1);
 assert.equal(anchorRecovered.metrics.parserStrategy, LIST_PARSER_STRATEGIES.HEURISTIC_ANCHOR);
 assert.equal(anchorRecovered.items[0].noticeUrl, "https://example.edu/board/read.php?uid=77");
 
+const skkuBoardList = parseNoticeList(
+  { ...baseSource, listItemSelector: "tbody tr", titleSelector: "", noticeUrlPattern: "mode=view" },
+  `<div class="board list">
+    <ul class="board-search-tab">
+      <li><a href="?mode=list&boardId=1">학사공지(학생용)</a></li>
+      <li><a href="?mode=list&boardId=2">장학</a></li>
+    </ul>
+    <div class="board-name-list board-wrap">
+      <ul class="board-list-wrap">
+        <li>
+          <span>[장학]</span>
+          <a href="?mode=view&viewBoardId=2&itemId=159727">2026학년도 장학금 신청 안내</a>
+          <span>2026-06-05</span>
+        </li>
+      </ul>
+    </div>
+  </div>`,
+);
+assert.equal(skkuBoardList.items.length, 1);
+assert.equal(skkuBoardList.metrics.parserStrategy, LIST_PARSER_STRATEGIES.COMMON_BOARD);
+assert.equal(skkuBoardList.items[0].title, "2026학년도 장학금 신청 안내");
+
 const categoryLinks = parseNoticeList(
   { ...baseSource, listItemSelector: "", titleSelector: "", noticeUrlPattern: "" },
   `<main>
@@ -95,6 +117,19 @@ assert.equal(detail.images.length, 1);
 assert.equal(detail.images[0].url, "https://example.edu/uploads/poster.jpg");
 assert.equal(detail.images[0].caption, "Application schedule");
 assert.equal(detail.images[0].sourceAttribute, "data-src");
+
+const khuDetail = parseNoticeDetail(
+  baseSource,
+  `<html><head><title>경희대학교 학생광장 공지사항</title></head><body>
+    <article class="bbs-view">
+      <header class="top"><h2 class="t">[장학] 2026-2학기 교내장학 신청 안내</h2></header>
+      <div class="view-content"><p>교내장학 신청 대상과 제출 서류를 안내합니다.</p></div>
+    </article>
+  </body></html>`,
+  "https://example.edu/view.do?boardId=1",
+  { expectedTitle: "공통 2026-2학기 교내장학 신청 안내" },
+);
+assert.equal(khuDetail.title, "[장학] 2026-2학기 교내장학 신청 안내");
 
 const koreanPlatformDetail = parseNoticeDetail(
   baseSource,
