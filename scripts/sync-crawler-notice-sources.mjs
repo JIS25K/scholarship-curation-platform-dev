@@ -4,6 +4,7 @@ import path from "node:path";
 const DEFAULT_CSV_PATH = "data/notice-sources.csv";
 const VALID_SOURCE_LEVELS = new Set(["university", "college", "division", "department"]);
 const REQUIRED_COLUMNS = ["source_id", "source_name", "list_url", "source_level"];
+const MAX_APPLY_LIMIT = 10;
 
 function cleanText(value) {
   return String(value ?? "").replace(/\s+/g, " ").trim();
@@ -63,6 +64,7 @@ function parseArgs(argv) {
     json: false,
     limit: 0,
     prefix: "",
+    sourceKeys: [],
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -85,6 +87,9 @@ function parseArgs(argv) {
     } else if (arg === "--prefix") {
       options.prefix = cleanText(next).toLowerCase();
       index += 1;
+    } else if (arg === "--source-key") {
+      options.sourceKeys.push(...parseSourceKeyFilter(next));
+      index += 1;
     } else if (arg === "--json") {
       options.json = true;
     } else if (arg === "--help" || arg === "-h") {
@@ -99,17 +104,30 @@ function parseArgs(argv) {
 
 function printHelp() {
   console.log(`Usage:
-  node scripts/sync-crawler-notice-sources.mjs --csv data/notice-sources.csv --dry-run [--limit N] [--prefix PREFIX] [--json]
+  node scripts/sync-crawler-notice-sources.mjs --csv data/notice-sources.csv --dry-run [--limit N] [--prefix PREFIX] [--source-key SOURCE_KEY] [--json]
 
 Options:
   --csv PATH                         Source CSV path. Defaults to data/notice-sources.csv.
   --dry-run                          Preview validation and crawler_notice_sources payloads. Default.
   --limit N                          Limit selected rows after prefix filtering.
   --prefix PREFIX                    Select source_key values that start with PREFIX.
+  --source-key SOURCE_KEY             Select one exact source_key. Can be repeated or comma-separated.
   --json                             Print machine-readable JSON only.
-  --apply                            Reserved for a later P0 step; intentionally disabled now.
-  --yes-i-am-using-personal-dev-db   Reserved apply safety confirmation.
+  --apply                            Apply a guarded sample upsert to crawler_notice_sources.
+  --yes-i-am-using-personal-dev-db   Required with --apply.
+
+P0-2 apply safety:
+  --apply requires --yes-i-am-using-personal-dev-db, --limit N where N <= 10,
+  --prefix or --source-key, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+  and PERSONAL_DEV_SUPABASE_CONFIRM=1.
 `);
+}
+
+function parseSourceKeyFilter(value) {
+  return String(value ?? "")
+    .split(/[,\s|]+/)
+    .map((piece) => cleanText(piece).toLowerCase())
+    .filter(Boolean);
 }
 
 function readCsvRows(csvPath) {
@@ -315,19 +333,23 @@ function countEmptyFields(rows, fields) {
   );
 }
 
-function buildDryRunResult(options) {
+function buildSourceSyncPlan(options) {
   const { absolutePath, header, index, rows } = readCsvRows(options.csvPath);
   const duplicateSourceKeys = collectDuplicateSourceKeys(rows);
   const validation = validateRows(rows, index);
 
   const prefix = cleanText(options.prefix).toLowerCase();
+  const sourceKeyFilter = new Set(options.sourceKeys);
   const prefixFilteredRows = prefix
     ? rows.filter((row) => row.get("source_id").toLowerCase().startsWith(prefix))
     : rows;
-  const selectedRows = options.limit > 0 ? prefixFilteredRows.slice(0, options.limit) : prefixFilteredRows;
-  const samplePayloads = selectedRows
-    .slice(0, 10)
-    .map((row) => toCrawlerNoticeSourcePayload(row, index));
+  const filteredRows =
+    sourceKeyFilter.size > 0
+      ? prefixFilteredRows.filter((row) => sourceKeyFilter.has(row.get("source_id").toLowerCase()))
+      : prefixFilteredRows;
+  const selectedRows = options.limit > 0 ? filteredRows.slice(0, options.limit) : filteredRows;
+  const payloads = selectedRows.map((row) => toCrawlerNoticeSourcePayload(row, index));
+  const samplePayloads = payloads.slice(0, 10);
 
   const orgUnitCandidateRows = selectedRows.filter((row) => getOptional(row, "org_unit_id", index)).length;
   const sharedBoardCandidates = new Map();
@@ -338,14 +360,14 @@ function buildDryRunResult(options) {
     sharedBoardCandidates.get(listUrl).push(row.get("source_id"));
   }
 
-  return {
+  const result = {
     ok:
       duplicateSourceKeys.length === 0 &&
       validation.invalidUrls.length === 0 &&
       validation.invalidBaseUrls.length === 0 &&
       validation.invalidSourceLevels.length === 0 &&
       validation.missingRequiredFields.length === 0,
-    mode: "dry-run",
+    mode: options.apply ? "apply" : "dry-run",
     csvPath: absolutePath,
     csvRows: rows.length,
     selectedRows: selectedRows.length,
@@ -354,7 +376,10 @@ function buildDryRunResult(options) {
     limit: options.limit || null,
     plannedSourceUpserts: selectedRows.length,
     dbDiffAvailable: false,
-    dbDiffReason: "No Supabase connection is used in P0-1 dry-run.",
+    dbDiffReason: options.apply
+      ? "DB diff preview is not implemented for P0-2 guarded sample apply."
+      : "No Supabase connection is used in dry-run mode.",
+    sourceKeys: options.sourceKeys,
     header,
     emptyFieldCounts: countEmptyFields(rows, [
       "source_id",
@@ -375,6 +400,8 @@ function buildDryRunResult(options) {
     sharedBoardCandidateCount: [...sharedBoardCandidates.values()].filter((sourceKeys) => sourceKeys.length > 1).length,
     samplePayloads,
   };
+
+  return { result, payloads };
 }
 
 function printTextReport(result) {
@@ -395,7 +422,85 @@ function printTextReport(result) {
   console.log(JSON.stringify(result.samplePayloads, null, 2));
 }
 
-function main() {
+function validateApplyOptions(options) {
+  if (!options.apply) return;
+
+  if (!Number.isInteger(options.limit) || options.limit < 1 || options.limit > MAX_APPLY_LIMIT) {
+    throw new Error(`Refusing to apply: --limit is required and must be <= ${MAX_APPLY_LIMIT} for P0-2.`);
+  }
+
+  if (!options.prefix && options.sourceKeys.length === 0) {
+    throw new Error("Refusing to apply: --prefix or --source-key is required for sample apply.");
+  }
+
+  if (!options.personalDevDbConfirmed) {
+    throw new Error("Refusing to apply: --yes-i-am-using-personal-dev-db is required.");
+  }
+
+  if (process.env.PERSONAL_DEV_SUPABASE_CONFIRM !== "1") {
+    throw new Error("Refusing to apply: PERSONAL_DEV_SUPABASE_CONFIRM=1 is required.");
+  }
+
+  if (!process.env.SUPABASE_URL) {
+    throw new Error("Refusing to apply: SUPABASE_URL is required.");
+  }
+
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("Refusing to apply: SUPABASE_SERVICE_ROLE_KEY is required.");
+  }
+}
+
+function validateApplyPlan(result, payloads) {
+  if (!result.ok) {
+    throw new Error("Refusing to apply: CSV validation failed. Run --dry-run and resolve reported issues first.");
+  }
+
+  if (payloads.length < 1) {
+    throw new Error("Refusing to apply: no source rows selected.");
+  }
+
+  if (payloads.length > MAX_APPLY_LIMIT) {
+    throw new Error(`Refusing to apply: selected rows exceed P0-2 limit ${MAX_APPLY_LIMIT}.`);
+  }
+}
+
+async function applySourcePayloads(payloads, jsonOutput = false) {
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  const { error } = await supabase
+    .from("crawler_notice_sources")
+    .upsert(payloads, { onConflict: "source_key" });
+
+  if (error) {
+    throw new Error(`crawler_notice_sources upsert failed: ${error.message}`);
+  }
+
+  const sourceKeys = payloads.map((payload) => payload.source_key);
+  if (jsonOutput) {
+    console.log(
+      JSON.stringify(
+        {
+          ok: true,
+          mode: "apply",
+          appliedRows: payloads.length,
+          sourceKeys,
+        },
+        null,
+        2,
+      ),
+    );
+    return;
+  }
+
+  console.log("source_sync_apply=ok");
+  console.log(`applied_rows=${payloads.length}`);
+  console.log(`source_keys=${sourceKeys.join(",")}`);
+}
+
+async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
     printHelp();
@@ -403,12 +508,17 @@ function main() {
   }
 
   if (options.apply) {
-    throw new Error(
-      "--apply is intentionally disabled for P0-1. Run this script in --dry-run mode only.",
-    );
+    validateApplyOptions(options);
   }
 
-  const result = buildDryRunResult(options);
+  const { result, payloads } = buildSourceSyncPlan(options);
+
+  if (options.apply) {
+    validateApplyPlan(result, payloads);
+    await applySourcePayloads(payloads, options.json);
+    return;
+  }
+
   if (options.json) {
     console.log(JSON.stringify(result, null, 2));
   } else {
@@ -421,10 +531,11 @@ function main() {
 }
 
 try {
-  main();
+  await main();
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);
-  console.error(`source_sync_dry_run=failed`);
+  const attemptedApply = process.argv.slice(2).includes("--apply");
+  console.error(`${attemptedApply ? "source_sync_apply" : "source_sync_dry_run"}=failed`);
   console.error(message);
   process.exitCode = 1;
 }
