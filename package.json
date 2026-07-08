@@ -29,6 +29,7 @@
     "tune:yonsei-notices": "node scripts/tune-notice-sources.mjs data/notice-sources.csv data/notice-sources.csv yonsei_",
     "crawl:notices": "node scripts/crawl-scholarship-notices.mjs",
     "audit:crawler-capabilities": "node scripts/audit-crawler-capabilities.mjs",
+    "sync:notice-sources": "node scripts/sync-crawler-notice-sources.mjs",
     "test:crawler-observability": "node scripts/test-crawler-observability.mjs",
     "test:crawler-adapters": "node scripts/test-crawler-adapters.mjs",
     "test:crawler-parsers": "node scripts/test-crawler-parsers.mjs",
