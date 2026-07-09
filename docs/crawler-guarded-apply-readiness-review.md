@@ -106,3 +106,13 @@ NO-GO for real apply:
 ## Recommended Next Step
 
 Prepare a separate explicit user-approved guarded controlled sample apply prompt. That later prompt should include a dependency-complete operation set, personal-dev-only gates, a deterministic rehearsal label, audit checks, and rollback/cleanup review. It should still fail closed unless the selected fixture report has read-only DB comparison evidence and the user explicitly approves the write.
+
+## Phase 1 Executor Preparation
+
+The controlled sample apply executor preparation is documented in:
+
+```text
+docs/crawler-controlled-sample-apply-phase1.md
+```
+
+It adds a plan-only default executor for the controlled fixture and a future-only guarded apply path. The current preparation still does not execute real DB write. A real personal-dev write remains blocked until the controlled fixture has a read-only DB comparison report, the plan is reviewed, and the user gives separate explicit approval.

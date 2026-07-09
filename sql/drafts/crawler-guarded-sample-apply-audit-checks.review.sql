@@ -26,7 +26,7 @@ where id = :'rehearsal_run_id'::uuid
 
 -- 2. Source result linkage to the run.
 select
-  sr.crawl_run_id,
+  sr.run_id,
   s.source_key,
   sr.decision,
   sr.counts,
@@ -35,7 +35,8 @@ select
   sr.metadata
 from public.crawler_source_results sr
 join public.crawler_notice_sources s on s.id = sr.source_id
-where sr.crawl_run_id = :'rehearsal_run_id'::uuid
+where sr.run_id = :'rehearsal_run_id'::uuid
+  and s.source_key = :'expected_source_key'
 order by s.source_key;
 
 -- 3. Occurrence provenance and notice linkage.
@@ -113,7 +114,7 @@ order by n.canonical_key, a.asset_kind, a.source_url;
 
 -- 7. Warnings/errors preserved for audit.
 select
-  e.crawl_run_id,
+  e.run_id,
   s.source_key,
   n.canonical_key,
   e.stage,
@@ -125,7 +126,7 @@ select
 from public.crawler_errors e
 left join public.crawler_notice_sources s on s.id = e.source_id
 left join public.crawler_notices n on n.id = e.notice_id
-where e.crawl_run_id = :'rehearsal_run_id'::uuid
+where e.run_id = :'rehearsal_run_id'::uuid
 order by e.created_at, s.source_key;
 
 -- 8. Keyword evidence connected to rehearsal notices.

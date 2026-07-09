@@ -37,6 +37,7 @@
     "crawler:lifecycle:dry-run": "node scripts/diagnose-crawler-notice-lifecycle-dry-run.mjs",
     "crawler:pre-apply:dry-run": "node scripts/plan-crawler-pre-apply-safety-dry-run.mjs",
     "crawler:apply:rehearsal": "node scripts/prepare-crawler-guarded-apply-rehearsal.mjs",
+    "crawler:apply:controlled-sample": "node scripts/apply-crawler-controlled-sample-guarded.mjs",
     "crawler:apply:readiness:dry-run": "node scripts/plan-crawler-pre-apply-safety-dry-run.mjs --input fixtures/crawler-ingest-dry-run/guarded-apply-controlled-sample-input.json --out reports/pre-apply-safety-controlled-sample.local.verify.json --json",
     "crawler:apply:readiness:rehearsal": "node scripts/prepare-crawler-guarded-apply-rehearsal.mjs --pre-apply-report reports/pre-apply-safety-controlled-sample.local.verify.json --source-key yonsei_060 --max-items 1 --allow-operation insert_run --allow-operation insert_source_result --allow-operation insert_notice --allow-operation insert_occurrence --allow-operation insert_notice_target --allow-operation insert_error --out reports/guarded-apply-controlled-sample.local.verify.json --json",
     "test:crawler-observability": "node scripts/test-crawler-observability.mjs",

@@ -20,6 +20,7 @@ begin;
 -- psql example:
 --   \set rehearsal_run_id '00000000-0000-0000-0000-000000000000'
 --   \set rehearsal_label 'crawler-guarded-sample-YYYYMMDD-HHMM'
+--   \set expected_source_key 'yonsei_060'
 
 -- 1. Identify the exact rehearsal run.
 with rehearsal_run as (
@@ -49,11 +50,11 @@ notices as (
   join occurrences o on o.notice_id = n.id
   where n.metadata->>'rehearsal_label' = :'rehearsal_label'
 )
-select 'crawler_source_results' as table_name, count(*) from public.crawler_source_results sr join rehearsal_run r on r.id = sr.crawl_run_id
+select 'crawler_source_results' as table_name, count(*) from public.crawler_source_results sr join rehearsal_run r on r.id = sr.run_id
 union all
 select 'crawler_notice_occurrences', count(*) from occurrences
 union all
-select 'crawler_errors', count(*) from public.crawler_errors e join rehearsal_run r on r.id = e.crawl_run_id
+select 'crawler_errors', count(*) from public.crawler_errors e join rehearsal_run r on r.id = e.run_id
 union all
 select 'crawler_keyword_matches', count(*) from public.crawler_keyword_matches km join notices n on n.id = km.notice_id
 union all
@@ -87,9 +88,9 @@ select 'crawler_notices', count(*) from notices;
 -- delete from public.crawler_notice_assets a using notices n where a.notice_id = n.id;
 -- delete from public.crawler_notice_targets nt using notices n where nt.notice_id = n.id;
 -- delete from public.crawler_notice_url_aliases ua using notices n where ua.notice_id = n.id;
--- delete from public.crawler_errors e using rehearsal_run r where e.crawl_run_id = r.id;
+-- delete from public.crawler_errors e using rehearsal_run r where e.run_id = r.id;
 -- delete from public.crawler_notice_occurrences o using rehearsal_run r where o.crawl_run_id = r.id;
--- delete from public.crawler_source_results sr using rehearsal_run r where sr.crawl_run_id = r.id;
+-- delete from public.crawler_source_results sr using rehearsal_run r where sr.run_id = r.id;
 -- delete from public.crawler_notices n using notices scoped where n.id = scoped.id;
 -- delete from public.crawler_runs r using rehearsal_run scoped where r.id = scoped.id;
 

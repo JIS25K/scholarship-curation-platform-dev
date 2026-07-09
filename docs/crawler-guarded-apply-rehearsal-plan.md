@@ -22,6 +22,14 @@ docs/crawler-guarded-apply-readiness-review.md
 
 That review clarifies that `sample_apply_rehearsal_ready=true` means the dry-run planner found reviewable rehearsal candidates, not that real DB write is approved.
 
+Phase 1 controlled sample executor preparation:
+
+```text
+docs/crawler-controlled-sample-apply-phase1.md
+```
+
+That document connects the controlled fixture, read-only DB comparison, plan-only apply report, future-only apply template, and audit/cleanup SQL drafts. It still does not authorize or run a real DB write.
+
 ## Apply Guards
 
 A future apply command must require all of the following:
@@ -196,7 +204,7 @@ node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('reports/gua
 
 ```bash
 # FUTURE ONLY - DO NOT RUN IN THIS STEP.
-# node scripts/<future-guarded-apply-script>.mjs --apply ...
+# node scripts/apply-crawler-controlled-sample-guarded.mjs --apply ...
 ```
 
 5. Post-apply verification:
