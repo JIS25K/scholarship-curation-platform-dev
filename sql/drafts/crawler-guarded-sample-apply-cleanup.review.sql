@@ -13,6 +13,8 @@
 --   3. Keep the default transaction ending as ROLLBACK during review.
 --   4. Never use this against production/main Supabase.
 --   5. Do not delete rows that cannot be tied to the rehearsal run/label.
+--   6. For a successful controlled apply cleanup, delete child evidence first,
+--      then source_results, notices, and finally crawler_runs.
 
 begin;
 
@@ -73,6 +75,16 @@ union all
 select 'crawler_notices', count(*) from notices;
 
 -- 3. Cleanup order follows FK dependencies. Keep commented until reviewed.
+-- Successful apply cleanup order:
+--   1. crawler_keyword_matches
+--   2. crawler_notice_assets
+--   3. crawler_notice_targets
+--   4. crawler_notice_url_aliases
+--   5. crawler_errors
+--   6. crawler_notice_occurrences
+--   7. crawler_source_results
+--   8. crawler_notices scoped by rehearsal label/canonical key
+--   9. crawler_runs
 -- with rehearsal_run as (
 --   select id
 --   from public.crawler_runs

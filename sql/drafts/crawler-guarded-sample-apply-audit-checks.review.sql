@@ -11,6 +11,23 @@
 --   :'rehearsal_label'
 --   :'expected_source_key'
 --   :'expected_org_unit_id'
+--
+-- Phase 2 retry reference values confirmed by the user:
+--   rehearsal_run_id = f14548e7-7bc2-4244-94b5-69b431aa67f7
+--   rehearsal_label = controlled-sample-phase2-retry-20260709
+--   expected_source_key = yonsei_060
+--   expected_org_unit_id = 46
+--
+-- Expected row-count checklist for that controlled retry:
+--   crawler_runs: 1
+--   crawler_source_results: 1
+--   crawler_notices: 1
+--   crawler_notice_url_aliases: 1
+--   crawler_notice_occurrences: 1
+--   crawler_notice_targets: 1
+--   crawler_notice_assets: 1
+--   crawler_errors: 1
+--   crawler_keyword_matches: 1
 
 -- 1. Run identity and metadata.
 select

@@ -80,6 +80,7 @@ function parseArgs(argv) {
     writeRiskConfirmed: false,
     checkConflicts: false,
     simulateApplyFailureAt: "",
+    simulateApplySuccessReport: false,
     help: false,
   };
 
@@ -127,6 +128,8 @@ function parseArgs(argv) {
       if (!next) throw new Error("--simulate-apply-failure-at requires an operation name.");
       options.simulateApplyFailureAt = cleanText(next);
       index += 1;
+    } else if (arg === "--simulate-apply-success-report") {
+      options.simulateApplySuccessReport = true;
     } else if (arg === "--help" || arg === "-h") {
       options.help = true;
     } else if (["--write", "--commit", "--delete", "--cleanup"].includes(arg)) {
@@ -158,6 +161,7 @@ Options:
                                             Required with --apply.
   --check-conflicts                         Run local-only schema/upsert conflict preflight.
   --simulate-apply-failure-at OPERATION      Local-only failure report simulation.
+  --simulate-apply-success-report            Local-only success report simulation.
 
 Safety:
   Plan-only is the default and never creates a Supabase client. --apply is
@@ -191,6 +195,7 @@ function validateApplyGuards(options) {
 }
 
 function validateRequiredOptions(options) {
+  if (options.simulateApplySuccessReport && !options.inputPath && !options.preApplyReportPath) return;
   if (options.checkConflicts && !options.inputPath && !options.preApplyReportPath) return;
   if (!options.inputPath) throw new Error("--input is required.");
   if (!options.preApplyReportPath) throw new Error("--pre-apply-report is required.");
@@ -728,6 +733,81 @@ function simulateApplyFailure(report, options) {
   });
 }
 
+function markApplySucceeded(report, result) {
+  return {
+    ...report,
+    ok: true,
+    mode: "apply",
+    db_write_executed: true,
+    supabase_sql_executed: true,
+    real_apply_executed: true,
+    apply_result: result,
+    go_no_go: {
+      ...(report.go_no_go ?? {}),
+      controlled_sample_apply_plan_ready: true,
+      real_apply_ready: true,
+      real_apply_executed: true,
+      requires_user_approval_before_apply: false,
+      reason: "controlled_personal_dev_apply_executed",
+      blocking_reasons: [],
+    },
+  };
+}
+
+function buildSimulatedSuccessReport() {
+  const report = {
+    generated_at: new Date().toISOString(),
+    mode: "apply",
+    db_write_executed: false,
+    supabase_sql_executed: false,
+    real_apply_executed: false,
+    source_key: "yonsei_060",
+    rehearsal_label: "controlled-sample-success-simulation",
+    ok: true,
+    controlled_fixture: {
+      canonical_key: "yonsei_060:url:e74c29f4562cf52025d9",
+    },
+    guards: {
+      apply_requested: false,
+      personal_dev_confirmed: false,
+      controlled_apply_confirmed: false,
+      write_risk_confirmed: false,
+      personal_dev_env_confirmed: false,
+      supabase_url_present: false,
+      supabase_service_role_key_present: false,
+      production_guard_passed: true,
+      secret_redaction_passed: true,
+    },
+    go_no_go: {
+      controlled_sample_apply_plan_ready: true,
+      real_apply_ready: true,
+      real_apply_executed: false,
+      requires_user_approval_before_apply: false,
+      reason: "simulated_success_report_before_marking",
+      blocking_reasons: [],
+    },
+  };
+  const marked = markApplySucceeded(report, {
+    run_id: "00000000-0000-4000-8000-000000000000",
+    notice_id: 0,
+    occurrence_id: 0,
+    simulated: true,
+  });
+  return {
+    ...marked,
+    mode: "success_simulation",
+    db_write_executed: false,
+    supabase_sql_executed: false,
+    real_apply_executed: true,
+    simulation: {
+      local_only: true,
+      db_client_created: false,
+      real_db_write_executed: false,
+      validates_nested_real_apply_executed: marked.go_no_go.real_apply_executed === true,
+    },
+  };
+}
+
 async function executeApply(report, fixture, options) {
   if (!report.go_no_go.real_apply_ready) {
     throw new Error(`Refusing controlled sample apply: ${report.go_no_go.blocking_reasons.join(", ") || report.go_no_go.reason}`);
@@ -955,11 +1035,11 @@ function printTextReport(report) {
   console.log(`real_apply_executed=${report.real_apply_executed}`);
   console.log(`source_key=${report.source_key}`);
   console.log(`limit=${report.limit}`);
-  console.log(`planned_operations=${report.summary.planned_operations}`);
-  console.log(`dependency_complete=${report.summary.dependency_complete}`);
-  console.log(`controlled_sample_apply_plan_ready=${report.go_no_go.controlled_sample_apply_plan_ready}`);
-  console.log(`real_apply_ready=${report.go_no_go.real_apply_ready}`);
-  console.log(`reason=${report.go_no_go.reason}`);
+  console.log(`planned_operations=${report.summary?.planned_operations ?? 0}`);
+  console.log(`dependency_complete=${report.summary?.dependency_complete ?? false}`);
+  console.log(`controlled_sample_apply_plan_ready=${report.go_no_go?.controlled_sample_apply_plan_ready ?? false}`);
+  console.log(`real_apply_ready=${report.go_no_go?.real_apply_ready ?? false}`);
+  console.log(`reason=${report.go_no_go?.reason ?? "unknown"}`);
 }
 
 async function main() {
@@ -985,6 +1065,13 @@ async function main() {
     if (!report.ok) process.exitCode = 1;
     return;
   }
+  if (options.simulateApplySuccessReport && !options.inputPath && !options.preApplyReportPath) {
+    const report = buildSimulatedSuccessReport();
+    if (options.outPath) writeJson(options.outPath, report);
+    if (options.json) console.log(JSON.stringify(report, null, 2));
+    else printTextReport(report);
+    return;
+  }
   validateRequiredOptions(options);
   const fixture = readJson(options.inputPath, "Controlled fixture");
   const preApplyReport = readJson(options.preApplyReportPath, "Pre-apply report");
@@ -1006,14 +1093,32 @@ async function main() {
     process.exitCode = 1;
     return;
   }
+  if (options.simulateApplySuccessReport) {
+    report = markApplySucceeded(report, {
+      run_id: "00000000-0000-4000-8000-000000000000",
+      notice_id: 0,
+      occurrence_id: 0,
+      simulated: true,
+    });
+    report.mode = "success_simulation";
+    report.db_write_executed = false;
+    report.supabase_sql_executed = false;
+    report.simulation = {
+      local_only: true,
+      db_client_created: false,
+      real_db_write_executed: false,
+      validates_nested_real_apply_executed: report.go_no_go.real_apply_executed === true,
+    };
+    if (options.outPath) writeJson(options.outPath, report);
+    if (options.json) console.log(JSON.stringify(report, null, 2));
+    else printTextReport(report);
+    return;
+  }
 
   if (options.apply) {
     try {
       const result = await executeApply(report, fixture, options);
-      report.db_write_executed = true;
-      report.supabase_sql_executed = true;
-      report.real_apply_executed = true;
-      report.apply_result = result;
+      report = markApplySucceeded(report, result);
     } catch (error) {
       const failureReport = buildFailureReport({ baseReport: report, error, options });
       if (options.outPath) writeJson(options.outPath, failureReport);

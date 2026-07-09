@@ -126,3 +126,13 @@ docs/crawler-controlled-sample-apply-phase2-failure-fix.md
 ```
 
 The user has already cleaned up the partial personal-dev write. Codex must not rerun apply or cleanup; the next acceptable step is local-only validation and user review before any separately approved retry.
+
+## Phase 3 Audit Readiness
+
+The later controlled sample retry success and read-only audit row count confirmation are documented in:
+
+```text
+docs/crawler-controlled-sample-apply-phase3-audit-readiness.md
+```
+
+That document is the current reference before considering any move from controlled fixture data to real collector output candidates.

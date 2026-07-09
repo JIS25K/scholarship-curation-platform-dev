@@ -213,3 +213,13 @@ docs/crawler-controlled-sample-apply-phase2-failure-fix.md
 ```
 
 Any retry remains NO-GO until the user explicitly approves it after reviewing the local schema-conflict preflight and failure-report hardening.
+
+## Phase 3 Audit Readiness
+
+The successful Phase 2 retry and follow-up reporting fix are documented in:
+
+```text
+docs/crawler-controlled-sample-apply-phase3-audit-readiness.md
+```
+
+That document records the user-confirmed audit row counts and keeps full crawl, real crawler-output ingest, production/main Supabase, cleanup execution, and any Codex-run real apply as NO-GO.

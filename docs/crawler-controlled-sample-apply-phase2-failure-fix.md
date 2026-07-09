@@ -148,3 +148,12 @@ Still prohibited:
 - cleanup SQL execution by Codex
 - printing `.env`, Supabase URL, service role key, or secrets
 
+## Phase 3 Audit Readiness
+
+The controlled sample retry later succeeded in personal dev, and the follow-up audit/readiness record is documented in:
+
+```text
+docs/crawler-controlled-sample-apply-phase3-audit-readiness.md
+```
+
+Phase 3 also fixes the success-report inconsistency where top-level `real_apply_executed=true` but nested `go_no_go.real_apply_executed=false`.
