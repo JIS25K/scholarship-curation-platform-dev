@@ -178,4 +178,15 @@ NO-GO remains:
 
 ## Recommended Next Step
 
-The user should review Phase 4 cleanup readiness. If approved, the user may execute personal-dev cleanup manually, then share post-cleanup row counts. After cleanup PASS, proceed to Phase 5: real collector output 1 item dry-run/read-only gate.
+The user should review Roadmap Phase 1 - Gate 4 cleanup readiness. If approved, the user may execute personal-dev cleanup manually, then share post-cleanup row counts. After cleanup PASS, proceed to Roadmap Phase 2: Normalized ingest v2 executor.
+
+## Roadmap Naming Note
+
+This document was originally written during what is now named `Roadmap Phase 1 - Gate 4`. Any local wording such as "Phase 4" in this file refers to the controlled fixture cleanup readiness gate, not `Roadmap Phase 4 Full crawl dry-run`.
+
+The normalized ingest v2 executor work is documented in:
+
+```text
+docs/crawler-normalized-ingest-v2-executor-contract.md
+docs/crawler-normalized-ingest-v2-executor-phase2.md
+```

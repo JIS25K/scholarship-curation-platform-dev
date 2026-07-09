@@ -145,4 +145,15 @@ docs/crawler-controlled-sample-apply-phase4-cleanup-readiness.md
 
 It prepares exact-scope audit SQL, default-`ROLLBACK` cleanup review SQL, and a local-only cleanup guide. Cleanup remains a manual personal-dev user action and is still NO-GO for Codex.
 
+## Roadmap Phase 2 Normalized Ingest v2 Executor
+
+The normalized ingest v2 executor contract and local-only Roadmap Phase 2 implementation notes are documented in:
+
+```text
+docs/crawler-normalized-ingest-v2-executor-contract.md
+docs/crawler-normalized-ingest-v2-executor-phase2.md
+```
+
+Roadmap Phase 2 remains separate from Roadmap Phase 3 Real source mini apply and Roadmap Phase 4 Full crawl dry-run.
+
 That document is the current reference before considering any move from controlled fixture data to real collector output candidates.

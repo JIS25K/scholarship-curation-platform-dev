@@ -86,3 +86,13 @@ v2 crawler 테이블은 내부 운영 데이터다.
 - asset worker: 이미지/첨부파일 다운로드, MIME/sha256 검증, Storage 저장
 - admin UI: occurrence/provenance/asset 상태 노출
 - migration bridge: 기존 `crawled_notices`에서 v2로 backfill할지 여부 결정
+## Roadmap Phase 2 Executor Notes
+
+The normalized ingest v2 executor contract is documented in:
+
+```text
+docs/crawler-normalized-ingest-v2-executor-contract.md
+docs/crawler-normalized-ingest-v2-executor-phase2.md
+```
+
+Roadmap Phase 2 keeps Codex local-only. It can parse this schema SQL for conflict-target preflight, but Codex must not execute Supabase SQL, DB writes, cleanup, real source mini apply, full crawl, production/main Supabase, or batch apply.
