@@ -353,3 +353,21 @@ node scripts/plan-crawler-pre-apply-safety-dry-run.mjs \
 ```
 
 Real ingest apply remains NO-GO after this review. The next gate is still a successful personal-dev read-only DB comparison report, followed by guarded apply design review, rollback/audit trail verification planning, and sample apply rehearsal preparation.
+
+## Guarded Apply Rehearsal Preparation
+
+The guarded apply rehearsal preparation package is documented in:
+
+```text
+docs/crawler-guarded-apply-rehearsal-plan.md
+```
+
+It adds:
+
+- a dry-run-only rehearsal planner,
+- guarded apply eligibility rules,
+- review-only cleanup SQL draft,
+- read-only audit verification SQL draft,
+- future-only command templates.
+
+This package still does not implement or execute real sample apply. A future personal-dev sample apply requires a separate prompt and explicit user approval.

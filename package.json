@@ -36,6 +36,7 @@
     "crawler:ingest:dry-run": "node scripts/ingest-crawler-run-dry-run.mjs",
     "crawler:lifecycle:dry-run": "node scripts/diagnose-crawler-notice-lifecycle-dry-run.mjs",
     "crawler:pre-apply:dry-run": "node scripts/plan-crawler-pre-apply-safety-dry-run.mjs",
+    "crawler:apply:rehearsal": "node scripts/prepare-crawler-guarded-apply-rehearsal.mjs",
     "test:crawler-observability": "node scripts/test-crawler-observability.mjs",
     "test:crawler-adapters": "node scripts/test-crawler-adapters.mjs",
     "test:crawler-parsers": "node scripts/test-crawler-parsers.mjs",
