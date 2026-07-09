@@ -1,0 +1,243 @@
+{
+  "adapter_note": "Adapted local collector/report output for crawler ingest dry-run only. No DB write, SQL, or crawler execution occurred.",
+  "adapter": {
+    "input_path": "fixtures\\crawler-ingest-dry-run\\collector-output-sample-sources.json",
+    "requested_format": "collector-output",
+    "detected_format": "collector-output",
+    "generated_at": "2026-07-09T02:57:47.656Z",
+    "source_key_filter_or_fallback": null,
+    "input_items_seen": 4,
+    "matching_items_seen": 4,
+    "limit_applied": 4,
+    "output_items": 4,
+    "skipped": [],
+    "warnings": [],
+    "adapter_errors": [],
+    "source_diagnostics": [
+      {
+        "source_key": "cau_001",
+        "source_name": "중앙대 경영학부",
+        "crawled_count": 3,
+        "matched_count": 0,
+        "output_items": 0,
+        "body_quality": "empty_or_no_items",
+        "asset_quality": "no_assets_found",
+        "warnings": [
+          "no_matched_scholarship_notices",
+          "no_adapter_items_for_ingest_dry_run"
+        ],
+        "errors": []
+      },
+      {
+        "source_key": "cau_002",
+        "source_name": "중앙대 경제학부",
+        "crawled_count": 3,
+        "matched_count": 3,
+        "output_items": 3,
+        "body_quality": "short_or_empty",
+        "asset_quality": "no_assets_found",
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "source_key": "yonsei_060",
+        "source_name": "연세대 언더우드학부(UD)",
+        "crawled_count": 3,
+        "matched_count": 1,
+        "output_items": 1,
+        "body_quality": "mixed_with_detail_body",
+        "asset_quality": "no_assets_found",
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "db_write_executed": false,
+    "supabase_sql_executed": false,
+    "crawler_executed": false
+  },
+  "run": {
+    "run_key": "adapted-collector-output-29d9f1b7db79",
+    "started_at": "2026-07-09T02:57:47.656Z",
+    "mode": "manual",
+    "parser_version": "ingest-dry-run-v1"
+  },
+  "sources": [
+    {
+      "source_key": "cau_002",
+      "items": [
+        {
+          "title": "2026학년도 쌍용곰두리장학생 선발 공고",
+          "discovered_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29996",
+          "canonical_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29996",
+          "published_at": "2026-07-08",
+          "body_text": "[장학/외부] 학생지원팀(서울)",
+          "body_html": "",
+          "body_quality": "short",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "short_body_text",
+            "no_assets_found"
+          ],
+          "metadata": {
+            "adapter_format": "collector-output:sources.items",
+            "source_name": "중앙대 경제학부",
+            "raw": {
+              "title": "2026학년도 쌍용곰두리장학생 선발 공고",
+              "discovered_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29996",
+              "canonical_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29996",
+              "published_at": "2026-07-08",
+              "body_text": "[장학/외부] 학생지원팀(서울)",
+              "body_html": "",
+              "body_quality": "short",
+              "assets": [],
+              "warnings": [
+                "short_body_text",
+                "no_assets_found"
+              ],
+              "errors": [],
+              "raw": {
+                "sourceName": "중앙대 경제학부",
+                "parserStrategy": "ADAPTER:cau_portal",
+                "dateText": "2026.07.08",
+                "detailDate": "2026.07.08",
+                "parsedDate": "2026-07-08"
+              }
+            }
+          }
+        },
+        {
+          "title": "2026학년도 2학기 학자금 대출 신청 안내",
+          "discovered_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29993",
+          "canonical_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29993",
+          "published_at": "2026-07-07",
+          "body_text": "[장학/통합] 학생지원팀",
+          "body_html": "",
+          "body_quality": "short",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "short_body_text",
+            "no_assets_found"
+          ],
+          "metadata": {
+            "adapter_format": "collector-output:sources.items",
+            "source_name": "중앙대 경제학부",
+            "raw": {
+              "title": "2026학년도 2학기 학자금 대출 신청 안내",
+              "discovered_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29993",
+              "canonical_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29993",
+              "published_at": "2026-07-07",
+              "body_text": "[장학/통합] 학생지원팀",
+              "body_html": "",
+              "body_quality": "short",
+              "assets": [],
+              "warnings": [
+                "short_body_text",
+                "no_assets_found"
+              ],
+              "errors": [],
+              "raw": {
+                "sourceName": "중앙대 경제학부",
+                "parserStrategy": "ADAPTER:cau_portal",
+                "dateText": "2026.07.07",
+                "detailDate": "2026.07.07",
+                "parsedDate": "2026-07-07"
+              }
+            }
+          }
+        },
+        {
+          "title": "2026학년도 2학기 보건장학회 다문화가정 장학생 선발 공고",
+          "discovered_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29992",
+          "canonical_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29992",
+          "published_at": "2026-07-07",
+          "body_text": "[장학/외부] 학생지원팀(서울)",
+          "body_html": "",
+          "body_quality": "short",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "short_body_text",
+            "no_assets_found"
+          ],
+          "metadata": {
+            "adapter_format": "collector-output:sources.items",
+            "source_name": "중앙대 경제학부",
+            "raw": {
+              "title": "2026학년도 2학기 보건장학회 다문화가정 장학생 선발 공고",
+              "discovered_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29992",
+              "canonical_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29992",
+              "published_at": "2026-07-07",
+              "body_text": "[장학/외부] 학생지원팀(서울)",
+              "body_html": "",
+              "body_quality": "short",
+              "assets": [],
+              "warnings": [
+                "short_body_text",
+                "no_assets_found"
+              ],
+              "errors": [],
+              "raw": {
+                "sourceName": "중앙대 경제학부",
+                "parserStrategy": "ADAPTER:cau_portal",
+                "dateText": "2026.07.07",
+                "detailDate": "2026.07.07",
+                "parsedDate": "2026-07-07"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "yonsei_060",
+      "items": [
+        {
+          "title": "[ALL] UIC Scholarship Application Announcement: 2026 Fall",
+          "discovered_url": "https://uic.yonsei.ac.kr/main/news.php?mid=m06_01_02&act=view&uid=14407",
+          "canonical_url": "https://uic.yonsei.ac.kr/main/news.php?mid=m06_01_02&act=view&uid=14407",
+          "published_at": "2026-06-15",
+          "body_text": "UIC Scholarship Application Announcement: 2026 Fall * From 2022 winter, documents for Need-based Scholarship(언더우드자유장학금) should be submitted via Yonsei Portal System(http://portal.yonsei.ac.kr) during the application period. (Log in -> Academic Information -> Scholarship -> Students Scholarship Application(학생장학신청) -> Select 2026-2 semester ->Step 1. Applicable Scholarship -> 언더우드자유장학금 -> Download Notice File -> ADD -> Step 2. Apply for Scholarship ->Upload Application Form (Notice File) and Supplementary Documents in combined PDF file-> Apply) * Note: Merit-based scholarship(진리장학금) applicants do NOT need to submit a scholarship application except for students currently on leave and are planning to return in the 2026 Fall Semester. 1. Types of Scholarship and Eligibility A. Common Requirements - Minimum of 12 credits in 2026 Spring Semester (or the most current semester for those on leave of absence) - No overlapping scholarships are permitted except for 국가장학금 (the scholarship provided by Korea Student Aid Foundation) - Students who have completed more than 8 semesters as of 2026 Spring Semester cannot apply. B. Merit-based Scholarship (성적우수장학금) - Outstanding 2026 Spring Semester (or the most current semester for those on leave of absence) GPA C. Need-based Scholarship (가계곤란장학금) - 2026 Spring Semester (or the most current semester for those on leave of absence) GPA 2.5 or higher D. ESP (Exchange Student Program) Scholarship (교환학생장학금) - 2026 Spring Semester (or the most current semester for those on leave of absence) GPA 2.5 or higher - Outbound exchange students who have been selected to be dispatched in the 2026 Fall Semester 2. Amount: Full tuition, 1/2 of the tuition, 1/3 of the tuition, etc. 3. Selection Criteria A. Merit-based: Academic excellence (GPA) B. Need-based: Financial need C. ESP: Students who meet the above qualifications will be automatically selected without any additional application procedures. * Students who plan to return from leave of absence (복학생) should submit a merit-based scholarship application (attached) via email to each division’s office(UD: uic_ud@yonsei.ac.kr / HASS: uic_hass@yonsei.ac.kr ISE: uic_ise@yonsei.ac.k ) by July 16th, 2026. It is each student's responsibility to check the application status with each division’s office.(UD: 02-2123-3925 / HASS: 032-749-3760 / ISE: 032-749-3801) 4. Need-based Scholarship Application Period A. 9AM June 18th (Thu) ~ 5PM July 16th (Thu), 2026 (Korea Standard Time) B. Documents for need-based scholarship must be submitted via Yonsei Portal during the application period. 5. Application Materials for Need-Based Scholarship [Korean Students] 1) 가계곤란장학금신청서 (Scholarship Application Form: Attached) : 학사포탈에서 다운로드하여 반드시 영문으로 작성 2) 기타 가계곤란 증빙서류{파산증명서, 부채증명서, 직계가족의 장기입원확인증명서, 실직증명서(구직등록필증-고용안정센터 발급) 등} 각 1부(해당자만) 3) 근로소득 원천징수 영수증, 건강보험료 납부확인서, 지방세세목별과세증명서 등은 제출할 필요 없음. 4) 제출 증빙서류가 여러개인 경우, 지원서양식을 제외한 모든 증빙서류를 병합하여 하나의 PDF파일로 제출 (반드시 A4사이즈로 통일) 5) 국가장학금 (I, II유형)을 반드시 신청해야 함. 국가장학금 미신청자는 가계곤란장학금 심사 대상에서 제외됨. (횟수초과 등으로 국가장학금 신청불가자는 국가장학금 신청 없이 신청가능. 단, 지원서에 해당 사항 명시) * 한국장학재단 산정 소득분위가 있을 경우 소득분위 확인서로 증빙서류를 갈음함. [Non-Korean students] The following should be prepared in English. 1) Scholarship Application Form: Downloadable from the Yonsei Portal 2) Tax return statements from both you and your parent(s) or guardian(s) (if applicable) 3) A copy of a salary statement from both you and/or your guardian(s) for the last six or twelve months (if applicable) 4) Other income/asset information documents (if applicable) 5) Any other documents proving a need for financial aid 6) All the documents mentioned above shoud be merged into 1 PDF file except for the application form. * It is the student's responsibility to convince the school of true financial need. The more supporting documents you can submit the higher your chances of success will be. If possible, for example, you should submit copies of your banking and credit card statements for the past 6 months (12 months preferred), your housing lease agreement, statements of unemployment and bankruptcy by your guardian, and income tax and estate tax statements by yourself and/or guardian. All documents not in English or Korean must be translated into English or Korean. How to Submit the Documents on Yonsei Portal Click the Download button on the Scholarship Application Form -> Fill out and Save Downloaded Application -> Upload Saved Application > Click the 'Apply' button at the bottom 1) Please scan the supplementary documents or take clear photos with your cell phone, upload them online with the scholarship application form. 2) If there are multiple documents for submission, merge them into one PDF file and make sure to standardize the size to A4. 3) Upload file capacity is limited to 10MB. If the file has a larger capacity, please send them to your division office via e-mail under the title of \"2026-2 Needbased_Student ID_Name.pdf\". 6. Interview schedules for the need-based scholarship will be announced individually, if necessary. 7. Results Announcement: 2026 Fall Tuition Fee Bill Print Period through Bill Print Menu on Yonsei Portal System 8. Scholarship payment method: Automatic deduction on tuition statements For any questions or concerns, please contact to each division’s office. (UD: uic_ud@yonsei.ac.kr / HASS: uic_hass@yonsei.ac.kr / ISE: uic_ise@yonsei.ac.kr ) -Underwood International College-",
+          "body_html": "<h1 style=\"text-align: center;\">UIC Scholarship Application Announcement: 2026 Fall<br><br></h1> <p><strong>* From 2022 winter, documents for Need-based Scholarship(언더우드자유장학금) should be submitted via Yonsei Portal System(<a href=\"http://portal.yonsei.ac.kr/\">http://portal.yonsei.ac.kr</a>) during the application period.&nbsp;<br></strong></p> <table border=\"1\"> <tbody> <tr> <td> <p><em>(Log in -&gt; Academic Information -&gt; Scholarship -&gt; Students Scholarship Application(<strong>학생장학신청</strong>) -&gt; Select 2026-2 semester -&gt;</em><br><em>Step 1. Applicable Scholarship -&gt; 언더우드자유장학금 -&gt; Download Notice File -&gt; ADD -&gt; Step 2. Apply for Scholarship -&gt;</em><br><em>Upload Application Form (Notice File) and Supplementary Documents in combined PDF file-&gt; Apply)</em></p> </td> </tr> </tbody> </table> <p>&nbsp;* Note: <strong>Merit-based scholarship(진리장학금)</strong> applicants do NOT need to submit a scholarship application except for students currently on leave and are planning to return in the 2026 Fall Semester.&nbsp;<br><br></p> <p><strong>1. Types of Scholarship and Eligibility&nbsp;</strong></p> <p align=\"left\">A. Common Requirements</p> <p align=\"left\">&nbsp; &nbsp;- Minimum of <span style=\"text-decoration: underline;\"><strong>12 credits</strong></span> in 2026 Spring Semester &nbsp;(or the most current semester for those on leave of absence)</p> <p align=\"left\">&nbsp; &nbsp;- No overlapping scholarships are permitted except for 국가장학금 (the scholarship provided by Korea Student Aid Foundation)</p> <p align=\"left\">&nbsp; &nbsp;- Students who have completed more than 8 semesters as of 2026 Spring Semester cannot apply.</p> <p align=\"left\">B. Merit-based Scholarship (성적우수장학금)</p> <p align=\"left\">&nbsp; &nbsp;- Outstanding 2026 Spring Semester &nbsp;(or the most current semester for those on leave of absence)&nbsp;&nbsp;GPA</p> <p align=\"left\">C. Need-based Scholarship (가계곤란장학금)</p> <p align=\"left\">&nbsp; &nbsp;- 2026 Spring Semester &nbsp;(or the most current semester for those on leave of absence) GPA 2.5 or higher&nbsp;</p> <p align=\"left\">D. ESP (Exchange Student Program) Scholarship (교환학생장학금)</p> <p align=\"left\">&nbsp; &nbsp;- 2026 Spring&nbsp; Semester &nbsp;(or the most current semester for those on leave of absence) GPA 2.5 or higher</p> <p align=\"left\">&nbsp; &nbsp;- Outbound exchange students who have been selected to be dispatched in the 2026 Fall Semester</p> <p align=\"left\"><strong>2. Amount</strong>: Full tuition, 1/2 of the tuition, 1/3 of the tuition, etc.&nbsp;</p> <p align=\"left\"><strong>3. Selection Criteria &nbsp;</strong></p> <p align=\"left\">&nbsp; A. Merit-based: Academic excellence (GPA)<br>&nbsp; B. Need-based: Financial need&nbsp;<br>&nbsp; C. ESP: Students who meet the above qualifications will be automatically selected without any additional application procedures.<br><strong><br>&nbsp;*&nbsp;&nbsp;</strong>Students who plan to return from leave of absence (복학생) should submit a merit-based scholarship application (attached) via email to each division’s office(UD: <a href=\"mailto:uic_ud@yonsei.ac.k\">uic_ud@yonsei.ac.kr</a> / HASS: <a href=\"mailto:uic_hass@yonsei.ac.kr\">uic_hass@yonsei.ac.kr</a> ISE: <a href=\"mailto:uic_ise@yonsei.ac.kr\">uic_ise@yonsei.ac.k</a> ) by <span><strong>July 16th, 2026</strong></span>.</p> <p align=\"left\">It is each student's responsibility to check the application status with each division’s office.<br>(UD: 02-2123-3925 / HASS: 032-749-3760 / ISE: 032-749-3801)&nbsp;</p> <p align=\"left\"><strong>4. Need-based Scholarship Application Period</strong></p> <p align=\"left\">&nbsp; A. 9AM June 18th (Thu) ~&nbsp; 5PM July 16th (Thu), 2026 (Korea Standard Time)<br>&nbsp; B. Documents for need-based scholarship must be submitted via Yonsei Portal during the application period.</p> <p align=\"left\"><strong>5. Application Materials for Need-Based Scholarship</strong></p> <p align=\"left\"><strong>&nbsp;[Korean Students]</strong></p> <p align=\"left\">&nbsp; &nbsp;1) 가계곤란장학금신청서 (Scholarship Application Form: Attached) : 학사포탈에서 다운로드하여 반드시 영문으로 작성&nbsp;<br>&nbsp; &nbsp;2) 기타 가계곤란 증빙서류{파산증명서, 부채증명서, 직계가족의 장기입원확인증명서, 실직증명서(구직등록필증-고용안정센터 발급) 등} 각 1부(해당자만)<br>&nbsp; &nbsp;3) 근로소득 원천징수 영수증, 건강보험료 납부확인서, 지방세세목별과세증명서 등은 제출할 필요 없음.<br>&nbsp; &nbsp;4) <strong>제출 증빙서류가 여러개인 경우, 지원서양식을 제외한 모든 증빙서류를 병합하여 하나의 PDF파일로 제출 (반드시 A4사이즈로 통일)</strong><br>&nbsp; &nbsp;5) 국가장학금 (I, II유형)을 반드시 신청해야 함. 국가장학금 미신청자는 가계곤란장학금 심사 대상에서 제외됨.&nbsp; (횟수초과 등으로 국가장학금 신청불가자는 국가장학금 신청 없이 신청가능. 단, 지원서에 해당 사항 명시)</p> <p align=\"left\">* 한국장학재단 산정 소득분위가 있을 경우 소득분위 확인서로 증빙서류를 갈음함.</p> <p align=\"left\"><strong>&nbsp;[Non-Korean students]</strong></p> <p align=\"left\">The following should be prepared in English.</p> <p align=\"left\">&nbsp; &nbsp;1) Scholarship Application Form: Downloadable from the Yonsei Portal<br>&nbsp; &nbsp;2) Tax return statements from both you and your parent(s) or guardian(s) (if applicable)<br>&nbsp; &nbsp;3) A copy of a salary statement from both you and/or your guardian(s) for the last six or twelve months (if applicable)<br>&nbsp; &nbsp;4) Other income/asset information documents (if applicable)<br>&nbsp; &nbsp;5) Any other documents proving a need for financial aid<br>&nbsp; &nbsp;6) All the documents mentioned above shoud be <strong>merged into 1 PDF file except for the application form.</strong></p> <p align=\"left\">* It is the student's responsibility to convince the school of true financial need. The more supporting documents you can submit the higher your chances of success will be. If possible, for example, you should submit copies of your banking and credit card statements for the past 6 months (12 months preferred), your housing lease agreement, statements of unemployment and bankruptcy by your guardian, and income tax and estate tax statements by yourself and/or guardian. <strong>All documents not in English or Korean must be translated into English or Korean.</strong>&nbsp;<br><br></p> <table border=\"1\"> <tbody> <tr> <td> <p><strong><br>How to Submit the Documents on Yonsei Portal</strong></p> <p>Click the Download button on the Scholarship Application Form -&gt; Fill out and Save Downloaded Application -&gt; Upload Saved&nbsp; Application &gt; Click the 'Apply' button at the bottom</p> <p>&nbsp; 1) Please scan the supplementary documents or take clear photos with your cell phone, upload them online with the scholarship application form.<br>&nbsp; 2)<strong> If there are multiple documents for submission, merge them into one PDF file and make sure to standardize the size to A4.</strong><br>&nbsp; 3) Upload file capacity is limited to 10MB. If the file has a larger capacity, &nbsp;please send them to your division office via e-mail under the title of \"2026-2 Needbased_Student ID_Name.pdf\".</p> </td> </tr> </tbody> </table> <p align=\"left\"><strong>6. Interview schedules for the need-based scholarship will be announced individually, if necessary.&nbsp;</strong>&nbsp;</p> <p align=\"left\"><strong>7. Results Announcement:</strong> 2026 Fall Tuition Fee Bill Print Period through Bill Print Menu on Yonsei Portal System&nbsp;</p> <p align=\"left\"><strong>8. Scholarship payment method</strong>: Automatic deduction on tuition statements</p> <p align=\"left\">&nbsp;</p> <p align=\"left\">For any questions or concerns, please contact to each division’s office. (UD: <a href=\"mailto:uic_ud@yonsei.ac.kr\">uic_ud@yonsei.ac.kr</a> / HASS: <a href=\"mailto:uic_hass@yonsei.ac.kr\">uic_hass@yonsei.ac.kr</a> / ISE: <a href=\"mailto:uic_ise@yonsei.ac.kr\">uic_ise@yonsei.ac.kr</a> )</p> <p align=\"left\">&nbsp;</p> <p style=\"text-align: center;\" align=\"left\"><span style=\"font-size: x-large;\"><strong>-Underwood International College-</strong></span></p>",
+          "body_quality": "detail_body",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "no_assets_found"
+          ],
+          "metadata": {
+            "adapter_format": "collector-output:sources.items",
+            "source_name": "연세대 언더우드학부(UD)",
+            "raw": {
+              "title": "[ALL] UIC Scholarship Application Announcement: 2026 Fall",
+              "discovered_url": "https://uic.yonsei.ac.kr/main/news.php?mid=m06_01_02&act=view&uid=14407",
+              "canonical_url": "https://uic.yonsei.ac.kr/main/news.php?mid=m06_01_02&act=view&uid=14407",
+              "published_at": "Jun 16, 2026",
+              "body_text": "UIC Scholarship Application Announcement: 2026 Fall * From 2022 winter, documents for Need-based Scholarship(언더우드자유장학금) should be submitted via Yonsei Portal System(http://portal.yonsei.ac.kr) during the application period. (Log in -> Academic Information -> Scholarship -> Students Scholarship Application(학생장학신청) -> Select 2026-2 semester ->Step 1. Applicable Scholarship -> 언더우드자유장학금 -> Download Notice File -> ADD -> Step 2. Apply for Scholarship ->Upload Application Form (Notice File) and Suppl...",
+              "body_html": "[truncated]",
+              "body_quality": "detail_body",
+              "assets": [],
+              "warnings": [
+                "no_assets_found"
+              ],
+              "errors": [],
+              "raw": {
+                "sourceName": "연세대 언더우드학부(UD)",
+                "parserStrategy": "ADAPTER:yonsei_uic",
+                "dateText": "Jun 16, 2026",
+                "detailDate": "Jun 16, 2026",
+                "parsedDate": ""
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "cau_001",
+      "items": [],
+      "adapter_code": null
+    }
+  ]
+}

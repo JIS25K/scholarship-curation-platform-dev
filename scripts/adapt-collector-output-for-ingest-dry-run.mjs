@@ -2,7 +2,13 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
-const VALID_FORMATS = new Set(["auto", "collector-report", "candidate-list", "synthetic-compatible"]);
+const VALID_FORMATS = new Set([
+  "auto",
+  "collector-output",
+  "collector-report",
+  "candidate-list",
+  "synthetic-compatible",
+]);
 const DEFAULT_FORMAT = "auto";
 const SAFE_ITEM_WARNING_THRESHOLD = 1000;
 const MAX_METADATA_STRING_LENGTH = 500;
@@ -65,7 +71,7 @@ function parseArgs(argv) {
 
 function printHelp() {
   console.log(`Usage:
-  node scripts/adapt-collector-output-for-ingest-dry-run.mjs --input <path> --out fixtures/crawler-ingest-dry-run/adapted-sample.json [--source-key cau_002] [--limit N] [--json] [--format auto|collector-report|candidate-list|synthetic-compatible]
+  node scripts/adapt-collector-output-for-ingest-dry-run.mjs --input <path> --out fixtures/crawler-ingest-dry-run/adapted-sample.json [--source-key cau_002] [--limit N] [--json] [--format auto|collector-output|collector-report|candidate-list|synthetic-compatible]
 
 Options:
   --input PATH            Collector/report/fixture JSON path.
@@ -294,6 +300,33 @@ function collectSyntheticRecords(data) {
   return records;
 }
 
+function collectCollectorOutputRecords(data) {
+  const records = [];
+  for (const source of data.sources ?? []) {
+    const sourceKey = cleanText(source.source_key ?? source.sourceId ?? source.source_id).toLowerCase();
+    const sourceWarnings = Array.isArray(source.warnings) ? source.warnings.map(cleanText).filter(Boolean) : [];
+    const sourceErrors = Array.isArray(source.errors) ? source.errors.map(cleanText).filter(Boolean) : [];
+    const items = Array.isArray(source.items) ? source.items : [];
+    for (const [itemIndex, item] of items.entries()) {
+      const itemWarnings = Array.isArray(item.warnings) ? item.warnings.map(cleanText).filter(Boolean) : [];
+      records.push({
+        sourceKey,
+        item: {
+          ...item,
+          warnings: [...new Set([...itemWarnings, ...sourceWarnings, ...sourceErrors])].filter(Boolean),
+        },
+        context: {
+          format: "collector-output:sources.items",
+          hasNativeSourceKey: Boolean(sourceKey),
+          itemIndex,
+          sourceName: source.source_name ?? source.sourceName,
+        },
+      });
+    }
+  }
+  return records;
+}
+
 function collectCollectorRecords(data) {
   const records = [];
 
@@ -360,6 +393,9 @@ function collectCandidateRecords(data) {
 
 function detectFormat(data, requestedFormat) {
   if (requestedFormat !== "auto") return requestedFormat;
+  if (data && typeof data === "object" && Array.isArray(data.sources) && data.collector_output_version) {
+    return "collector-output";
+  }
   if (data && typeof data === "object" && Array.isArray(data.sources)) return "synthetic-compatible";
   if (data && typeof data === "object" && (Array.isArray(data.newNotices) || Array.isArray(data.perSource))) {
     return "collector-report";
@@ -368,6 +404,7 @@ function detectFormat(data, requestedFormat) {
 }
 
 function collectRecords(data, format) {
+  if (format === "collector-output") return collectCollectorOutputRecords(data);
   if (format === "synthetic-compatible") return collectSyntheticRecords(data);
   if (format === "collector-report") return collectCollectorRecords(data);
   if (format === "candidate-list") return collectCandidateRecords(data);
@@ -383,6 +420,42 @@ function groupBySource(normalizedItems) {
     groups.get(normalized.sourceKey).items.push(normalized.item);
   }
   return [...groups.values()];
+}
+
+function collectorOutputSourceShells(data, options) {
+  if (!data || typeof data !== "object" || !Array.isArray(data.sources)) return [];
+  return data.sources
+    .map((source) => ({
+      source_key: cleanText(source.source_key ?? source.sourceId ?? source.source_id).toLowerCase(),
+      items: [],
+      adapter_code: cleanText(source.adapter_code ?? source.adapterCode) || null,
+    }))
+    .filter((source) => source.source_key && (!options.sourceKey || source.source_key === options.sourceKey));
+}
+
+function mergeSourceShells(sources, shells) {
+  const byKey = new Map(sources.map((source) => [source.source_key, source]));
+  for (const shell of shells) {
+    if (!byKey.has(shell.source_key)) byKey.set(shell.source_key, shell);
+  }
+  return [...byKey.values()];
+}
+
+function collectSourceDiagnostics(data, options) {
+  if (!data || typeof data !== "object" || !Array.isArray(data.sources)) return [];
+  return data.sources
+    .map((source) => ({
+      source_key: cleanText(source.source_key ?? source.sourceId ?? source.source_id).toLowerCase(),
+      source_name: cleanText(source.source_name ?? source.sourceName) || null,
+      crawled_count: Number.isFinite(source.crawled_count) ? source.crawled_count : null,
+      matched_count: Number.isFinite(source.matched_count) ? source.matched_count : null,
+      output_items: Array.isArray(source.items) ? source.items.length : 0,
+      body_quality: cleanText(source.body_quality) || null,
+      asset_quality: cleanText(source.asset_quality) || null,
+      warnings: Array.isArray(source.warnings) ? source.warnings.map(cleanText).filter(Boolean) : [],
+      errors: Array.isArray(source.errors) ? source.errors.map(cleanText).filter(Boolean) : [],
+    }))
+    .filter((source) => source.source_key && (!options.sourceKey || source.source_key === options.sourceKey));
 }
 
 function adaptFixture(data, options) {
@@ -425,6 +498,11 @@ function adaptFixture(data, options) {
     count: normalizedItems.length,
   });
 
+  const sources =
+    detectedFormat === "collector-output"
+      ? mergeSourceShells(groupBySource(normalizedItems), collectorOutputSourceShells(data, options))
+      : groupBySource(normalizedItems);
+
   return {
     adapter_note: "Adapted local collector/report output for crawler ingest dry-run only. No DB write, SQL, or crawler execution occurred.",
     adapter: {
@@ -440,6 +518,7 @@ function adaptFixture(data, options) {
       skipped: state.skipped,
       warnings: state.warnings,
       adapter_errors: state.adapterErrors,
+      source_diagnostics: detectedFormat === "collector-output" ? collectSourceDiagnostics(data, options) : [],
       db_write_executed: false,
       supabase_sql_executed: false,
       crawler_executed: false,
@@ -450,7 +529,7 @@ function adaptFixture(data, options) {
       mode: "manual",
       parser_version: "ingest-dry-run-v1",
     },
-    sources: groupBySource(normalizedItems),
+    sources,
   };
 }
 
