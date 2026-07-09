@@ -303,3 +303,53 @@ Recommended order:
 3. personal dev DB sample apply rehearsal preparation
 
 Add one gate before step 3: run personal-dev read-only DB comparison on the exact sample fixture and review the write plan report before any rehearsal design.
+
+## Read-Only DB Comparison Review - 2026-07-09
+
+This review attempted the personal-dev read-only DB comparison path from the current Codex session. The code path is implemented, but the DB comparison was not executed in this session because the required Supabase environment variables were not present.
+
+Environment presence check, without printing values:
+
+| Variable | Status in this Codex session |
+| --- | --- |
+| `PERSONAL_DEV_SUPABASE_CONFIRM` | missing |
+| `SUPABASE_URL` | missing |
+| `SUPABASE_SERVICE_ROLE_KEY` | missing |
+
+Guard rejection checks:
+
+| Check | Result |
+| --- | --- |
+| `--check-db` without `--yes-i-am-using-personal-dev-db` | rejected with `Refusing DB check: --yes-i-am-using-personal-dev-db is required.` |
+| `--check-db --yes-i-am-using-personal-dev-db` with only `PERSONAL_DEV_SUPABASE_CONFIRM=1` | rejected with `Refusing DB check: SUPABASE_URL is required.` |
+
+Safety result:
+
+- DB writes executed: `false`
+- Supabase SQL writes executed: `false`
+- source sync apply executed: `false`
+- crawler source target apply executed: `false`
+- notice ingest apply executed: `false`
+- deletion apply executed: `false`
+- secrets printed: `false`
+
+Local-only regression still passes:
+
+| Input | Mode | Summary |
+| --- | --- | --- |
+| `adapted-collector-output-sample-sources.json` | `local_only` | `sources=3`, `input_items=4`, `needs_quality_review=4`, `unknown_without_db_check=4`, `write_plan_operations=32` |
+| `pre-apply-safety-synthetic-input.json` | `local_only` | `sources=4`, `input_items=9`, `duplicates_within_input=4`, `needs_quality_review=3`, `do_not_mark_deleted=3`, `write_plan_operations=74` |
+
+Because `db_check.executed` remained `false`, sample source DB readiness and DB-backed classification changes are not asserted by this review. They require the command below to be rerun in a personal dev shell that has the required environment variables set.
+
+```bash
+PERSONAL_DEV_SUPABASE_CONFIRM=1 \
+node scripts/plan-crawler-pre-apply-safety-dry-run.mjs \
+  --input fixtures/crawler-ingest-dry-run/adapted-collector-output-sample-sources.json \
+  --check-db \
+  --yes-i-am-using-personal-dev-db \
+  --out reports/pre-apply-safety-sample-source.readonly-db.verify.json \
+  --json
+```
+
+Real ingest apply remains NO-GO after this review. The next gate is still a successful personal-dev read-only DB comparison report, followed by guarded apply design review, rollback/audit trail verification planning, and sample apply rehearsal preparation.
