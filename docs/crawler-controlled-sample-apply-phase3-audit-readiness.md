@@ -117,6 +117,14 @@ Cleanup remains NO-GO unless the user explicitly requests it. The draft keeps `R
 2. Promote one real collector output item to a controlled apply candidate through dry-run and read-only gates.
 3. Re-evaluate `cau_001`, `cau_002`, and `yonsei_060` to find one real item with sufficient body and asset evidence for a later rehearsal.
 
+The first candidate is now expanded in:
+
+```text
+docs/crawler-controlled-sample-apply-phase4-cleanup-readiness.md
+```
+
+Phase 4 keeps cleanup as an exact-scope, manual personal-dev user action and prepares the audit -> cleanup review -> post-cleanup verification path before any real crawler-output ingest gate.
+
 ## Go / No-Go Checklist
 
 GO for the next design review:
@@ -134,4 +142,3 @@ NO-GO remains:
 - production/main Supabase
 - cleanup execution unless explicitly approved
 - any real apply retry by Codex
-

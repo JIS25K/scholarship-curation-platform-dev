@@ -135,4 +135,14 @@ The later controlled sample retry success and read-only audit row count confirma
 docs/crawler-controlled-sample-apply-phase3-audit-readiness.md
 ```
 
+## Phase 4 Cleanup Readiness
+
+The controlled fixture cleanup readiness gate is documented in:
+
+```text
+docs/crawler-controlled-sample-apply-phase4-cleanup-readiness.md
+```
+
+It prepares exact-scope audit SQL, default-`ROLLBACK` cleanup review SQL, and a local-only cleanup guide. Cleanup remains a manual personal-dev user action and is still NO-GO for Codex.
+
 That document is the current reference before considering any move from controlled fixture data to real collector output candidates.

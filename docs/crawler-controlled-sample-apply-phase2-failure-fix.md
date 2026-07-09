@@ -157,3 +157,13 @@ docs/crawler-controlled-sample-apply-phase3-audit-readiness.md
 ```
 
 Phase 3 also fixes the success-report inconsistency where top-level `real_apply_executed=true` but nested `go_no_go.real_apply_executed=false`.
+
+## Phase 4 Cleanup Readiness
+
+The later controlled fixture cleanup readiness gate is documented in:
+
+```text
+docs/crawler-controlled-sample-apply-phase4-cleanup-readiness.md
+```
+
+Phase 4 prepares exact-scope audit and cleanup review material for the successful Phase 2 retry fixture. Cleanup remains a manual personal-dev user action; Codex must not execute it.

@@ -223,3 +223,13 @@ docs/crawler-controlled-sample-apply-phase3-audit-readiness.md
 ```
 
 That document records the user-confirmed audit row counts and keeps full crawl, real crawler-output ingest, production/main Supabase, cleanup execution, and any Codex-run real apply as NO-GO.
+
+## Phase 4 Cleanup Readiness
+
+The controlled fixture cleanup readiness gate is documented in:
+
+```text
+docs/crawler-controlled-sample-apply-phase4-cleanup-readiness.md
+```
+
+That document keeps cleanup as a manual personal-dev user action only. Codex still must not execute cleanup SQL, Supabase SQL, real apply, real crawler-output ingest, or full crawl.

@@ -1,47 +1,132 @@
 -- REVIEW ONLY - READ-ONLY SELECT CHECKS.
--- Guarded crawler sample apply audit trail verification draft.
+-- Guarded crawler controlled sample audit trail verification draft.
 -- Production/main Supabase execution is prohibited.
 --
 -- Purpose:
---   Verify that a future personal-dev guarded sample apply preserved run,
---   source, occurrence, target, alias, asset, error, and keyword provenance.
+--   Verify that the user-run personal-dev controlled sample apply preserved
+--   run, source, notice, occurrence, target, alias, asset, error, and keyword
+--   provenance before any cleanup or real crawler-output ingest gate.
 --
--- Replace these placeholders manually during a reviewed personal-dev audit:
---   :'rehearsal_run_id'
---   :'rehearsal_label'
---   :'expected_source_key'
---   :'expected_org_unit_id'
---
+-- Codex must not execute this SQL. The user may run it manually in a
+-- confirmed personal dev database.
+
 -- Phase 2 retry reference values confirmed by the user:
---   rehearsal_run_id = f14548e7-7bc2-4244-94b5-69b431aa67f7
+--   run_id = f14548e7-7bc2-4244-94b5-69b431aa67f7
 --   rehearsal_label = controlled-sample-phase2-retry-20260709
---   expected_source_key = yonsei_060
+--   source_key = yonsei_060
+--   canonical_key = yonsei_060:url:e74c29f4562cf52025d9
 --   expected_org_unit_id = 46
---
--- Expected row-count checklist for that controlled retry:
---   crawler_runs: 1
---   crawler_source_results: 1
---   crawler_notices: 1
---   crawler_notice_url_aliases: 1
---   crawler_notice_occurrences: 1
---   crawler_notice_targets: 1
---   crawler_notice_assets: 1
---   crawler_errors: 1
---   crawler_keyword_matches: 1
 
--- 1. Run identity and metadata.
+-- 1. Expected fixture identifiers.
+with params as (
+  select
+    'f14548e7-7bc2-4244-94b5-69b431aa67f7'::uuid as run_id,
+    'controlled-sample-phase2-retry-20260709'::text as rehearsal_label,
+    'yonsei_060'::text as source_key,
+    'yonsei_060:url:e74c29f4562cf52025d9'::text as canonical_key,
+    46::bigint as org_unit_id
+)
+select * from params;
+
+-- 2. Row-count summary. Expected count is 1 for every table below.
+with params as (
+  select
+    'f14548e7-7bc2-4244-94b5-69b431aa67f7'::uuid as run_id,
+    'controlled-sample-phase2-retry-20260709'::text as rehearsal_label,
+    'yonsei_060'::text as source_key,
+    'yonsei_060:url:e74c29f4562cf52025d9'::text as canonical_key,
+    46::bigint as org_unit_id
+),
+scoped_run as (
+  select r.id
+  from public.crawler_runs r
+  join params p on p.run_id = r.id
+  where r.metadata->>'rehearsal_label' = p.rehearsal_label
+),
+scoped_source as (
+  select s.id
+  from public.crawler_notice_sources s
+  join params p on p.source_key = s.source_key
+),
+scoped_notices as (
+  select distinct n.id
+  from public.crawler_notices n
+  join params p on p.canonical_key = n.canonical_key
+  where n.metadata->>'rehearsal_label' = p.rehearsal_label
+     or n.metadata->>'controlled_sample' = 'true'
+),
+scoped_occurrences as (
+  select o.id, o.notice_id
+  from public.crawler_notice_occurrences o
+  join scoped_run r on r.id = o.crawl_run_id
+  join scoped_source s on s.id = o.source_id
+  join scoped_notices n on n.id = o.notice_id
+)
+select 'crawler_runs' as table_name, count(*) as actual_count, 1 as expected_count
+from scoped_run
+union all
+select 'crawler_source_results', count(*), 1
+from public.crawler_source_results sr
+join scoped_run r on r.id = sr.run_id
+join scoped_source s on s.id = sr.source_id
+union all
+select 'crawler_notices', count(*), 1
+from scoped_notices
+union all
+select 'crawler_notice_url_aliases', count(*), 1
+from public.crawler_notice_url_aliases ua
+join scoped_notices n on n.id = ua.notice_id
+join scoped_source s on s.id = ua.source_id
+union all
+select 'crawler_notice_occurrences', count(*), 1
+from scoped_occurrences
+union all
+select 'crawler_notice_targets', count(*), 1
+from public.crawler_notice_targets nt
+join scoped_notices n on n.id = nt.notice_id
+join params p on p.org_unit_id = nt.org_unit_id
+union all
+select 'crawler_notice_assets', count(*), 1
+from public.crawler_notice_assets a
+join scoped_notices n on n.id = a.notice_id
+where exists (
+  select 1 from scoped_occurrences o where o.id = a.occurrence_id
+)
+union all
+select 'crawler_errors', count(*), 1
+from public.crawler_errors e
+join scoped_run r on r.id = e.run_id
+join scoped_source s on s.id = e.source_id
+join scoped_notices n on n.id = e.notice_id
+union all
+select 'crawler_keyword_matches', count(*), 1
+from public.crawler_keyword_matches km
+join scoped_notices n on n.id = km.notice_id
+order by table_name;
+
+-- 3. Run identity and metadata.
+with params as (
+  select
+    'f14548e7-7bc2-4244-94b5-69b431aa67f7'::uuid as run_id,
+    'controlled-sample-phase2-retry-20260709'::text as rehearsal_label
+)
 select
-  id,
-  started_at,
-  ended_at,
-  mode,
-  status,
-  metadata
-from public.crawler_runs
-where id = :'rehearsal_run_id'::uuid
-   or metadata->>'rehearsal_label' = :'rehearsal_label';
+  r.id,
+  r.started_at,
+  r.ended_at,
+  r.mode,
+  r.status,
+  r.metadata
+from public.crawler_runs r
+join params p on p.run_id = r.id
+where r.metadata->>'rehearsal_label' = p.rehearsal_label;
 
--- 2. Source result linkage to the run.
+-- 4. Source result linkage to the exact run and source.
+with params as (
+  select
+    'f14548e7-7bc2-4244-94b5-69b431aa67f7'::uuid as run_id,
+    'yonsei_060'::text as source_key
+)
 select
   sr.run_id,
   s.source_key,
@@ -52,11 +137,16 @@ select
   sr.metadata
 from public.crawler_source_results sr
 join public.crawler_notice_sources s on s.id = sr.source_id
-where sr.run_id = :'rehearsal_run_id'::uuid
-  and s.source_key = :'expected_source_key'
+join params p on p.run_id = sr.run_id and p.source_key = s.source_key
 order by s.source_key;
 
--- 3. Occurrence provenance and notice linkage.
+-- 5. Occurrence provenance and notice linkage.
+with params as (
+  select
+    'f14548e7-7bc2-4244-94b5-69b431aa67f7'::uuid as run_id,
+    'yonsei_060'::text as source_key,
+    'yonsei_060:url:e74c29f4562cf52025d9'::text as canonical_key
+)
 select
   o.id as occurrence_id,
   o.crawl_run_id,
@@ -73,10 +163,18 @@ select
 from public.crawler_notice_occurrences o
 join public.crawler_notice_sources s on s.id = o.source_id
 join public.crawler_notices n on n.id = o.notice_id
-where o.crawl_run_id = :'rehearsal_run_id'::uuid
+join params p on p.run_id = o.crawl_run_id
+  and p.source_key = s.source_key
+  and p.canonical_key = n.canonical_key
 order by s.source_key, n.canonical_key;
 
--- 4. Target linkage to expected org unit.
+-- 6. Target linkage to the expected org unit.
+with params as (
+  select
+    'f14548e7-7bc2-4244-94b5-69b431aa67f7'::uuid as run_id,
+    'yonsei_060:url:e74c29f4562cf52025d9'::text as canonical_key,
+    46::bigint as org_unit_id
+)
 select
   n.canonical_key,
   nt.org_unit_id,
@@ -84,109 +182,104 @@ select
   nt.evidence
 from public.crawler_notice_targets nt
 join public.crawler_notices n on n.id = nt.notice_id
-where nt.org_unit_id = :'expected_org_unit_id'::bigint
-  and exists (
-    select 1
-    from public.crawler_notice_occurrences o
-    where o.notice_id = n.id
-      and o.crawl_run_id = :'rehearsal_run_id'::uuid
-  )
+join params p on p.canonical_key = n.canonical_key
+  and p.org_unit_id = nt.org_unit_id
+where exists (
+  select 1
+  from public.crawler_notice_occurrences o
+  where o.notice_id = n.id
+    and o.crawl_run_id = p.run_id
+)
 order by n.canonical_key;
 
--- 5. URL aliases connected to rehearsal notices.
-select
-  n.canonical_key,
-  s.source_key,
-  ua.url,
-  ua.first_seen_at,
-  ua.last_seen_at
+-- 7. Child evidence rows linked back to the controlled notice/run.
+with params as (
+  select
+    'f14548e7-7bc2-4244-94b5-69b431aa67f7'::uuid as run_id,
+    'yonsei_060'::text as source_key,
+    'yonsei_060:url:e74c29f4562cf52025d9'::text as canonical_key
+),
+scoped_notice as (
+  select n.id
+  from public.crawler_notices n
+  join params p on p.canonical_key = n.canonical_key
+),
+scoped_source as (
+  select s.id
+  from public.crawler_notice_sources s
+  join params p on p.source_key = s.source_key
+),
+scoped_occurrence as (
+  select o.id, o.notice_id
+  from public.crawler_notice_occurrences o
+  join scoped_notice n on n.id = o.notice_id
+  join scoped_source s on s.id = o.source_id
+  join params p on p.run_id = o.crawl_run_id
+)
+select 'alias' as evidence_type, ua.notice_id, ua.source_id, ua.url as evidence_value
 from public.crawler_notice_url_aliases ua
-join public.crawler_notices n on n.id = ua.notice_id
-left join public.crawler_notice_sources s on s.id = ua.source_id
-where exists (
-  select 1
-  from public.crawler_notice_occurrences o
-  where o.notice_id = n.id
-    and o.crawl_run_id = :'rehearsal_run_id'::uuid
-)
-order by n.canonical_key, ua.url;
-
--- 6. Asset references connected to rehearsal notices.
-select
-  n.canonical_key,
-  a.asset_kind,
-  a.source_url,
-  a.filename,
-  a.mime,
-  a.status
+join scoped_notice n on n.id = ua.notice_id
+join scoped_source s on s.id = ua.source_id
+union all
+select 'asset', a.notice_id, null::bigint, a.source_url
 from public.crawler_notice_assets a
-join public.crawler_notices n on n.id = a.notice_id
-where exists (
-  select 1
-  from public.crawler_notice_occurrences o
-  where o.notice_id = n.id
-    and o.crawl_run_id = :'rehearsal_run_id'::uuid
-)
-order by n.canonical_key, a.asset_kind, a.source_url;
-
--- 7. Warnings/errors preserved for audit.
-select
-  e.run_id,
-  s.source_key,
-  n.canonical_key,
-  e.stage,
-  e.error_class,
-  e.http_status,
-  e.message,
-  e.details,
-  e.created_at
+join scoped_notice n on n.id = a.notice_id
+join scoped_occurrence o on o.id = a.occurrence_id
+union all
+select 'error', e.notice_id, e.source_id, e.error_class
 from public.crawler_errors e
-left join public.crawler_notice_sources s on s.id = e.source_id
-left join public.crawler_notices n on n.id = e.notice_id
-where e.run_id = :'rehearsal_run_id'::uuid
-order by e.created_at, s.source_key;
-
--- 8. Keyword evidence connected to rehearsal notices.
-select
-  n.canonical_key,
-  km.keyword,
-  km.field,
-  km.offset_start,
-  km.offset_end,
-  km.score
+join scoped_notice n on n.id = e.notice_id
+join scoped_source s on s.id = e.source_id
+join params p on p.run_id = e.run_id
+union all
+select 'keyword', km.notice_id, null::bigint, km.keyword
 from public.crawler_keyword_matches km
-join public.crawler_notices n on n.id = km.notice_id
-where exists (
-  select 1
-  from public.crawler_notice_occurrences o
-  where o.notice_id = n.id
-    and o.crawl_run_id = :'rehearsal_run_id'::uuid
-)
-order by n.canonical_key, km.keyword;
+join scoped_notice n on n.id = km.notice_id
+order by evidence_type, evidence_value;
 
--- 9. Orphan checks should all return zero rows.
+-- 8. Orphan checks should all return zero.
+with params as (
+  select
+    'f14548e7-7bc2-4244-94b5-69b431aa67f7'::uuid as run_id,
+    'yonsei_060:url:e74c29f4562cf52025d9'::text as canonical_key
+),
+scoped_notice as (
+  select n.id
+  from public.crawler_notices n
+  join params p on p.canonical_key = n.canonical_key
+)
 select 'occurrence_without_notice' as check_name, count(*) as orphan_count
 from public.crawler_notice_occurrences o
 left join public.crawler_notices n on n.id = o.notice_id
-where o.crawl_run_id = :'rehearsal_run_id'::uuid
-  and n.id is null
+join params p on p.run_id = o.crawl_run_id
+where n.id is null
 union all
-select 'target_without_notice', count(*)
+select 'target_without_scoped_notice', count(*)
 from public.crawler_notice_targets nt
-left join public.crawler_notices n on n.id = nt.notice_id
-where n.id is null
+left join scoped_notice n on n.id = nt.notice_id
+where nt.notice_id in (select id from scoped_notice) and n.id is null
 union all
-select 'asset_without_notice', count(*)
+select 'asset_without_scoped_notice', count(*)
 from public.crawler_notice_assets a
-left join public.crawler_notices n on n.id = a.notice_id
-where n.id is null
+left join scoped_notice n on n.id = a.notice_id
+where a.notice_id in (select id from scoped_notice) and n.id is null
 union all
-select 'alias_without_notice', count(*)
+select 'alias_without_scoped_notice', count(*)
 from public.crawler_notice_url_aliases ua
-left join public.crawler_notices n on n.id = ua.notice_id
-where n.id is null;
+left join scoped_notice n on n.id = ua.notice_id
+where ua.notice_id in (select id from scoped_notice) and n.id is null
+union all
+select 'keyword_without_scoped_notice', count(*)
+from public.crawler_keyword_matches km
+left join scoped_notice n on n.id = km.notice_id
+where km.notice_id in (select id from scoped_notice) and n.id is null;
 
--- 10. Timestamp sanity for rows created during the reviewed rehearsal window.
+-- 9. Timestamp sanity for rows created during the reviewed rehearsal window.
+with params as (
+  select
+    'f14548e7-7bc2-4244-94b5-69b431aa67f7'::uuid as run_id,
+    'yonsei_060:url:e74c29f4562cf52025d9'::text as canonical_key
+)
 select
   n.canonical_key,
   n.created_at,
@@ -195,6 +288,6 @@ select
   max(o.updated_at) as last_occurrence_updated_at
 from public.crawler_notices n
 join public.crawler_notice_occurrences o on o.notice_id = n.id
-where o.crawl_run_id = :'rehearsal_run_id'::uuid
+join params p on p.canonical_key = n.canonical_key and p.run_id = o.crawl_run_id
 group by n.id, n.canonical_key, n.created_at, n.updated_at
 order by n.canonical_key;
