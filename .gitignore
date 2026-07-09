@@ -25,6 +25,7 @@
 *.pem
 .crawler/
 exports/
+reports/
 # 루트 데이터 export CSV (예: 장학금/학과 덤프)
 /*.csv
 

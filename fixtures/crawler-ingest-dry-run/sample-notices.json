@@ -1,0 +1,51 @@
+{
+  "fixture_note": "Synthetic fixture for crawler ingest dry-run only. These are not real scholarship notices.",
+  "run": {
+    "run_key": "synthetic-pre-ingest-sample",
+    "started_at": "2026-07-09T00:00:00.000Z",
+    "mode": "manual",
+    "parser_version": "ingest-dry-run-v1"
+  },
+  "sources": [
+    {
+      "source_key": "cau_002",
+      "items": [
+        {
+          "title": "Synthetic scholarship notice example with attachment",
+          "discovered_url": "https://example.edu/notices/synthetic-scholarship-1",
+          "canonical_url": "https://example.edu/notices/synthetic-scholarship-1",
+          "published_at": "2026-07-01",
+          "body_text": "Synthetic fixture body for ingest dry-run only. This item includes an attachment reference.",
+          "body_html": "<p>Synthetic fixture body for ingest dry-run only.</p>",
+          "body_quality": "synthetic",
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "synthetic-example.pdf",
+              "source_url": "https://example.edu/files/synthetic-example.pdf",
+              "content_type": "application/pdf"
+            }
+          ]
+        },
+        {
+          "title": "Synthetic scholarship notice example with empty body warning",
+          "discovered_url": "https://example.edu/notices/synthetic-scholarship-2",
+          "canonical_url": "https://example.edu/notices/synthetic-scholarship-2",
+          "published_at": "2026-07-02",
+          "body_text": "",
+          "body_quality": "empty",
+          "warnings": ["empty_body"]
+        },
+        {
+          "title": "Synthetic scholarship notice alias path",
+          "discovered_url": "https://example.edu/board/read?id=synthetic-scholarship-1",
+          "canonical_url": "https://example.edu/notices/synthetic-scholarship-1",
+          "published_at": "2026-07-01",
+          "body_text": "Synthetic alias occurrence for the first canonical notice.",
+          "body_quality": "synthetic",
+          "warnings": ["alias_occurrence"]
+        }
+      ]
+    }
+  ]
+}
