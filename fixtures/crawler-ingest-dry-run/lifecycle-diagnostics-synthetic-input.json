@@ -1,0 +1,191 @@
+{
+  "adapter_note": "Synthetic lifecycle diagnostics fixture for dry-run only. No DB write, SQL, crawler execution, or notice ingest occurred.",
+  "adapter": {
+    "input_path": "fixtures/crawler-ingest-dry-run/lifecycle-diagnostics-synthetic-input.json",
+    "requested_format": "synthetic-compatible",
+    "detected_format": "synthetic-compatible",
+    "generated_at": "2026-07-09T00:00:00.000Z",
+    "source_key_filter_or_fallback": null,
+    "input_items_seen": 7,
+    "matching_items_seen": 7,
+    "limit_applied": null,
+    "output_items": 7,
+    "skipped": [],
+    "warnings": [],
+    "adapter_errors": [],
+    "db_write_executed": false,
+    "supabase_sql_executed": false,
+    "crawler_executed": false,
+    "source_diagnostics": [
+      {
+        "source_key": "cau_002",
+        "input_items_seen": 5,
+        "output_items": 5,
+        "warnings": [
+          "synthetic_duplicate_and_quality_cases"
+        ],
+        "errors": []
+      },
+      {
+        "source_key": "yonsei_060",
+        "input_items_seen": 2,
+        "output_items": 2,
+        "warnings": [
+          "synthetic_alias_and_missing_required_cases"
+        ],
+        "errors": []
+      }
+    ]
+  },
+  "run": {
+    "run_key": "synthetic-lifecycle-diagnostics",
+    "started_at": "2026-07-09T00:00:00.000Z",
+    "mode": "manual",
+    "parser_version": "lifecycle-dry-run-v1"
+  },
+  "sources": [
+    {
+      "source_key": "cau_002",
+      "items": [
+        {
+          "title": "Lifecycle duplicate primary with attachment",
+          "discovered_url": "https://example.edu/lifecycle/duplicate-primary",
+          "canonical_url": "https://example.edu/lifecycle/duplicate-notice",
+          "published_at": "2026-07-01",
+          "body_text": "Synthetic lifecycle duplicate primary body with enough text to avoid short-body quality review in the dry-run diagnostics path.",
+          "body_html": "<p>Synthetic lifecycle duplicate primary body.</p>",
+          "body_quality": "synthetic",
+          "raw_list_text": null,
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "lifecycle-duplicate.pdf",
+              "source_url": "https://example.edu/files/lifecycle-duplicate.pdf",
+              "content_type": "application/pdf",
+              "alt": null,
+              "caption": null
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "title": "Lifecycle duplicate alias path with attachment",
+          "discovered_url": "https://example.edu/board/read?id=duplicate-notice",
+          "canonical_url": "https://example.edu/lifecycle/duplicate-notice",
+          "published_at": "2026-07-01",
+          "body_text": "Synthetic lifecycle duplicate alias body with enough text to avoid short-body quality review in the dry-run diagnostics path.",
+          "body_html": "<p>Synthetic lifecycle duplicate alias body.</p>",
+          "body_quality": "synthetic",
+          "raw_list_text": null,
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "lifecycle-duplicate.pdf",
+              "source_url": "https://example.edu/files/lifecycle-duplicate.pdf",
+              "content_type": "application/pdf",
+              "alt": null,
+              "caption": null
+            }
+          ],
+          "warnings": [
+            "synthetic_same_canonical_url"
+          ]
+        },
+        {
+          "title": "Lifecycle empty body quality case",
+          "discovered_url": "https://example.edu/lifecycle/empty-body",
+          "canonical_url": "https://example.edu/lifecycle/empty-body",
+          "published_at": "2026-07-02",
+          "body_text": "",
+          "body_html": "",
+          "body_quality": "empty",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "empty_body",
+            "missing_body_text"
+          ]
+        },
+        {
+          "title": "Lifecycle short body quality case",
+          "discovered_url": "https://example.edu/lifecycle/short-body",
+          "canonical_url": "https://example.edu/lifecycle/short-body",
+          "published_at": "2026-07-03",
+          "body_text": "Short body.",
+          "body_html": "<p>Short body.</p>",
+          "body_quality": "short",
+          "raw_list_text": null,
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "short-body.pdf",
+              "source_url": "https://example.edu/files/short-body.pdf",
+              "content_type": "application/pdf",
+              "alt": null,
+              "caption": null
+            }
+          ],
+          "warnings": [
+            "short_body_text"
+          ]
+        },
+        {
+          "title": "Lifecycle no asset quality case",
+          "discovered_url": "https://example.edu/lifecycle/no-assets",
+          "canonical_url": "https://example.edu/lifecycle/no-assets",
+          "published_at": "2026-07-04",
+          "body_text": "Synthetic lifecycle no asset body with enough text to avoid short body review while still checking missing asset diagnostics.",
+          "body_html": "<p>Synthetic lifecycle no asset body.</p>",
+          "body_quality": "synthetic",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "no_assets_found"
+          ]
+        }
+      ]
+    },
+    {
+      "source_key": "yonsei_060",
+      "items": [
+        {
+          "title": "Lifecycle same title and date alias candidate",
+          "discovered_url": "https://example.edu/lifecycle/alias-a",
+          "canonical_url": "https://example.edu/lifecycle/alias-canonical-a",
+          "published_at": "2026-07-05",
+          "body_text": "Synthetic lifecycle same title and date body with enough text to avoid short body quality review for alias candidate diagnostics.",
+          "body_html": "<p>Synthetic lifecycle same title and date body.</p>",
+          "body_quality": "synthetic",
+          "raw_list_text": null,
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "alias-a.pdf",
+              "source_url": "https://example.edu/files/alias-a.pdf",
+              "content_type": "application/pdf",
+              "alt": null,
+              "caption": null
+            }
+          ],
+          "warnings": [
+            "synthetic_same_title_published_at"
+          ]
+        },
+        {
+          "title": "",
+          "discovered_url": "",
+          "canonical_url": "",
+          "published_at": "2026-07-05",
+          "body_text": "Synthetic lifecycle row intentionally missing title and discovered URL to prove required-field blockers.",
+          "body_html": "<p>Synthetic lifecycle required-field blocker.</p>",
+          "body_quality": "synthetic",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "synthetic_missing_required_fields"
+          ]
+        }
+      ]
+    }
+  ]
+}

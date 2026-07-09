@@ -34,6 +34,7 @@
     "crawler:targets:plan": "node scripts/plan-crawler-source-targets.mjs",
     "crawler:ingest:adapt": "node scripts/adapt-collector-output-for-ingest-dry-run.mjs",
     "crawler:ingest:dry-run": "node scripts/ingest-crawler-run-dry-run.mjs",
+    "crawler:lifecycle:dry-run": "node scripts/diagnose-crawler-notice-lifecycle-dry-run.mjs",
     "test:crawler-observability": "node scripts/test-crawler-observability.mjs",
     "test:crawler-adapters": "node scripts/test-crawler-adapters.mjs",
     "test:crawler-parsers": "node scripts/test-crawler-parsers.mjs",
