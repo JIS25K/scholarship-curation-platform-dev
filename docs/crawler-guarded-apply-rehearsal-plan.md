@@ -14,6 +14,14 @@ Current sample source reading:
 
 Real guarded sample apply remains NO-GO until the user explicitly approves a later step.
 
+Follow-up readiness review:
+
+```text
+docs/crawler-guarded-apply-readiness-review.md
+```
+
+That review clarifies that `sample_apply_rehearsal_ready=true` means the dry-run planner found reviewable rehearsal candidates, not that real DB write is approved.
+
 ## Apply Guards
 
 A future apply command must require all of the following:
@@ -58,6 +66,8 @@ Initial candidate operation types:
 - `insert_notice_target`
 - `insert_error`
 - `insert_keyword_match`, only if keyword evidence is already reviewable
+
+For a real write rehearsal, child operations must be reviewed with their parent dependencies. A selected `insert_occurrence`, `insert_notice_target`, or `insert_error` alone is not a dependency-complete lifecycle rehearsal when `insert_run`, `insert_source_result`, or `insert_notice` were excluded.
 
 Default blocked operation types:
 
@@ -105,6 +115,8 @@ node scripts/prepare-crawler-guarded-apply-rehearsal.mjs \
 ```
 
 If the input report is still `local_only`, the planner returns `sample_apply_rehearsal_ready=false` and blocks selected operations with `read_only_db_check_required`.
+
+The planner also reports `go_no_go.real_apply_ready=false` by design. A real apply remains a separate user-approved phase even when dry-run rehearsal candidates exist.
 
 ## Rollback And Cleanup Plan
 
@@ -220,6 +232,8 @@ NO-GO for real apply when:
 - production or secret leakage risk is present.
 - deletion/inactive operation appears.
 - user has not explicitly approved a separate sample apply step.
+
+The current real sample source output remains NO-GO for real apply because `cau_001` has no input item, `cau_002` has short bodies and no assets, and `yonsei_060` still has `no_assets`. The first future DB write rehearsal should use the controlled fixture strategy in `docs/crawler-guarded-apply-readiness-review.md`.
 
 ## Current Recommendation
 

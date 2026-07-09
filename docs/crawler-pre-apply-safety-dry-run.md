@@ -371,3 +371,19 @@ It adds:
 - future-only command templates.
 
 This package still does not implement or execute real sample apply. A future personal-dev sample apply requires a separate prompt and explicit user approval.
+
+## Guarded Apply Readiness Review
+
+The follow-up readiness review is documented in:
+
+```text
+docs/crawler-guarded-apply-readiness-review.md
+```
+
+Current real sample source output remains insufficient for real apply:
+
+- `cau_001` has no input item.
+- `cau_002` has short bodies and no assets.
+- `yonsei_060` has detail body but still has no assets.
+
+The first future DB write rehearsal should prefer a controlled fixture strategy so dependency completeness, rollback scoping, and audit trail checks can be reviewed before any real source-output apply.

@@ -12,6 +12,24 @@ const DELETION_OR_MISSING_OPERATIONS = new Set([
   "skip_missing_detection_due_to_pagination",
 ]);
 const QUALITY_BLOCKED_OPERATIONS = new Set(["insert_notice", "update_notice_body"]);
+const DEPENDENCY_PARENT_OPERATIONS = {
+  add_url_alias: ["insert_notice"],
+  insert_asset: ["insert_notice"],
+  insert_error: ["insert_run", "insert_source_result"],
+  insert_keyword_match: ["insert_notice"],
+  insert_notice_target: ["insert_notice"],
+  insert_occurrence: ["insert_run", "insert_source_result", "insert_notice"],
+  update_notice_body: ["insert_notice"],
+  update_notice_metadata: ["insert_notice"],
+};
+const MINIMAL_DEPENDENCY_COMPLETE_OPERATION_SET = [
+  "insert_run",
+  "insert_source_result",
+  "insert_notice",
+  "insert_occurrence",
+  "insert_notice_target",
+  "insert_error",
+];
 
 function cleanText(value) {
   return String(value ?? "").replace(/\s+/g, " ").trim();
@@ -179,6 +197,60 @@ function opWithReason(operation, reasons, item) {
   };
 }
 
+function itemOperationKey(operation) {
+  return makeItemKey(
+    cleanText(operation.source_key).toLowerCase(),
+    cleanText(operation.canonical_key),
+  );
+}
+
+function buildOperationNameMap(operations) {
+  const map = new Map();
+  for (const operation of operations) {
+    const itemKey = itemOperationKey(operation);
+    if (!map.has(itemKey)) map.set(itemKey, new Map());
+    const name = operationKey(operation);
+    if (!map.get(itemKey).has(name)) map.get(itemKey).set(name, []);
+    map.get(itemKey).get(name).push(operation);
+  }
+  return map;
+}
+
+function analyzeOperationDependencies(selectedOperations, excludedOperations) {
+  const selectedByItem = buildOperationNameMap(selectedOperations);
+  const excludedByItem = buildOperationNameMap(excludedOperations);
+  const warnings = [];
+
+  for (const operation of selectedOperations) {
+    const name = operationKey(operation);
+    const requiredParents = DEPENDENCY_PARENT_OPERATIONS[name] ?? [];
+    if (requiredParents.length === 0) continue;
+
+    const itemKey = itemOperationKey(operation);
+    const selectedNames = selectedByItem.get(itemKey) ?? new Map();
+    const excludedNames = excludedByItem.get(itemKey) ?? new Map();
+    const missingParents = requiredParents.filter((parent) => !selectedNames.has(parent));
+    if (missingParents.length === 0) continue;
+
+    warnings.push({
+      source_key: operation.source_key,
+      canonical_key: operation.canonical_key,
+      operation: name,
+      missing_parent_operations: missingParents,
+      excluded_parent_operations: missingParents.filter((parent) => excludedNames.has(parent)),
+      risk: "selected_child_operation_without_dependency_complete_parent_set",
+      recommendation: "review schema FK requirements and use a dependency-complete minimal operation set before any real apply",
+    });
+  }
+
+  return {
+    dependency_complete_for_real_apply: warnings.length === 0 && selectedOperations.length > 0,
+    warning_count: warnings.length,
+    warnings,
+    recommended_minimal_dependency_complete_operation_set: MINIMAL_DEPENDENCY_COMPLETE_OPERATION_SET,
+  };
+}
+
 function planRehearsal(report, options) {
   const itemDetailMap = buildItemDetailMap(report);
   const sourceHealthMap = buildSourceHealthMap(report);
@@ -246,6 +318,10 @@ function planRehearsal(report, options) {
   const reason = selectedOperations.length === 0
     ? (readOnlyDbReady ? "no_safe_operations_after_filters" : "read_only_db_check_required")
     : "safe_rehearsal_candidates_selected_for_user_review";
+  const operationDependency = analyzeOperationDependencies(selectedOperations, excludedOperations);
+  if (operationDependency.warning_count > 0) {
+    warnings.push("selected_operations_require_dependency_review_before_real_apply");
+  }
 
   return {
     generated_at: new Date().toISOString(),
@@ -282,10 +358,18 @@ function planRehearsal(report, options) {
     },
     selected_operations: selectedOperations,
     excluded_operations: excludedOperations,
+    operation_dependency: operationDependency,
     warnings,
     go_no_go: {
       sample_apply_rehearsal_ready: readOnlyDbReady && selectedOperations.length > 0,
+      real_apply_ready: false,
       reason,
+      real_apply_ready_reason: "selected operations are dry-run rehearsal candidates only; actual DB write requires separate user approval, controlled fixture or quality gate review, and dependency-complete operation review",
+      requires_user_approval_before_real_apply: true,
+      requires_controlled_fixture_or_quality_gate_pass: true,
+      dependency_complete_for_real_apply: operationDependency.dependency_complete_for_real_apply,
+      dependency_warning_count: operationDependency.warning_count,
+      recommended_minimal_dependency_complete_operation_set: MINIMAL_DEPENDENCY_COMPLETE_OPERATION_SET,
     },
   };
 }
@@ -302,6 +386,8 @@ function printTextReport(report) {
   console.log(`selected_operations=${report.summary.selected_operations}`);
   console.log(`excluded_operations=${report.summary.excluded_operations}`);
   console.log(`sample_apply_rehearsal_ready=${report.go_no_go.sample_apply_rehearsal_ready}`);
+  console.log(`real_apply_ready=${report.go_no_go.real_apply_ready}`);
+  console.log(`dependency_warning_count=${report.go_no_go.dependency_warning_count}`);
   console.log(`reason=${report.go_no_go.reason}`);
 }
 
