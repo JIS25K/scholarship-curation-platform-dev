@@ -30,6 +30,8 @@
     "crawl:notices": "node scripts/crawl-scholarship-notices.mjs",
     "audit:crawler-capabilities": "node scripts/audit-crawler-capabilities.mjs",
     "sync:notice-sources": "node scripts/sync-crawler-notice-sources.mjs",
+    "crawler:org-units:seed-sql": "node scripts/generate-org-units-seed-sql.mjs",
+    "crawler:targets:plan": "node scripts/plan-crawler-source-targets.mjs",
     "test:crawler-observability": "node scripts/test-crawler-observability.mjs",
     "test:crawler-adapters": "node scripts/test-crawler-adapters.mjs",
     "test:crawler-parsers": "node scripts/test-crawler-parsers.mjs",

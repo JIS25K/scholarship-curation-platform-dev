@@ -3,6 +3,7 @@ import path from "node:path";
 
 const DEFAULT_CSV_PATH = "data/notice-sources.csv";
 const REQUIRED_COLUMNS = ["source_id", "org_unit_id", "list_url"];
+const MAX_APPLY_LIMIT = 10;
 
 function cleanText(value) {
   return String(value ?? "").replace(/\s+/g, " ").trim();
@@ -73,6 +74,7 @@ function parseArgs(argv) {
     csvPath: DEFAULT_CSV_PATH,
     dryRun: true,
     checkDb: false,
+    apply: false,
     personalDevDbConfirmed: false,
     json: false,
     limit: 0,
@@ -92,6 +94,9 @@ function parseArgs(argv) {
       options.dryRun = true;
     } else if (arg === "--check-db") {
       options.checkDb = true;
+    } else if (arg === "--apply") {
+      options.apply = true;
+      options.dryRun = false;
     } else if (arg === "--yes-i-am-using-personal-dev-db") {
       options.personalDevDbConfirmed = true;
     } else if (arg === "--limit") {
@@ -110,8 +115,6 @@ function parseArgs(argv) {
       options.json = true;
     } else if (arg === "--help" || arg === "-h") {
       options.help = true;
-    } else if (arg === "--apply") {
-      throw new Error("--apply is not supported by this read-only planning script.");
     } else {
       throw new Error(`Unknown option: ${arg}`);
     }
@@ -123,10 +126,15 @@ function parseArgs(argv) {
 function printHelp() {
   console.log(`Usage:
   node scripts/plan-crawler-source-targets.mjs --csv data/notice-sources.csv --dry-run [--limit N] [--prefix PREFIX] [--source-key SOURCE_KEY] [--json]
+  node scripts/plan-crawler-source-targets.mjs --apply --limit N (--prefix PREFIX | --source-key SOURCE_KEY) --yes-i-am-using-personal-dev-db
 
 Options:
   --csv PATH              Source CSV path. Defaults to data/notice-sources.csv.
   --dry-run               CSV-only preview. Default and only supported mode in P0-3.
+  --apply                 Guarded personal-dev upsert to crawler_source_targets.
+                          Requires --limit N where N <= ${MAX_APPLY_LIMIT}, --prefix or --source-key,
+                          --yes-i-am-using-personal-dev-db, PERSONAL_DEV_SUPABASE_CONFIRM=1,
+                          SUPABASE_URL, and SUPABASE_SERVICE_ROLE_KEY.
   --limit N               Limit selected rows after prefix/source-key filtering.
   --prefix PREFIX         Select source_key values that start with PREFIX.
   --source-key SOURCE_KEY Select exact source_key values. Can be repeated or comma-separated.
@@ -136,11 +144,12 @@ Options:
                           Required with --check-db.
 
 Safety:
-  This script never writes to DB and never reads .env. CSV-only dry-run does not
-  connect to Supabase. --check-db only reads crawler_notice_sources(source_key,id)
-  and org_units(id), and requires explicit personal dev DB confirmation.
-  Payload previews use source_key. Real crawler_source_targets writes require
-  crawler_notice_sources.source_key -> crawler_notice_sources.id lookup first.
+  This script never reads .env and never prints URL/key values. CSV-only dry-run
+  does not connect to Supabase. --check-db only reads
+  crawler_notice_sources(source_key,id) and org_units(id), and requires explicit
+  personal dev DB confirmation. --apply is capped to ${MAX_APPLY_LIMIT} selected rows
+  and refuses to write unless every selected source and org_unit already exists.
+  crawler_source_targets is treated as a composite-key table; no id column is assumed.
 `);
 }
 
@@ -304,7 +313,7 @@ function buildPlan(options) {
       invalidOrgUnitIds.length === 0 &&
       missingOrgUnitIds.length === 0 &&
       duplicateSourceOrgPairs.length === 0,
-    mode: options.checkDb ? "check-db" : "csv-only-dry-run",
+    mode: options.apply ? "apply" : options.checkDb ? "check-db" : "csv-only-dry-run",
     csv_path: absolutePath,
     csv_rows: rows.length,
     selected_rows: selectedRows.length,
@@ -383,6 +392,34 @@ function validateDbCheckOptions(options) {
   }
 }
 
+function validateApplyOptions(options) {
+  if (!options.apply) return;
+
+  if (!options.personalDevDbConfirmed) {
+    throw new Error("Refusing apply: --yes-i-am-using-personal-dev-db is required.");
+  }
+
+  if (process.env.PERSONAL_DEV_SUPABASE_CONFIRM !== "1") {
+    throw new Error("Refusing apply: PERSONAL_DEV_SUPABASE_CONFIRM=1 is required.");
+  }
+
+  if (!process.env.SUPABASE_URL) {
+    throw new Error("Refusing apply: SUPABASE_URL is required.");
+  }
+
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("Refusing apply: SUPABASE_SERVICE_ROLE_KEY is required.");
+  }
+
+  if (!Number.isInteger(options.limit) || options.limit < 1 || options.limit > MAX_APPLY_LIMIT) {
+    throw new Error(`Refusing apply: --limit is required and must be <= ${MAX_APPLY_LIMIT}.`);
+  }
+
+  if (!cleanText(options.prefix) && options.sourceKeys.length === 0) {
+    throw new Error("Refusing apply: --prefix or --source-key is required.");
+  }
+}
+
 function uniqueValues(values) {
   return [...new Set(values.filter((value) => value !== null && value !== undefined && value !== ""))];
 }
@@ -403,7 +440,7 @@ async function loadRowsByIn(supabase, table, columns, columnName, values) {
 }
 
 async function addDbCheckResult(result, options) {
-  validateDbCheckOptions(options);
+  if (options.checkDb) validateDbCheckOptions(options);
 
   const { createClient } = await import("@supabase/supabase-js");
   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
@@ -472,6 +509,68 @@ async function addDbCheckResult(result, options) {
   };
 }
 
+function validateApplyReadiness(result) {
+  if (!result.ok) {
+    throw new Error("Refusing apply: CSV validation failed. Run dry-run and resolve reported issues first.");
+  }
+
+  if (result.readyToSync.length < 1) {
+    throw new Error("Refusing apply: no ready source-target rows selected.");
+  }
+
+  if (result.missingSources.length > 0 || result.missingOrgUnits.length > 0) {
+    throw new Error(
+      `Refusing apply: missing_sources=${result.missingSources.length}, missing_org_units=${result.missingOrgUnits.length}.`,
+    );
+  }
+}
+
+async function applyCrawlerSourceTargets(result, options) {
+  validateApplyOptions(options);
+  validateApplyReadiness(result);
+
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const payloads = result.readyToSync.map((row) => ({
+    source_id: row.source_id,
+    org_unit_id: row.org_unit_id,
+    priority: row.priority,
+  }));
+
+  const { error } = await supabase
+    .from("crawler_source_targets")
+    .upsert(payloads, { onConflict: "source_id,org_unit_id" });
+
+  if (error) {
+    throw new Error(`crawler_source_targets upsert failed: ${error.message}`);
+  }
+
+  const sourceKeys = result.readyToSync.map((row) => row.source_key);
+  if (options.json) {
+    console.log(
+      JSON.stringify(
+        {
+          ok: true,
+          mode: "apply",
+          applied_rows: payloads.length,
+          source_keys: sourceKeys,
+          writes_executed: true,
+        },
+        null,
+        2,
+      ),
+    );
+    return;
+  }
+
+  console.log("source_targets_apply=ok");
+  console.log(`applied_rows=${payloads.length}`);
+  console.log(`source_keys=${sourceKeys.join(",")}`);
+  console.log("writes_executed=true");
+}
+
 function printTextReport(result) {
   console.log("source_targets_dry_run=ok");
   console.log(`mode=${result.mode}`);
@@ -506,10 +605,16 @@ async function main() {
     return;
   }
 
+  if (options.apply) validateApplyOptions(options);
   validateDbCheckOptions(options);
   const result = buildPlan(options);
-  if (options.checkDb) {
+  if (options.checkDb || options.apply) {
     await addDbCheckResult(result, options);
+  }
+
+  if (options.apply) {
+    await applyCrawlerSourceTargets(result, options);
+    return;
   }
 
   if (options.json) {
