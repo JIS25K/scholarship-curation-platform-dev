@@ -25,7 +25,7 @@ const expectedCounts = {
 };
 
 const files = {
-  phase4_doc: "docs/crawler-controlled-sample-apply-phase4-cleanup-readiness.md",
+  roadmap_phase1_gate4_doc: "docs/crawler-roadmap-phase1-gate4-controlled-sample-cleanup-readiness.md",
   audit_sql: "sql/drafts/crawler-guarded-sample-apply-audit-checks.review.sql",
   cleanup_sql: "sql/drafts/crawler-guarded-sample-apply-cleanup.review.sql",
 };
@@ -42,7 +42,7 @@ const report = {
     Object.entries(files).map(([key, value]) => [key, path.resolve(value)])
   ),
   sequence: [
-    "Review the Phase 4 cleanup readiness doc.",
+    "Review the Roadmap Phase 1 - Gate 4 cleanup readiness doc.",
     "Run the audit SQL manually only in personal dev, if approved by the user.",
     "Review cleanup SQL counts with the default ROLLBACK.",
     "Change ROLLBACK to COMMIT only after explicit manual approval.",

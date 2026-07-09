@@ -1,14 +1,14 @@
-# Crawler Controlled Sample Apply Phase 3 Audit Readiness
+# Crawler Roadmap Phase 1 - Gate 3 Audit Readiness
 
 ## Purpose
 
-Phase 3 records the successful controlled sample retry, fixes a reporting inconsistency, and defines the next readiness gate before moving from a controlled fixture to real collector output.
+Roadmap Phase 1 - Gate 3 records the successful controlled sample retry, fixes a reporting inconsistency, and defines the next readiness gate before moving from a controlled fixture to real collector output.
 
 Codex did not run real apply, did not execute SQL, did not access Supabase, and did not run cleanup in this phase.
 
-## Phase 2 Retry Status
+## Roadmap Phase 1 - Gate 2 Retry Status
 
-The user confirmed that the Phase 2 controlled sample real apply retry succeeded in a personal dev Supabase database.
+The user confirmed that the Roadmap Phase 1 - Gate 2 controlled sample real apply retry succeeded in a personal dev Supabase database.
 
 Report:
 
@@ -29,7 +29,7 @@ Key values reported by the user:
 - `apply_result.notice_id=3`
 - `apply_result.occurrence_id=2`
 
-The first Phase 2 attempt failed before URL alias insertion. The user already verified and cleaned up that partial write. Codex did not execute cleanup.
+The first Roadmap Phase 1 - Gate 2 attempt failed before URL alias insertion. The user already verified and cleaned up that partial write. Codex did not execute cleanup. The `phase2-retry` report filename and `controlled-sample-phase2-retry-20260709` rehearsal label are legacy audit identifiers and are intentionally preserved.
 
 ## Audit Row Count
 
@@ -49,7 +49,7 @@ The user confirmed that read-only audit row counts matched the expected controll
 
 This confirms that the controlled fixture exercised the full intended run/source/notice/alias/occurrence/target/asset/error/keyword lifecycle for one item.
 
-## Phase 3 Code Fix
+## Roadmap Phase 1 - Gate 3 Code Fix
 
 The successful retry report had a small inconsistency:
 
@@ -99,7 +99,7 @@ Read-only audit draft:
 sql/drafts/crawler-guarded-sample-apply-audit-checks.review.sql
 ```
 
-The draft includes Phase 2 retry placeholders for the confirmed run id, rehearsal label, expected source key, expected org unit, and expected row counts. It remains review-only SELECT SQL.
+The draft includes Roadmap Phase 1 - Gate 2 retry placeholders for the confirmed run id, rehearsal label, expected source key, expected org unit, and expected row counts. It remains review-only SELECT SQL.
 
 ## Cleanup Review
 
@@ -120,16 +120,16 @@ Cleanup remains NO-GO unless the user explicitly requests it. The draft keeps `R
 The first candidate is now expanded in:
 
 ```text
-docs/crawler-controlled-sample-apply-phase4-cleanup-readiness.md
+docs/crawler-roadmap-phase1-gate4-controlled-sample-cleanup-readiness.md
 ```
 
-Phase 4 keeps cleanup as an exact-scope, manual personal-dev user action and prepares the audit -> cleanup review -> post-cleanup verification path before any real crawler-output ingest gate.
+Roadmap Phase 1 - Gate 4 keeps cleanup as an exact-scope, manual personal-dev user action and prepares the audit -> cleanup review -> post-cleanup verification path before any real crawler-output ingest gate.
 
 ## Go / No-Go Checklist
 
 GO for the next design review:
 
-- Phase 2 retry success report reviewed.
+- Roadmap Phase 1 - Gate 2 retry success report reviewed.
 - Audit row counts match the expected lifecycle shape.
 - Success reporting simulation passes locally.
 - Schema conflict preflight remains clean.

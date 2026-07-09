@@ -107,40 +107,40 @@ NO-GO for real apply:
 
 Prepare a separate explicit user-approved guarded controlled sample apply prompt. That later prompt should include a dependency-complete operation set, personal-dev-only gates, a deterministic rehearsal label, audit checks, and rollback/cleanup review. It should still fail closed unless the selected fixture report has read-only DB comparison evidence and the user explicitly approves the write.
 
-## Phase 1 Executor Preparation
+## Roadmap Phase 1 - Gate 1 Executor Preparation
 
 The controlled sample apply executor preparation is documented in:
 
 ```text
-docs/crawler-controlled-sample-apply-phase1.md
+docs/crawler-roadmap-phase1-gate1-controlled-sample-apply-executor.md
 ```
 
 It adds a plan-only default executor for the controlled fixture and a future-only guarded apply path. The current preparation still does not execute real DB write. A real personal-dev write remains blocked until the controlled fixture has a read-only DB comparison report, the plan is reviewed, and the user gives separate explicit approval.
 
-## Phase 2 Failure Fix Note
+## Roadmap Phase 1 - Gate 2 Failure Fix Note
 
 The controlled apply failure and executor hardening are documented in:
 
 ```text
-docs/crawler-controlled-sample-apply-phase2-failure-fix.md
+docs/crawler-roadmap-phase1-gate2-controlled-fixture-apply-retry.md
 ```
 
 The user has already cleaned up the partial personal-dev write. Codex must not rerun apply or cleanup; the next acceptable step is local-only validation and user review before any separately approved retry.
 
-## Phase 3 Audit Readiness
+## Roadmap Phase 1 - Gate 3 Audit Readiness
 
 The later controlled sample retry success and read-only audit row count confirmation are documented in:
 
 ```text
-docs/crawler-controlled-sample-apply-phase3-audit-readiness.md
+docs/crawler-roadmap-phase1-gate3-audit-readiness.md
 ```
 
-## Phase 4 Cleanup Readiness
+## Roadmap Phase 1 - Gate 4 Cleanup Readiness
 
 The controlled fixture cleanup readiness gate is documented in:
 
 ```text
-docs/crawler-controlled-sample-apply-phase4-cleanup-readiness.md
+docs/crawler-roadmap-phase1-gate4-controlled-sample-cleanup-readiness.md
 ```
 
 It prepares exact-scope audit SQL, default-`ROLLBACK` cleanup review SQL, and a local-only cleanup guide. Cleanup remains a manual personal-dev user action and is still NO-GO for Codex.
@@ -151,7 +151,7 @@ The normalized ingest v2 executor contract and local-only Roadmap Phase 2 implem
 
 ```text
 docs/crawler-normalized-ingest-v2-executor-contract.md
-docs/crawler-normalized-ingest-v2-executor-phase2.md
+docs/crawler-roadmap-phase2-normalized-ingest-v2-executor.md
 ```
 
 Roadmap Phase 2 remains separate from Roadmap Phase 3 Real source mini apply and Roadmap Phase 4 Full crawl dry-run.

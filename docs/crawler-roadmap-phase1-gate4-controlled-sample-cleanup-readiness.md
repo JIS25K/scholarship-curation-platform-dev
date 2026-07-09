@@ -1,14 +1,14 @@
-# Crawler Controlled Sample Apply Phase 4 Cleanup Readiness
+# Crawler Roadmap Phase 1 - Gate 4 Controlled Sample Cleanup Readiness
 
 ## Purpose
 
-Phase 4 prepares the controlled fixture cleanup gate before moving toward any real crawler-output ingest.
+Roadmap Phase 1 - Gate 4 prepares the controlled fixture cleanup gate before moving toward any real crawler-output ingest.
 
 This phase does not delete the controlled fixture, does not execute SQL, does not access Supabase, and does not approve a real DB write. It only documents the manual audit -> cleanup review -> post-cleanup verification path for the user to run in a confirmed personal dev database.
 
 ## Current Verified State
 
-Phase 2 controlled sample apply retry: PASS.
+Roadmap Phase 1 - Gate 2 controlled sample apply retry: PASS.
 
 The user confirmed the personal dev audit row counts matched the expected controlled lifecycle shape exactly:
 
@@ -24,9 +24,9 @@ The user confirmed the personal dev audit row counts matched the expected contro
 | `crawler_errors` | 1 |
 | `crawler_keyword_matches` | 1 |
 
-Phase 3 audit readiness/reporting alignment: PASS.
+Roadmap Phase 1 - Gate 3 audit readiness/reporting alignment: PASS.
 
-The Phase 3 success simulation confirmed that local success reporting now aligns top-level and nested `go_no_go.real_apply_executed` values while still leaving local simulation as `db_write_executed=false` and `supabase_sql_executed=false`.
+The Roadmap Phase 1 - Gate 3 success simulation confirmed that local success reporting now aligns top-level and nested `go_no_go.real_apply_executed` values while still leaving local simulation as `db_write_executed=false` and `supabase_sql_executed=false`.
 
 ## Controlled Fixture Identifiers
 
@@ -42,7 +42,7 @@ The cleanup and audit gate is scoped to these exact identifiers:
 | `occurrence_id` | `2` |
 | `expected_org_unit_id` | `46` |
 
-Cleanup must not be scoped by `source_key` alone. `source_key=yonsei_060` is only one part of the fixture identity.
+Cleanup must not be scoped by `source_key` alone. `source_key=yonsei_060` is only one part of the fixture identity. The `controlled-sample-phase2-retry-20260709` label is a legacy audit identifier and is intentionally preserved.
 
 ## Why Cleanup Readiness Comes Before Real Output
 
@@ -63,7 +63,7 @@ Use the read-only audit draft:
 sql/drafts/crawler-guarded-sample-apply-audit-checks.review.sql
 ```
 
-The audit SQL is SELECT-only and uses the exact Phase 2 retry identifiers. It checks:
+The audit SQL is SELECT-only and uses the exact Roadmap Phase 1 - Gate 2 retry identifiers. It checks:
 
 - fixture identifier values,
 - row counts for the nine expected lifecycle tables,
@@ -135,14 +135,14 @@ node scripts/print-controlled-sample-cleanup-guide.mjs
 
 Recommended manual sequence:
 
-1. Review this Phase 4 document.
+1. Review this Roadmap Phase 1 - Gate 4 document.
 2. Review `sql/drafts/crawler-guarded-sample-apply-audit-checks.review.sql`.
 3. In personal dev only, run the audit SQL and confirm the expected row counts.
 4. Review `sql/drafts/crawler-guarded-sample-apply-cleanup.review.sql` with the default `ROLLBACK`.
 5. In personal dev only, run the cleanup SQL with `ROLLBACK` and confirm the transaction-local post-cleanup counts would be zero.
 6. If cleanup is approved, change only the final `ROLLBACK` to `COMMIT` and run manually.
 7. Rerun the post-cleanup verification query and confirm all scoped counts are zero.
-8. Share the post-cleanup row counts before Phase 5.
+8. Share the post-cleanup row counts before any Roadmap Phase 3 work.
 
 ## Codex Prohibition
 
@@ -160,9 +160,9 @@ Codex must not:
 
 GO for user review:
 
-- Phase 2 retry PASS is recorded.
+- Roadmap Phase 1 - Gate 2 retry PASS is recorded.
 - User audit row count matched expected is recorded.
-- Phase 3 reporting alignment PASS is recorded.
+- Roadmap Phase 1 - Gate 3 reporting alignment PASS is recorded.
 - Audit SQL is read-only and exact-scope.
 - Cleanup SQL is exact-scope, FK-order safe, and default `ROLLBACK`.
 - Local cleanup guide prints identifiers and paths only.
@@ -182,11 +182,11 @@ The user should review Roadmap Phase 1 - Gate 4 cleanup readiness. If approved, 
 
 ## Roadmap Naming Note
 
-This document was originally written during what is now named `Roadmap Phase 1 - Gate 4`. Any local wording such as "Phase 4" in this file refers to the controlled fixture cleanup readiness gate, not `Roadmap Phase 4 Full crawl dry-run`.
+This document was originally written during what is now named `Roadmap Phase 1 - Gate 4`. Older references to "Phase 4" in this history refer to Roadmap Phase 1 - Gate 4 controlled fixture cleanup readiness, not `Roadmap Phase 4 Full crawl dry-run`.
 
 The normalized ingest v2 executor work is documented in:
 
 ```text
 docs/crawler-normalized-ingest-v2-executor-contract.md
-docs/crawler-normalized-ingest-v2-executor-phase2.md
+docs/crawler-roadmap-phase2-normalized-ingest-v2-executor.md
 ```

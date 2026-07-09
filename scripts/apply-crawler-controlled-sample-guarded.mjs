@@ -201,7 +201,7 @@ function validateRequiredOptions(options) {
   if (!options.preApplyReportPath) throw new Error("--pre-apply-report is required.");
   if (!options.sourceKey) throw new Error("--source-key is required.");
   if (options.limit === null) throw new Error("--limit is required.");
-  if (options.limit !== 1) throw new Error("Refusing controlled sample apply: --limit must be exactly 1 for Phase 1.");
+  if (options.limit !== 1) throw new Error("Refusing controlled sample apply: --limit must be exactly 1 for Roadmap Phase 1 - Gate 1.");
   if (!options.rehearsalLabel) throw new Error("--rehearsal-label is required.");
 }
 
@@ -353,7 +353,7 @@ function selectedControlledItem(fixture, options) {
   if (!source) throw new Error(`source_key not found in fixture: ${options.sourceKey}`);
   const items = Array.isArray(source.items) ? source.items : [];
   if (items.length !== 1) {
-    throw new Error(`Controlled Phase 1 fixture must contain exactly 1 item for ${options.sourceKey}; found ${items.length}.`);
+    throw new Error(`Controlled Roadmap Phase 1 - Gate 1 fixture must contain exactly 1 item for ${options.sourceKey}; found ${items.length}.`);
   }
   return { source, item: items[0] };
 }

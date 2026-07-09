@@ -388,12 +388,12 @@ Current real sample source output remains insufficient for real apply:
 
 The first future DB write rehearsal should prefer a controlled fixture strategy so dependency completeness, rollback scoping, and audit trail checks can be reviewed before any real source-output apply.
 
-## Controlled Sample Apply Phase 1
+## Roadmap Phase 1 - Gate 1 Controlled Sample Apply
 
 The next preparation artifact is documented in:
 
 ```text
-docs/crawler-controlled-sample-apply-phase1.md
+docs/crawler-roadmap-phase1-gate1-controlled-sample-apply-executor.md
 ```
 
 It uses the controlled fixture:
@@ -402,4 +402,4 @@ It uses the controlled fixture:
 fixtures/crawler-ingest-dry-run/guarded-apply-controlled-sample-input.json
 ```
 
-The Phase 1 executor is plan-only by default and keeps `db_write_executed=false`, `supabase_sql_executed=false`, and `real_apply_executed=false` unless a future command passes all personal-dev write guards. In the current preparation phase, only local plan generation and guard rejection are validated.
+The Roadmap Phase 1 - Gate 1 executor is plan-only by default and keeps `db_write_executed=false`, `supabase_sql_executed=false`, and `real_apply_executed=false` unless a future command passes all personal-dev write guards. In the current preparation phase, only local plan generation and guard rejection are validated.

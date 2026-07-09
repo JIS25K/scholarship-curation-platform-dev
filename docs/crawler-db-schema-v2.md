@@ -92,7 +92,7 @@ The normalized ingest v2 executor contract is documented in:
 
 ```text
 docs/crawler-normalized-ingest-v2-executor-contract.md
-docs/crawler-normalized-ingest-v2-executor-phase2.md
+docs/crawler-roadmap-phase2-normalized-ingest-v2-executor.md
 ```
 
 Roadmap Phase 2 keeps Codex local-only. It can parse this schema SQL for conflict-target preflight, but Codex must not execute Supabase SQL, DB writes, cleanup, real source mini apply, full crawl, production/main Supabase, or batch apply.

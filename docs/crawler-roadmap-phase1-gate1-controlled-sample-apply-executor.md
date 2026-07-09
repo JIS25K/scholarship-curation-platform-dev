@@ -1,8 +1,8 @@
-# Crawler Controlled Sample Apply Phase 1
+# Crawler Roadmap Phase 1 - Gate 1 Controlled Sample Apply Executor
 
 ## Purpose
 
-Phase 1 prepares a guarded executor for the first future controlled personal-dev DB write rehearsal.
+Roadmap Phase 1 - Gate 1 prepares a guarded executor for the first future controlled personal-dev DB write rehearsal.
 
 This document and the related script do not approve a real DB write. The current phase only prepares:
 
@@ -131,6 +131,8 @@ node scripts/apply-crawler-controlled-sample-guarded.mjs \
   --json
 ```
 
+The `controlled-sample-phase1-*` rehearsal labels are legacy audit identifiers and are intentionally preserved for report continuity.
+
 Expected safety fields:
 
 - `db_write_executed=false`
@@ -204,32 +206,32 @@ NO-GO for real apply:
 - cleanup/audit review is not ready,
 - deletion/inactive behavior is requested.
 
-## Phase 2 Failure Fix
+## Roadmap Phase 1 - Gate 2 Failure Fix
 
 The first controlled personal-dev apply attempt exposed an executor/schema mismatch before URL alias insertion completed. Review the fix note before any retry:
 
 ```text
-docs/crawler-controlled-sample-apply-phase2-failure-fix.md
+docs/crawler-roadmap-phase1-gate2-controlled-fixture-apply-retry.md
 ```
 
 Any retry remains NO-GO until the user explicitly approves it after reviewing the local schema-conflict preflight and failure-report hardening.
 
-## Phase 3 Audit Readiness
+## Roadmap Phase 1 - Gate 3 Audit Readiness
 
-The successful Phase 2 retry and follow-up reporting fix are documented in:
+The successful Roadmap Phase 1 - Gate 2 retry and follow-up reporting fix are documented in:
 
 ```text
-docs/crawler-controlled-sample-apply-phase3-audit-readiness.md
+docs/crawler-roadmap-phase1-gate3-audit-readiness.md
 ```
 
 That document records the user-confirmed audit row counts and keeps full crawl, real crawler-output ingest, production/main Supabase, cleanup execution, and any Codex-run real apply as NO-GO.
 
-## Phase 4 Cleanup Readiness
+## Roadmap Phase 1 - Gate 4 Cleanup Readiness
 
 The controlled fixture cleanup readiness gate is documented in:
 
 ```text
-docs/crawler-controlled-sample-apply-phase4-cleanup-readiness.md
+docs/crawler-roadmap-phase1-gate4-controlled-sample-cleanup-readiness.md
 ```
 
 That document keeps cleanup as a manual personal-dev user action only. Codex still must not execute cleanup SQL, Supabase SQL, real apply, real crawler-output ingest, or full crawl.

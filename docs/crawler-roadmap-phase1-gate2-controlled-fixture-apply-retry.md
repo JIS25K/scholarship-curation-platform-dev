@@ -1,8 +1,8 @@
-# Crawler Controlled Sample Apply Phase 2 Failure Fix
+# Crawler Roadmap Phase 1 - Gate 2 Controlled Fixture Apply Retry
 
 ## Purpose
 
-This note records the Phase 2 controlled sample apply failure and the local-only hardening added before any retry.
+This note records the Roadmap Phase 1 - Gate 2 controlled sample apply failure and the local-only hardening added before any retry.
 
 This phase does not rerun real apply, does not execute cleanup SQL, does not connect to Supabase, and does not approve production/main Supabase use, full crawl, or real crawler-output ingest.
 
@@ -123,7 +123,7 @@ The cleanup draft keeps `ROLLBACK` as the default and now scopes partial notices
 - `metadata->>'rehearsal_label'`
 - controlled `canonical_key` plus `metadata->>'controlled_sample' = 'true'`
 
-This catches the Phase 2 partial write shape where run/source_result/notice existed but alias and later child rows did not.
+This catches the Roadmap Phase 1 - Gate 2 partial write shape where run/source_result/notice existed but alias and later child rows did not.
 
 ## Retry Checklist
 
@@ -148,22 +148,22 @@ Still prohibited:
 - cleanup SQL execution by Codex
 - printing `.env`, Supabase URL, service role key, or secrets
 
-## Phase 3 Audit Readiness
+## Roadmap Phase 1 - Gate 3 Audit Readiness
 
 The controlled sample retry later succeeded in personal dev, and the follow-up audit/readiness record is documented in:
 
 ```text
-docs/crawler-controlled-sample-apply-phase3-audit-readiness.md
+docs/crawler-roadmap-phase1-gate3-audit-readiness.md
 ```
 
-Phase 3 also fixes the success-report inconsistency where top-level `real_apply_executed=true` but nested `go_no_go.real_apply_executed=false`.
+Roadmap Phase 1 - Gate 3 also fixes the success-report inconsistency where top-level `real_apply_executed=true` but nested `go_no_go.real_apply_executed=false`.
 
-## Phase 4 Cleanup Readiness
+## Roadmap Phase 1 - Gate 4 Cleanup Readiness
 
 The later controlled fixture cleanup readiness gate is documented in:
 
 ```text
-docs/crawler-controlled-sample-apply-phase4-cleanup-readiness.md
+docs/crawler-roadmap-phase1-gate4-controlled-sample-cleanup-readiness.md
 ```
 
-Phase 4 prepares exact-scope audit and cleanup review material for the successful Phase 2 retry fixture. Cleanup remains a manual personal-dev user action; Codex must not execute it.
+Roadmap Phase 1 - Gate 4 prepares exact-scope audit and cleanup review material for the successful Roadmap Phase 1 - Gate 2 retry fixture. Cleanup remains a manual personal-dev user action; Codex must not execute it.
