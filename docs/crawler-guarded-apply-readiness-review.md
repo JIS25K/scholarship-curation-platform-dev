@@ -116,3 +116,13 @@ docs/crawler-controlled-sample-apply-phase1.md
 ```
 
 It adds a plan-only default executor for the controlled fixture and a future-only guarded apply path. The current preparation still does not execute real DB write. A real personal-dev write remains blocked until the controlled fixture has a read-only DB comparison report, the plan is reviewed, and the user gives separate explicit approval.
+
+## Phase 2 Failure Fix Note
+
+The controlled apply failure and executor hardening are documented in:
+
+```text
+docs/crawler-controlled-sample-apply-phase2-failure-fix.md
+```
+
+The user has already cleaned up the partial personal-dev write. Codex must not rerun apply or cleanup; the next acceptable step is local-only validation and user review before any separately approved retry.

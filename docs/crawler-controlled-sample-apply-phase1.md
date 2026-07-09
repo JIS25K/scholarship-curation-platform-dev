@@ -204,3 +204,12 @@ NO-GO for real apply:
 - cleanup/audit review is not ready,
 - deletion/inactive behavior is requested.
 
+## Phase 2 Failure Fix
+
+The first controlled personal-dev apply attempt exposed an executor/schema mismatch before URL alias insertion completed. Review the fix note before any retry:
+
+```text
+docs/crawler-controlled-sample-apply-phase2-failure-fix.md
+```
+
+Any retry remains NO-GO until the user explicitly approves it after reviewing the local schema-conflict preflight and failure-report hardening.

@@ -21,6 +21,7 @@ begin;
 --   \set rehearsal_run_id '00000000-0000-0000-0000-000000000000'
 --   \set rehearsal_label 'crawler-guarded-sample-YYYYMMDD-HHMM'
 --   \set expected_source_key 'yonsei_060'
+--   \set expected_canonical_key 'yonsei_060:url:e74c29f4562cf52025d9'
 
 -- 1. Identify the exact rehearsal run.
 with rehearsal_run as (
@@ -47,8 +48,13 @@ occurrences as (
 notices as (
   select distinct n.id
   from public.crawler_notices n
-  join occurrences o on o.notice_id = n.id
+  left join occurrences o on o.notice_id = n.id
   where n.metadata->>'rehearsal_label' = :'rehearsal_label'
+     or (
+       n.canonical_key = :'expected_canonical_key'
+       and n.metadata->>'controlled_sample' = 'true'
+     )
+     or o.notice_id is not null
 )
 select 'crawler_source_results' as table_name, count(*) from public.crawler_source_results sr join rehearsal_run r on r.id = sr.run_id
 union all
@@ -81,8 +87,13 @@ select 'crawler_notices', count(*) from notices;
 -- notices as (
 --   select distinct n.id
 --   from public.crawler_notices n
---   join occurrences o on o.notice_id = n.id
+--   left join occurrences o on o.notice_id = n.id
 --   where n.metadata->>'rehearsal_label' = :'rehearsal_label'
+--      or (
+--        n.canonical_key = :'expected_canonical_key'
+--        and n.metadata->>'controlled_sample' = 'true'
+--      )
+--      or o.notice_id is not null
 -- )
 -- delete from public.crawler_keyword_matches km using notices n where km.notice_id = n.id;
 -- delete from public.crawler_notice_assets a using notices n where a.notice_id = n.id;
