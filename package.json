@@ -32,6 +32,7 @@
     "sync:notice-sources": "node scripts/sync-crawler-notice-sources.mjs",
     "crawler:org-units:seed-sql": "node scripts/generate-org-units-seed-sql.mjs",
     "crawler:targets:plan": "node scripts/plan-crawler-source-targets.mjs",
+    "crawler:ingest:adapt": "node scripts/adapt-collector-output-for-ingest-dry-run.mjs",
     "crawler:ingest:dry-run": "node scripts/ingest-crawler-run-dry-run.mjs",
     "test:crawler-observability": "node scripts/test-crawler-observability.mjs",
     "test:crawler-adapters": "node scripts/test-crawler-adapters.mjs",

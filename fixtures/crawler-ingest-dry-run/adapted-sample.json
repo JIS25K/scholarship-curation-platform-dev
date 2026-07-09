@@ -1,0 +1,129 @@
+{
+  "adapter_note": "Adapted local collector/report output for crawler ingest dry-run only. No DB write, SQL, or crawler execution occurred.",
+  "adapter": {
+    "input_path": "fixtures\\crawler-ingest-dry-run\\sample-notices.json",
+    "requested_format": "auto",
+    "detected_format": "synthetic-compatible",
+    "generated_at": "2026-07-09T02:41:33.954Z",
+    "source_key_filter_or_fallback": "cau_002",
+    "input_items_seen": 3,
+    "matching_items_seen": 3,
+    "limit_applied": 3,
+    "output_items": 3,
+    "skipped": [],
+    "warnings": [],
+    "adapter_errors": [],
+    "db_write_executed": false,
+    "supabase_sql_executed": false,
+    "crawler_executed": false
+  },
+  "run": {
+    "run_key": "adapted-collector-output-953613fab63d",
+    "started_at": "2026-07-09T02:41:33.954Z",
+    "mode": "manual",
+    "parser_version": "ingest-dry-run-v1"
+  },
+  "sources": [
+    {
+      "source_key": "cau_002",
+      "items": [
+        {
+          "title": "Synthetic scholarship notice example with attachment",
+          "discovered_url": "https://example.edu/notices/synthetic-scholarship-1",
+          "canonical_url": "https://example.edu/notices/synthetic-scholarship-1",
+          "published_at": "2026-07-01",
+          "body_text": "Synthetic fixture body for ingest dry-run only. This item includes an attachment reference.",
+          "body_html": "<p>Synthetic fixture body for ingest dry-run only.</p>",
+          "body_quality": "synthetic",
+          "raw_list_text": null,
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "synthetic-example.pdf",
+              "source_url": "https://example.edu/files/synthetic-example.pdf",
+              "content_type": "application/pdf",
+              "alt": null,
+              "caption": null
+            }
+          ],
+          "warnings": [],
+          "metadata": {
+            "adapter_format": "synthetic-compatible",
+            "source_name": null,
+            "raw": {
+              "title": "Synthetic scholarship notice example with attachment",
+              "discovered_url": "https://example.edu/notices/synthetic-scholarship-1",
+              "canonical_url": "https://example.edu/notices/synthetic-scholarship-1",
+              "published_at": "2026-07-01",
+              "body_text": "Synthetic fixture body for ingest dry-run only. This item includes an attachment reference.",
+              "body_html": "<p>Synthetic fixture body for ingest dry-run only.</p>",
+              "body_quality": "synthetic",
+              "assets": [
+                "[truncated]"
+              ]
+            }
+          }
+        },
+        {
+          "title": "Synthetic scholarship notice example with empty body warning",
+          "discovered_url": "https://example.edu/notices/synthetic-scholarship-2",
+          "canonical_url": "https://example.edu/notices/synthetic-scholarship-2",
+          "published_at": "2026-07-02",
+          "body_text": "",
+          "body_html": "",
+          "body_quality": "empty",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "empty_body",
+            "missing_body_text"
+          ],
+          "metadata": {
+            "adapter_format": "synthetic-compatible",
+            "source_name": null,
+            "raw": {
+              "title": "Synthetic scholarship notice example with empty body warning",
+              "discovered_url": "https://example.edu/notices/synthetic-scholarship-2",
+              "canonical_url": "https://example.edu/notices/synthetic-scholarship-2",
+              "published_at": "2026-07-02",
+              "body_text": "",
+              "body_quality": "empty",
+              "warnings": [
+                "empty_body"
+              ]
+            }
+          }
+        },
+        {
+          "title": "Synthetic scholarship notice alias path",
+          "discovered_url": "https://example.edu/board/read?id=synthetic-scholarship-1",
+          "canonical_url": "https://example.edu/notices/synthetic-scholarship-1",
+          "published_at": "2026-07-01",
+          "body_text": "Synthetic alias occurrence for the first canonical notice.",
+          "body_html": "",
+          "body_quality": "synthetic",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "alias_occurrence"
+          ],
+          "metadata": {
+            "adapter_format": "synthetic-compatible",
+            "source_name": null,
+            "raw": {
+              "title": "Synthetic scholarship notice alias path",
+              "discovered_url": "https://example.edu/board/read?id=synthetic-scholarship-1",
+              "canonical_url": "https://example.edu/notices/synthetic-scholarship-1",
+              "published_at": "2026-07-01",
+              "body_text": "Synthetic alias occurrence for the first canonical notice.",
+              "body_quality": "synthetic",
+              "warnings": [
+                "alias_occurrence"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

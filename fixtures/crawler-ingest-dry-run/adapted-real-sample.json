@@ -1,0 +1,178 @@
+{
+  "adapter_note": "Adapted local collector/report output for crawler ingest dry-run only. No DB write, SQL, or crawler execution occurred.",
+  "adapter": {
+    "input_path": "exports\\notices\\diagnostics\\capability-audit-20260706-20260706-073155.json",
+    "requested_format": "auto",
+    "detected_format": "collector-report",
+    "generated_at": "2026-07-09T02:41:34.047Z",
+    "source_key_filter_or_fallback": "cau_univ_001",
+    "input_items_seen": 805,
+    "matching_items_seen": 5,
+    "limit_applied": 5,
+    "output_items": 5,
+    "skipped": [],
+    "warnings": [],
+    "adapter_errors": [],
+    "db_write_executed": false,
+    "supabase_sql_executed": false,
+    "crawler_executed": false
+  },
+  "run": {
+    "run_key": "adapted-collector-output-a6de0e1fb897",
+    "started_at": "2026-07-09T02:41:34.047Z",
+    "mode": "manual",
+    "parser_version": "ingest-dry-run-v1"
+  },
+  "sources": [
+    {
+      "source_key": "cau_univ_001",
+      "items": [
+        {
+          "title": "2026학년도 2학기 삼일장학회 희망/동행 장학생 선발 공고",
+          "discovered_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29987",
+          "canonical_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29987",
+          "published_at": "2026-07-05",
+          "body_text": "",
+          "body_html": "",
+          "body_quality": "empty",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "missing_body_text",
+            "audit_sample_notice"
+          ],
+          "metadata": {
+            "adapter_format": "collector-report:perSource.samples.notices",
+            "source_name": "중앙대 학생지원팀 통합 장학 공지",
+            "raw": {
+              "title": "2026학년도 2학기 삼일장학회 희망/동행 장학생 선발 공고",
+              "rawListText": "",
+              "listTitle": "2026학년도 2학기 삼일장학회 희망/동행 장학생 선발 공고",
+              "listTitleQuality": "missing",
+              "titleExtractionEvidence": "missing",
+              "noticeUrl": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29987",
+              "dateText": "2026.07.06",
+              "parsedDate": ""
+            }
+          }
+        },
+        {
+          "title": "(다빈치) 2026학년도 하계방학 교외 근로지 국가근로장학생 추가 모집",
+          "discovered_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29982",
+          "canonical_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29982",
+          "published_at": "2026-07-02",
+          "body_text": "",
+          "body_html": "",
+          "body_quality": "empty",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "missing_body_text",
+            "audit_sample_notice"
+          ],
+          "metadata": {
+            "adapter_format": "collector-report:perSource.samples.notices",
+            "source_name": "중앙대 학생지원팀 통합 장학 공지",
+            "raw": {
+              "title": "(다빈치) 2026학년도 하계방학 교외 근로지 국가근로장학생 추가 모집",
+              "rawListText": "",
+              "listTitle": "(다빈치) 2026학년도 하계방학 교외 근로지 국가근로장학생 추가 모집",
+              "listTitleQuality": "missing",
+              "titleExtractionEvidence": "missing",
+              "noticeUrl": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29982",
+              "dateText": "2026.07.03",
+              "parsedDate": ""
+            }
+          }
+        },
+        {
+          "title": "2026학년도 2학기 AI학업장려 학자금대출 관련 안내",
+          "discovered_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29981",
+          "canonical_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29981",
+          "published_at": "2026-07-02",
+          "body_text": "",
+          "body_html": "",
+          "body_quality": "empty",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "missing_body_text",
+            "audit_sample_notice"
+          ],
+          "metadata": {
+            "adapter_format": "collector-report:perSource.samples.notices",
+            "source_name": "중앙대 학생지원팀 통합 장학 공지",
+            "raw": {
+              "title": "2026학년도 2학기 AI학업장려 학자금대출 관련 안내",
+              "rawListText": "",
+              "listTitle": "2026학년도 2학기 AI학업장려 학자금대출 관련 안내",
+              "listTitleQuality": "missing",
+              "titleExtractionEvidence": "missing",
+              "noticeUrl": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29981",
+              "dateText": "2026.07.03",
+              "parsedDate": ""
+            }
+          }
+        },
+        {
+          "title": "(다빈치) 2026학년도 하계방학 다빈치캠퍼스 국가근로장학금(교내•교외근로) 추가 선발 안내",
+          "discovered_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29980",
+          "canonical_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29980",
+          "published_at": "2026-07-02",
+          "body_text": "",
+          "body_html": "",
+          "body_quality": "empty",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "missing_body_text",
+            "audit_sample_notice"
+          ],
+          "metadata": {
+            "adapter_format": "collector-report:perSource.samples.notices",
+            "source_name": "중앙대 학생지원팀 통합 장학 공지",
+            "raw": {
+              "title": "(다빈치) 2026학년도 하계방학 다빈치캠퍼스 국가근로장학금(교내•교외근로) 추가 선발 안내",
+              "rawListText": "",
+              "listTitle": "(다빈치) 2026학년도 하계방학 다빈치캠퍼스 국가근로장학금(교내•교외근로) 추가 선발 안내",
+              "listTitleQuality": "missing",
+              "titleExtractionEvidence": "missing",
+              "noticeUrl": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29980",
+              "dateText": "2026.07.03",
+              "parsedDate": ""
+            }
+          }
+        },
+        {
+          "title": "2026년 2학기 농촌출신대학생 학자금융자(무이자) 지원 안내",
+          "discovered_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29979",
+          "canonical_url": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29979",
+          "published_at": "2026-07-02",
+          "body_text": "",
+          "body_html": "",
+          "body_quality": "empty",
+          "raw_list_text": null,
+          "assets": [],
+          "warnings": [
+            "missing_body_text",
+            "audit_sample_notice"
+          ],
+          "metadata": {
+            "adapter_format": "collector-report:perSource.samples.notices",
+            "source_name": "중앙대 학생지원팀 통합 장학 공지",
+            "raw": {
+              "title": "2026년 2학기 농촌출신대학생 학자금융자(무이자) 지원 안내",
+              "rawListText": "",
+              "listTitle": "2026년 2학기 농촌출신대학생 학자금융자(무이자) 지원 안내",
+              "listTitleQuality": "missing",
+              "titleExtractionEvidence": "missing",
+              "noticeUrl": "https://www.cau.ac.kr/cms/FR_CON/BoardView.do?MENU_ID=100&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ=29979",
+              "dateText": "2026.07.03",
+              "parsedDate": ""
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
