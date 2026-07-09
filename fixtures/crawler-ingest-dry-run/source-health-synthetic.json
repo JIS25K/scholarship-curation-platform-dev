@@ -1,0 +1,108 @@
+{
+  "source_health": [
+    {
+      "source_key": "cau_002",
+      "run_quality": "healthy",
+      "safe_for_change_detection": true,
+      "safe_for_missing_detection": true,
+      "counts": {
+        "fetched_item_count": 8,
+        "matched_scholarship_notice_count": 8,
+        "output_item_count": 8,
+        "detail_fetch_success_count": 7,
+        "detail_fetch_failure_count": 0,
+        "empty_body_count": 1,
+        "short_body_count": 1,
+        "no_assets_count": 4,
+        "asset_extraction_count": 4,
+        "timeout_count": 0,
+        "http_error_count": 0,
+        "selector_mismatch_count": 0
+      },
+      "pagination_incomplete": false,
+      "blocked_or_captcha": false,
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "source_key": "yonsei_060",
+      "run_quality": "blocked",
+      "safe_for_change_detection": false,
+      "safe_for_missing_detection": false,
+      "counts": {
+        "fetched_item_count": 0,
+        "matched_scholarship_notice_count": 0,
+        "output_item_count": 0,
+        "detail_fetch_success_count": 0,
+        "detail_fetch_failure_count": 1,
+        "empty_body_count": 0,
+        "short_body_count": 0,
+        "no_assets_count": 1,
+        "asset_extraction_count": 0,
+        "timeout_count": 0,
+        "http_error_count": 1,
+        "selector_mismatch_count": 0
+      },
+      "pagination_incomplete": false,
+      "blocked_or_captcha": true,
+      "warnings": [
+        "blocked_403"
+      ],
+      "errors": [
+        "http_403"
+      ]
+    },
+    {
+      "source_key": "cau_001",
+      "run_quality": "pagination_incomplete",
+      "safe_for_change_detection": false,
+      "safe_for_missing_detection": false,
+      "counts": {
+        "fetched_item_count": 1,
+        "matched_scholarship_notice_count": 0,
+        "output_item_count": 0,
+        "detail_fetch_success_count": 0,
+        "detail_fetch_failure_count": 0,
+        "empty_body_count": 0,
+        "short_body_count": 0,
+        "no_assets_count": 0,
+        "asset_extraction_count": 0,
+        "timeout_count": 0,
+        "http_error_count": 0,
+        "selector_mismatch_count": 0
+      },
+      "pagination_incomplete": true,
+      "blocked_or_captcha": false,
+      "warnings": [
+        "pagination_incomplete"
+      ],
+      "errors": []
+    },
+    {
+      "source_key": "synthetic_degraded",
+      "run_quality": "degraded",
+      "safe_for_change_detection": false,
+      "safe_for_missing_detection": false,
+      "counts": {
+        "fetched_item_count": 3,
+        "matched_scholarship_notice_count": 0,
+        "output_item_count": 0,
+        "detail_fetch_success_count": 0,
+        "detail_fetch_failure_count": 3,
+        "empty_body_count": 0,
+        "short_body_count": 0,
+        "no_assets_count": 0,
+        "asset_extraction_count": 0,
+        "timeout_count": 0,
+        "http_error_count": 0,
+        "selector_mismatch_count": 1
+      },
+      "pagination_incomplete": false,
+      "blocked_or_captcha": false,
+      "warnings": [
+        "selector_mismatch_suspected"
+      ],
+      "errors": []
+    }
+  ]
+}

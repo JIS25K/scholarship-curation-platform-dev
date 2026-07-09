@@ -1,0 +1,197 @@
+{
+  "adapter_note": "Synthetic input for crawler pre-apply safety diagnostics and write-plan dry-run only.",
+  "adapter": {
+    "input_path": "fixtures/crawler-ingest-dry-run/pre-apply-safety-synthetic-input.json",
+    "requested_format": "synthetic-compatible",
+    "detected_format": "synthetic-compatible",
+    "generated_at": "2026-07-09T00:00:00.000Z",
+    "source_diagnostics": [
+      {
+        "source_key": "cau_002",
+        "crawled_count": 8,
+        "matched_count": 8,
+        "output_items": 8,
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "source_key": "yonsei_060",
+        "crawled_count": 2,
+        "matched_count": 0,
+        "output_items": 0,
+        "warnings": [
+          "blocked_403"
+        ],
+        "errors": [
+          "http_403"
+        ]
+      },
+      {
+        "source_key": "cau_001",
+        "crawled_count": 1,
+        "matched_count": 0,
+        "output_items": 0,
+        "warnings": [
+          "pagination_incomplete"
+        ],
+        "errors": []
+      }
+    ],
+    "db_write_executed": false,
+    "supabase_sql_executed": false,
+    "crawler_executed": false
+  },
+  "run": {
+    "run_key": "pre-apply-safety-synthetic",
+    "started_at": "2026-07-09T00:00:00.000Z",
+    "mode": "manual",
+    "parser_version": "pre-apply-safety-dry-run-v1"
+  },
+  "sources": [
+    {
+      "source_key": "cau_002",
+      "items": [
+        {
+          "title": "Pre-apply unchanged notice",
+          "discovered_url": "https://example.edu/pre-apply/unchanged",
+          "canonical_url": "https://example.edu/pre-apply/unchanged",
+          "published_at": "2026-07-01",
+          "body_text": "Previous body that remains identical in the current pre-apply synthetic fixture for unchanged detection.",
+          "body_quality": "full",
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "unchanged.pdf",
+              "source_url": "https://example.edu/files/unchanged.pdf"
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "title": "Pre-apply changed notice new title",
+          "discovered_url": "https://example.edu/pre-apply/changed",
+          "canonical_url": "https://example.edu/pre-apply/changed",
+          "published_at": "2026-07-02",
+          "body_text": "Current body changed enough to trigger content hash and body change diagnostics before any real write path.",
+          "body_quality": "short",
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "changed.pdf",
+              "source_url": "https://example.edu/files/changed-v2.pdf"
+            }
+          ],
+          "warnings": [
+            "short_body_text"
+          ]
+        },
+        {
+          "title": "Pre-apply URL alias candidate",
+          "discovered_url": "https://example.edu/board/read?id=alias-candidate",
+          "canonical_url": "https://example.edu/pre-apply/alias-canonical",
+          "published_at": "2026-07-06",
+          "body_text": "Synthetic alias candidate body with enough text to avoid quality review while preserving discovered URL provenance.",
+          "body_quality": "full",
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "alias.pdf",
+              "source_url": "https://example.edu/files/alias.pdf"
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "title": "Pre-apply URL alias candidate duplicate",
+          "discovered_url": "https://example.edu/board/legacy?id=alias-candidate",
+          "canonical_url": "https://example.edu/pre-apply/alias-canonical",
+          "published_at": "2026-07-06",
+          "body_text": "Synthetic alias duplicate body with enough text to show the same canonical notice can have multiple occurrences.",
+          "body_quality": "full",
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "alias.pdf",
+              "source_url": "https://example.edu/files/alias.pdf"
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "title": "Pre-apply shared board notice",
+          "discovered_url": "https://example.edu/shared-board/notice-1",
+          "canonical_url": "https://example.edu/shared-board/notice-1",
+          "published_at": "2026-07-07",
+          "body_text": "Shared board notice body long enough to avoid short body quality flags and prove cross-source provenance.",
+          "body_quality": "full",
+          "assets": [],
+          "warnings": [
+            "no_assets_found"
+          ]
+        },
+        {
+          "title": "Pre-apply same title date",
+          "discovered_url": "https://example.edu/pre-apply/title-date-a",
+          "canonical_url": "https://example.edu/pre-apply/title-date-a",
+          "published_at": "2026-07-08",
+          "body_text": "First same title date item with different URL for provenance diagnostics.",
+          "body_quality": "full",
+          "assets": [],
+          "warnings": [
+            "no_assets_found"
+          ]
+        },
+        {
+          "title": "Pre-apply same title date",
+          "discovered_url": "https://example.edu/pre-apply/title-date-b",
+          "canonical_url": "https://example.edu/pre-apply/title-date-b",
+          "published_at": "2026-07-08",
+          "body_text": "Second same title date item with different URL for provenance diagnostics.",
+          "body_quality": "full",
+          "assets": [],
+          "warnings": [
+            "no_assets_found"
+          ]
+        },
+        {
+          "title": "",
+          "discovered_url": "",
+          "canonical_url": "",
+          "published_at": "2026-07-09",
+          "body_text": "",
+          "body_quality": "empty",
+          "assets": [],
+          "warnings": [
+            "missing_required_fields",
+            "empty_body"
+          ]
+        }
+      ]
+    },
+    {
+      "source_key": "yonsei_060",
+      "items": [
+        {
+          "title": "Pre-apply shared board notice",
+          "discovered_url": "https://example.edu/shared-board/notice-1",
+          "canonical_url": "https://example.edu/shared-board/notice-1",
+          "published_at": "2026-07-07",
+          "body_text": "Shared board notice body repeated from a blocked source to verify source health blocks update planning.",
+          "body_quality": "full",
+          "assets": [],
+          "warnings": [
+            "blocked_source_sample"
+          ]
+        }
+      ]
+    },
+    {
+      "source_key": "cau_001",
+      "items": []
+    },
+    {
+      "source_key": "synthetic_degraded",
+      "items": []
+    }
+  ]
+}

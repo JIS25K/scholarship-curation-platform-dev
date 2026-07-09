@@ -1,0 +1,62 @@
+{
+  "adapter_note": "Synthetic current run fixture for pre-apply missing visibility dry-run only.",
+  "run": {
+    "run_key": "pre-apply-current-synthetic",
+    "started_at": "2026-07-09T00:00:00.000Z",
+    "mode": "manual",
+    "parser_version": "pre-apply-safety-dry-run-v1"
+  },
+  "sources": [
+    {
+      "source_key": "cau_002",
+      "items": [
+        {
+          "title": "Pre-apply unchanged notice",
+          "discovered_url": "https://example.edu/pre-apply/unchanged",
+          "canonical_url": "https://example.edu/pre-apply/unchanged",
+          "published_at": "2026-07-01",
+          "body_text": "Previous body that remains identical in the current pre-apply synthetic fixture for unchanged detection.",
+          "body_quality": "full",
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "unchanged.pdf",
+              "source_url": "https://example.edu/files/unchanged.pdf"
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "title": "Pre-apply changed notice new title",
+          "discovered_url": "https://example.edu/pre-apply/changed",
+          "canonical_url": "https://example.edu/pre-apply/changed",
+          "published_at": "2026-07-02",
+          "body_text": "Current body changed enough to trigger content hash and body change diagnostics before any real write path.",
+          "body_quality": "short",
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "changed.pdf",
+              "source_url": "https://example.edu/files/changed-v2.pdf"
+            }
+          ],
+          "warnings": [
+            "short_body_text"
+          ]
+        }
+      ]
+    },
+    {
+      "source_key": "yonsei_060",
+      "items": []
+    },
+    {
+      "source_key": "cau_001",
+      "items": []
+    },
+    {
+      "source_key": "synthetic_degraded",
+      "items": []
+    }
+  ]
+}

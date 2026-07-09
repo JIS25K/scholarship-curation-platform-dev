@@ -1,0 +1,97 @@
+{
+  "adapter_note": "Synthetic previous run fixture for pre-apply missing visibility and change detection dry-run only.",
+  "run": {
+    "run_key": "pre-apply-previous-synthetic",
+    "started_at": "2026-07-08T00:00:00.000Z",
+    "mode": "manual",
+    "parser_version": "pre-apply-safety-dry-run-v1"
+  },
+  "sources": [
+    {
+      "source_key": "cau_002",
+      "items": [
+        {
+          "title": "Pre-apply unchanged notice",
+          "discovered_url": "https://example.edu/pre-apply/unchanged",
+          "canonical_url": "https://example.edu/pre-apply/unchanged",
+          "published_at": "2026-07-01",
+          "body_text": "Previous body that remains identical in the current pre-apply synthetic fixture for unchanged detection.",
+          "body_quality": "full",
+          "assets": [
+            {
+              "asset_type": "attachment",
+              "filename": "unchanged.pdf",
+              "source_url": "https://example.edu/files/unchanged.pdf"
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "title": "Pre-apply changed notice old title",
+          "discovered_url": "https://example.edu/pre-apply/changed",
+          "canonical_url": "https://example.edu/pre-apply/changed",
+          "published_at": "2026-07-02",
+          "body_text": "Previous body that will change in the current fixture so content hash and body change flags appear.",
+          "body_quality": "full",
+          "assets": [],
+          "warnings": []
+        },
+        {
+          "title": "Pre-apply missing healthy notice",
+          "discovered_url": "https://example.edu/pre-apply/missing-healthy",
+          "canonical_url": "https://example.edu/pre-apply/missing-healthy",
+          "published_at": "2026-07-03",
+          "body_text": "Previous healthy source item that disappears in the current fixture and should be only potentially missing.",
+          "body_quality": "full",
+          "assets": [],
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_key": "yonsei_060",
+      "items": [
+        {
+          "title": "Pre-apply missing blocked notice",
+          "discovered_url": "https://example.edu/pre-apply/missing-blocked",
+          "canonical_url": "https://example.edu/pre-apply/missing-blocked",
+          "published_at": "2026-07-04",
+          "body_text": "Previous blocked source item that must never become a delete candidate while source health is blocked.",
+          "body_quality": "full",
+          "assets": [],
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_key": "cau_001",
+      "items": [
+        {
+          "title": "Pre-apply missing pagination notice",
+          "discovered_url": "https://example.edu/pre-apply/missing-pagination",
+          "canonical_url": "https://example.edu/pre-apply/missing-pagination",
+          "published_at": "2026-07-05",
+          "body_text": "Previous pagination-incomplete source item that must be blocked from deletion judgment.",
+          "body_quality": "full",
+          "assets": [],
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "source_key": "synthetic_degraded",
+      "items": [
+        {
+          "title": "Pre-apply missing degraded notice",
+          "discovered_url": "https://example.edu/pre-apply/missing-degraded",
+          "canonical_url": "https://example.edu/pre-apply/missing-degraded",
+          "published_at": "2026-07-06",
+          "body_text": "Previous degraded source item that must be treated as needs recheck rather than a deletion candidate.",
+          "body_quality": "full",
+          "assets": [],
+          "warnings": []
+        }
+      ]
+    }
+  ]
+}
