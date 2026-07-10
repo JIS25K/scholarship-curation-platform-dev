@@ -1,0 +1,462 @@
+{
+  "roadmap_phase": "Roadmap Phase 7 - Gate 1",
+  "result": "PASS",
+  "generated_at": "2026-07-10T00:00:00+09:00",
+  "latest_confirmed_pushed_commit_before_gate1": "f215f17c553024452ed0a87389e7aa1bad31710e",
+  "scope": {
+    "gate": "Phase 1~6 result consolidation + production readiness inventory",
+    "db_write_executed_during_gate1": false,
+    "raw_or_arbitrary_supabase_sql_executed": false,
+    "cleanup_sql_executed": false,
+    "production_main_supabase_accessed": false,
+    "new_crawl_executed": false,
+    "phase6_rerun_executed": false
+  },
+  "missing_expected_files": [],
+  "collective_conclusion": "Phase 1~6 validated that real crawler output can be planned, compared, converted, and guarded-applied into the normalized personal-dev ingest path with duplicate/orphan sanity checks. They did not prove national coverage completeness, deeper observation quality, review backlog policy, cleanup execution, or production/main readiness.",
+  "phases": [
+    {
+      "phase": "Roadmap Phase 1",
+      "result": "PASS",
+      "purpose": "Establish the normalized ingest/schema safety baseline used by later roadmap work.",
+      "validated": [
+        "Normalized ingest direction was sufficient for later guarded apply exercises.",
+        "Later Phase 3 and Phase 6 evidence shows the baseline supports notice, occurrence, target, asset, and keyword-match writes."
+      ],
+      "not_validated": [
+        "No standalone production readiness decision.",
+        "No national coverage completeness claim."
+      ],
+      "evidence_files": [
+        "docs/crawler-roadmap-phase3-real-source-mini-apply-result.md",
+        "docs/crawler-roadmap-phase6-guarded-batch-apply-result.md",
+        "scripts/apply-normalized-ingest-v2-guarded.mjs"
+      ],
+      "identifiers": {
+        "supporting_latest_commit_before_gate1": "f215f17c553024452ed0a87389e7aa1bad31710e"
+      },
+      "db_write_status": "No Gate 1 DB write. Phase 1 was treated as already PASS in the adopted roadmap state.",
+      "production_main_access_status": "No production/main access.",
+      "remaining_risk": "Production deployment readiness deferred to Phase 7 Gate 3."
+    },
+    {
+      "phase": "Roadmap Phase 2",
+      "result": "PASS",
+      "purpose": "Validate local planning and guarded candidate handling before DB-backed mini apply.",
+      "validated": [
+        "Local-only planning flow was sufficient to feed later read-only comparison and guarded apply work.",
+        "Scope controls carried forward into Phase 3, Phase 5, and Phase 6."
+      ],
+      "not_validated": [
+        "No full-output national coverage claim.",
+        "No production/main DB use."
+      ],
+      "evidence_files": [
+        "docs/crawler-roadmap-phase3-real-source-mini-apply-result.md",
+        "docs/crawler-roadmap-phase5-full-output-pre-apply-readonly-plan.md",
+        "fixtures/crawler-ingest-dry-run/roadmap-phase5-phase6-candidate-plan.json"
+      ],
+      "identifiers": {
+        "supporting_latest_commit_before_gate1": "f215f17c553024452ed0a87389e7aa1bad31710e"
+      },
+      "db_write_status": "No Gate 1 DB write. Phase 2 was treated as already PASS in the adopted roadmap state.",
+      "production_main_access_status": "No production/main access.",
+      "remaining_risk": "Broader source observation and review policy deferred to Phase 7 Gate 2 and Gate 3."
+    },
+    {
+      "phase": "Roadmap Phase 3",
+      "result": "PASS",
+      "purpose": "Prove a DB-backed real-source mini apply to personal-dev only.",
+      "validated": [
+        "A real crawler-output candidate could be selected only after source and source-target coverage were confirmed.",
+        "The guarded normalized ingest executor could write a real-source notice path to personal-dev.",
+        "No-assets alone was treated as a warning, not an automatic blocker."
+      ],
+      "not_validated": [
+        "Broad batch behavior.",
+        "National coverage completeness.",
+        "Same-turn live crawl matching reliability for the selected source."
+      ],
+      "evidence_files": [
+        "docs/crawler-roadmap-phase3-real-source-mini-apply-result.md",
+        "fixtures/crawler-ingest-dry-run/roadmap-phase3-db-backed-pass-candidate.json"
+      ],
+      "identifiers": {
+        "source_key": "yonsei_060",
+        "rehearsal_label": "roadmap-phase3-db-backed-mini-apply-20260710-102900",
+        "run_id": "e32af575-7aca-4164-a7c7-2c26c70973ed"
+      },
+      "db_write_status": "Phase 3 wrote to personal-dev DB before Gate 1; Gate 1 itself did not write.",
+      "production_main_access_status": "No production/main access.",
+      "remaining_risk": "Scale-up and full output planning carried to Phase 4-6."
+    },
+    {
+      "phase": "Roadmap Phase 4",
+      "result": "CONDITIONAL PASS",
+      "purpose": "Run a full source-inventory crawl dry-run without DB writes.",
+      "validated": [
+        "613 sources were covered by the dry-run inventory.",
+        "606 sources crawled at least one list item.",
+        "179 scholarship-matched notice items were produced locally."
+      ],
+      "not_validated": [
+        "Coverage completeness because CRAWL_MAX_ITEMS_PER_SOURCE=1.",
+        "Lifecycle/missing judgments for failure or zero-crawled sources.",
+        "False-negative rate across zero-match sources."
+      ],
+      "evidence_files": [
+        "docs/crawler-roadmap-phase4-full-crawl-dry-run-result.md",
+        "exports/notices/roadmap-phase4-full-crawl-dry-run/scholarship-notices-20260710.json",
+        "reports/roadmap-phase4-full-crawl-dry-run.summary.json"
+      ],
+      "identifiers": {
+        "source_coverage_count": 613,
+        "crawled_source_count": 606,
+        "matched_item_count": 179,
+        "explicit_failures": 2,
+        "zero_crawled_without_explicit_error": 5
+      },
+      "db_write_status": "No DB write.",
+      "production_main_access_status": "No production/main access.",
+      "remaining_risk": "Gate 2 must handle observation depth, zero-match source analysis, and source-health risk."
+    },
+    {
+      "phase": "Roadmap Phase 5",
+      "result": "PASS",
+      "purpose": "Classify the Phase 4 full output using read-only personal-dev comparison and prepare a bounded Phase 6 candidate plan.",
+      "validated": [
+        "The initial zero-candidate state was traced to missing personal-dev source metadata baseline, not output shape or source-key mismatch.",
+        "Metadata-only readiness remediation allowed the read-only comparison to classify candidates.",
+        "84 clean Phase 6 candidates were selected from 179 input items."
+      ],
+      "not_validated": [
+        "Review-only, duplicate-review, and quality-review items.",
+        "Production write readiness.",
+        "Coverage completeness."
+      ],
+      "evidence_files": [
+        "docs/crawler-roadmap-phase5-full-output-pre-apply-readonly-plan.md",
+        "fixtures/crawler-ingest-dry-run/roadmap-phase5-phase6-candidate-plan.json"
+      ],
+      "identifiers": {
+        "total_input_items": 179,
+        "clean_phase6_candidates": 84,
+        "excluded_or_review_only": 95,
+        "duplicate_review": 82,
+        "quality_review": 13,
+        "no_assets_total": 103,
+        "no_assets_among_phase6_candidates": 48
+      },
+      "db_write_status": "Read-only comparison plus metadata readiness remediation occurred before Gate 1; Gate 1 itself did not write.",
+      "production_main_access_status": "No production/main access.",
+      "remaining_risk": "Duplicate/review, quality-review, and no-assets quality policy carried to Gate 3."
+    },
+    {
+      "phase": "Roadmap Phase 4-5 funnel accountability",
+      "result": "CONDITIONAL PROCEED",
+      "purpose": "Explain the 613 -> 179 -> 84 funnel and determine whether clean84 is meaningful for guarded ingest validation.",
+      "validated": [
+        "84 candidates came from 84 distinct source keys.",
+        "Source-key concentration was not excessive for ingest-path validation.",
+        "The 84-candidate set is meaningful for mechanics validation, not completeness."
+      ],
+      "not_validated": [
+        "National coverage completeness.",
+        "Deeper pagination behavior.",
+        "All zero-match source reasons."
+      ],
+      "evidence_files": [
+        "docs/crawler-roadmap-phase4-5-funnel-accountability-report.md",
+        "fixtures/crawler-ingest-dry-run/roadmap-phase4-5-funnel-accountability.json"
+      ],
+      "identifiers": {
+        "canonical_source_count": 613,
+        "total_matched_items": 179,
+        "clean_phase6_candidates": 84,
+        "zero_match_sources": 434
+      },
+      "db_write_status": "No DB write.",
+      "production_main_access_status": "No production/main access.",
+      "remaining_risk": "Gate 2 coverage and false-negative analysis."
+    },
+    {
+      "phase": "Roadmap Phase 6",
+      "result": "PASS",
+      "purpose": "Apply only the clean84 candidate set to personal-dev through the guarded normalized ingest executor.",
+      "validated": [
+        "84 requested candidates applied successfully.",
+        "84 distinct source keys were represented.",
+        "Post-apply duplicate and orphan sanity checks passed.",
+        "Main relationship-table write paths were exercised."
+      ],
+      "not_validated": [
+        "Full 179 item apply.",
+        "Review-only, duplicate-review, unsafe, blocked, or quality-review items.",
+        "Production/main DB behavior.",
+        "National coverage completeness."
+      ],
+      "evidence_files": [
+        "docs/crawler-roadmap-phase6-guarded-batch-apply-result.md",
+        "fixtures/crawler-ingest-dry-run/roadmap-phase6-guarded-batch-apply-result.json",
+        "fixtures/crawler-ingest-dry-run/roadmap-phase6-clean84-apply-input.json"
+      ],
+      "identifiers": {
+        "rehearsal_label": "roadmap-phase6-guarded-batch-apply-20260710-clean84",
+        "run_id_count": 84,
+        "first_run_id": "b143088e-cc90-4e66-a4d9-4d248f86c9dc",
+        "last_run_id": "5aeba907-f49d-4bdc-a647-cbddaa826e15",
+        "candidate_count_requested": 84,
+        "candidate_count_applied": 84,
+        "candidate_count_skipped": 0,
+        "candidate_count_failed": 0,
+        "no_assets_among_applied": 48
+      },
+      "db_write_status": "Phase 6 wrote to personal-dev DB before Gate 1; Gate 1 itself did not write.",
+      "production_main_access_status": "No production/main access.",
+      "remaining_risk": "Coverage and operational readiness carried to Phase 7 Gate 2 and Gate 3."
+    }
+  ],
+  "capability_inventory": {
+    "validated": [
+      "canonical source inventory handling",
+      "source metadata baseline sync",
+      "source-target/org-unit readiness",
+      "normalized ingest input planning",
+      "guarded personal-dev DB apply",
+      "notice upsert path",
+      "URL alias path",
+      "occurrence path",
+      "notice target path",
+      "asset path",
+      "keyword match path",
+      "duplicate/orphan sanity checking",
+      "partial write traceability",
+      "report/fixture generation"
+    ],
+    "not_validated_or_partially_validated": [
+      "national coverage completeness not proven",
+      "deeper crawl not proven",
+      "source-level false negative rate unknown",
+      "434 zero-match sources unresolved",
+      "duplicate/review policy unresolved",
+      "quality-review policy unresolved",
+      "no_assets quality policy unresolved",
+      "cleanup/rollback execution not proven",
+      "aggregate batch run observability not fully designed",
+      "production deployment readiness not proven"
+    ]
+  },
+  "key_metrics": {
+    "source_level_funnel": {
+      "canonical_source_count": 613,
+      "sources_covered_by_phase4": 613,
+      "sources_crawled_at_least_one_item": 606,
+      "sources_with_explicit_failures": 2,
+      "http_error_sources": 1,
+      "timeout_or_abort_sources": 1,
+      "zero_crawled_sources": 7,
+      "zero_crawled_without_explicit_error": 5,
+      "sources_with_at_least_one_matched_item": 179,
+      "sources_with_zero_matched_items": 434,
+      "sources_contributing_phase6_candidates": 84,
+      "sources_with_matched_items_but_no_phase6_candidates": 95,
+      "crawled_sources_with_no_matched_items": 427
+    },
+    "item_level_funnel": {
+      "total_matched_items": 179,
+      "clean_phase6_candidates": 84,
+      "duplicate_review": 82,
+      "quality_review": 13,
+      "excluded_or_review_only": 95,
+      "no_assets_total": 103,
+      "no_assets_among_phase6_candidates": 48,
+      "blocked_by_schema": 0,
+      "blocked_by_quality_operations": 26,
+      "missing_source": 0,
+      "missing_source_target": 0,
+      "missing_org_unit": 0,
+      "new_candidates": 90,
+      "unchanged_candidates": 0,
+      "changed_candidates": 0
+    },
+    "phase4_coverage": {
+      "source_count": 613,
+      "crawled_count": 606,
+      "matched_item_count": 179,
+      "new_item_count": 179
+    },
+    "phase5_classification_summary": {
+      "total_input_items": 179,
+      "source_keys_count": 179,
+      "classifications": {
+        "duplicate_within_input": 82,
+        "needs_quality_review": 7,
+        "new_candidate": 90
+      },
+      "recommended_actions": {
+        "review_body_assets_and_source_health": 7,
+        "review_provenance_and_occurrence_policy": 82,
+        "review_write_plan_before_guarded_apply_design": 90
+      },
+      "new_candidates": 90,
+      "unchanged_candidates": 0,
+      "changed_candidates": 0,
+      "duplicate_review_candidates": 82,
+      "quality_review_candidates": 13,
+      "excluded_or_review_candidates": 95,
+      "phase6_batch_apply_candidates": 84
+    },
+    "phase5_write_plan_summary": {
+      "operations_total": 1248,
+      "operations_by_type": {
+        "insert_asset": 161,
+        "insert_keyword_match": 179,
+        "insert_notice": 179,
+        "insert_notice_target": 179,
+        "insert_occurrence": 179,
+        "insert_run": 179,
+        "insert_source_result": 179,
+        "skip_update_due_to_low_quality": 13
+      },
+      "blocked_operations": 26,
+      "blocked_reasons": {
+        "needs_quality_review": 26
+      },
+      "review_required_operations": 550,
+      "db_write_executed": false
+    },
+    "phase6_row_counts_by_table": {
+      "crawler_runs": 84,
+      "crawler_source_results": 84,
+      "crawler_notices": 84,
+      "crawler_notice_url_aliases": 84,
+      "crawler_notice_occurrences": 84,
+      "crawler_notice_targets": 84,
+      "crawler_notice_assets": 96,
+      "crawler_errors": 0,
+      "crawler_keyword_matches": 141
+    },
+    "phase6_post_apply_sanity_check": {
+      "ok": true,
+      "run_statuses": {
+        "succeeded": 84
+      },
+      "source_result_decisions": {
+        "succeeded": 84
+      },
+      "checks": {
+        "run_count_ok": true,
+        "run_status_ok": true,
+        "source_results_ok": true,
+        "notice_count_ok": true,
+        "occurrence_count_ok": true,
+        "target_count_ok": true,
+        "duplicate_notices_ok": true,
+        "duplicate_aliases_ok": true,
+        "duplicate_occurrences_ok": true,
+        "duplicate_targets_ok": true,
+        "duplicate_assets_ok": true,
+        "orphan_occurrences_ok": true,
+        "orphan_targets_ok": true,
+        "orphan_aliases_ok": true,
+        "orphan_assets_ok": true
+      }
+    },
+    "phase6_duplicate_check": {
+      "ok": true,
+      "duplicate_notices": [],
+      "duplicate_aliases": [],
+      "duplicate_occurrences": [],
+      "duplicate_targets": [],
+      "duplicate_assets": []
+    },
+    "phase6_orphan_check": {
+      "ok": true,
+      "orphan_occurrences_count": 0,
+      "orphan_targets_count": 0,
+      "orphan_aliases_count": 0,
+      "orphan_assets_count": 0
+    }
+  },
+  "risk_routing": {
+    "gate2": [
+      {
+        "risk": "CRAWL_MAX_ITEMS_PER_SOURCE=1",
+        "reason": "Phase 4 observed at most one list item per source, so pagination depth and older notice discovery remain unproven."
+      },
+      {
+        "risk": "434 zero-match sources",
+        "reason": "The available output cannot distinguish no recent scholarship notice from matcher or selector false negatives for every zero-match source."
+      },
+      {
+        "risk": "source-health / false negative risk",
+        "reason": "Two explicit failures, five zero-crawled/no-error sources, and 427 crawled-but-zero-match sources need source-health analysis."
+      },
+      {
+        "risk": "deeper dry-run necessity",
+        "reason": "Gate 2 should run or design deeper observation before any production completeness claim."
+      }
+    ],
+    "gate3": [
+      {
+        "risk": "duplicate/review 82",
+        "reason": "Shared-board and duplicate/provenance policy remains outside the clean84 apply."
+      },
+      {
+        "risk": "quality-review 13",
+        "reason": "Short body and extraction-quality cases remain excluded until quality policy is resolved."
+      },
+      {
+        "risk": "no_assets 48 applied candidates",
+        "reason": "No-assets alone was not an ingest blocker, but it remains a product-quality and review-readiness risk."
+      },
+      {
+        "risk": "cleanup/rollback procedure",
+        "reason": "Cleanup SQL was neither generated nor executed; rollback execution remains unproven."
+      },
+      {
+        "risk": "aggregate batch observability",
+        "reason": "Source-scoped run traceability was validated, but aggregate production batch monitoring still needs a Gate 3 decision."
+      },
+      {
+        "risk": "final production readiness decision",
+        "reason": "Coverage and operational risks must be closed or explicitly accepted before production/main use."
+      }
+    ]
+  },
+  "gate2_input_package": [
+    {
+      "file": "docs/crawler-roadmap-phase4-full-crawl-dry-run-result.md",
+      "use": "Primary Phase 4 dry-run result and source coverage summary."
+    },
+    {
+      "file": "exports/notices/roadmap-phase4-full-crawl-dry-run/scholarship-notices-20260710.json",
+      "use": "Raw local dry-run output for per-source and matched notice inspection."
+    },
+    {
+      "file": "reports/roadmap-phase4-full-crawl-dry-run.summary.json",
+      "use": "Machine summary of the Phase 4 dry-run."
+    },
+    {
+      "file": "docs/crawler-roadmap-phase4-5-funnel-accountability-report.md",
+      "use": "Human-readable source/item funnel and observation-risk analysis."
+    },
+    {
+      "file": "fixtures/crawler-ingest-dry-run/roadmap-phase4-5-funnel-accountability.json",
+      "use": "Machine-readable funnel metrics for Gate 2 analysis."
+    },
+    {
+      "file": "docs/crawler-roadmap-phase6-guarded-batch-apply-result.md",
+      "use": "Context for what ingest mechanics validated; not coverage proof."
+    },
+    {
+      "file": "fixtures/crawler-ingest-dry-run/roadmap-phase6-guarded-batch-apply-result.json",
+      "use": "Machine-readable Phase 6 apply result; context only."
+    }
+  ],
+  "decision": {
+    "gate1_can_close": true,
+    "phase7_gate2_can_begin_next": true,
+    "reason": "Required Phase 3-6 and Phase 4-5 evidence files are present and non-contradictory; unresolved risks are routed to Gate 2 or Gate 3."
+  }
+}
