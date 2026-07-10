@@ -1,0 +1,385 @@
+{
+  "generated_at": "2026-07-10T05:45:12.977Z",
+  "result": "CONDITIONAL PROCEED",
+  "safety": {
+    "db_write_executed": false,
+    "raw_or_arbitrary_supabase_sql_executed": false,
+    "cleanup_sql_executed": false,
+    "production_main_supabase_accessed": false,
+    "phase6_batch_apply_executed": false,
+    "full_crawl_rerun_executed": false
+  },
+  "inputs": {
+    "phase4_output": "exports/notices/roadmap-phase4-full-crawl-dry-run/scholarship-notices-20260710.json",
+    "phase5_candidate_plan": "fixtures/crawler-ingest-dry-run/roadmap-phase5-phase6-candidate-plan.json",
+    "phase5_source_diagnostics": "fixtures/crawler-ingest-dry-run/roadmap-phase5-source-baseline-diagnostics.json",
+    "phase4_report": "docs/crawler-roadmap-phase4-full-crawl-dry-run-result.md",
+    "phase5_report": "docs/crawler-roadmap-phase5-full-output-pre-apply-readonly-plan.md"
+  },
+  "source_level_funnel": {
+    "canonical_source_count": 613,
+    "sources_covered_by_phase4": 613,
+    "sources_crawled_at_least_one_item": 606,
+    "sources_with_explicit_failures": 2,
+    "http_error_sources": 1,
+    "timeout_or_abort_sources": 1,
+    "zero_crawled_sources": 7,
+    "zero_crawled_without_explicit_error": 5,
+    "sources_with_at_least_one_matched_item": 179,
+    "sources_with_zero_matched_items": 434,
+    "sources_contributing_phase6_candidates": 84,
+    "sources_with_matched_items_but_no_phase6_candidates": 95,
+    "crawled_sources_with_no_matched_items": 427
+  },
+  "item_level_funnel": {
+    "total_matched_items": 179,
+    "clean_phase6_candidates": 84,
+    "duplicate_review": 82,
+    "quality_review": 13,
+    "excluded_or_review_only": 95,
+    "no_assets_total": 103,
+    "no_assets_among_phase6_candidates": 48,
+    "blocked_by_schema": 0,
+    "blocked_by_quality_operations": 26,
+    "missing_source": 0,
+    "missing_source_target": 0,
+    "missing_org_unit": 0,
+    "new_candidates": 90,
+    "unchanged_candidates": 0,
+    "changed_candidates": 0
+  },
+  "concentration": {
+    "matched_top_5_count": 5,
+    "matched_top_5_percent": "2.8%",
+    "matched_top_10_count": 10,
+    "matched_top_10_percent": "5.6%",
+    "candidate_top_5_count": 5,
+    "candidate_top_5_percent": "6.0%",
+    "candidate_top_10_count": 10,
+    "candidate_top_10_percent": "11.9%",
+    "matched_by_source_top10": [
+      {
+        "key": "cau_002",
+        "count": 1
+      },
+      {
+        "key": "cau_010",
+        "count": 1
+      },
+      {
+        "key": "cau_020",
+        "count": 1
+      },
+      {
+        "key": "cau_026",
+        "count": 1
+      },
+      {
+        "key": "cau_041",
+        "count": 1
+      },
+      {
+        "key": "cau_042",
+        "count": 1
+      },
+      {
+        "key": "cau_043",
+        "count": 1
+      },
+      {
+        "key": "cau_044",
+        "count": 1
+      },
+      {
+        "key": "cau_045",
+        "count": 1
+      },
+      {
+        "key": "cau_046",
+        "count": 1
+      }
+    ],
+    "candidates_by_source_top10": [
+      {
+        "key": "cau_010",
+        "count": 1
+      },
+      {
+        "key": "cau_065",
+        "count": 1
+      },
+      {
+        "key": "cau_066",
+        "count": 1
+      },
+      {
+        "key": "cau_068",
+        "count": 1
+      },
+      {
+        "key": "cau_076",
+        "count": 1
+      },
+      {
+        "key": "cau_079",
+        "count": 1
+      },
+      {
+        "key": "cau_080",
+        "count": 1
+      },
+      {
+        "key": "cau_081",
+        "count": 1
+      },
+      {
+        "key": "ewha_004",
+        "count": 1
+      },
+      {
+        "key": "ewha_008",
+        "count": 1
+      }
+    ],
+    "matched_by_university": [
+      {
+        "key": "cau",
+        "count": 38
+      },
+      {
+        "key": "khu",
+        "count": 33
+      },
+      {
+        "key": "yonsei",
+        "count": 28
+      },
+      {
+        "key": "skku",
+        "count": 23
+      },
+      {
+        "key": "korea",
+        "count": 20
+      },
+      {
+        "key": "hanyang",
+        "count": 19
+      },
+      {
+        "key": "ewha",
+        "count": 9
+      },
+      {
+        "key": "uos",
+        "count": 5
+      },
+      {
+        "key": "hongik",
+        "count": 4
+      }
+    ],
+    "candidates_by_university": [
+      {
+        "key": "skku",
+        "count": 14
+      },
+      {
+        "key": "yonsei",
+        "count": 14
+      },
+      {
+        "key": "khu",
+        "count": 12
+      },
+      {
+        "key": "hanyang",
+        "count": 11
+      },
+      {
+        "key": "korea",
+        "count": 9
+      },
+      {
+        "key": "cau",
+        "count": 8
+      },
+      {
+        "key": "ewha",
+        "count": 7
+      },
+      {
+        "key": "uos",
+        "count": 5
+      },
+      {
+        "key": "hongik",
+        "count": 4
+      }
+    ]
+  },
+  "observation_performance_risk": {
+    "explicit_crawler_failure": 2,
+    "timeout_or_abort": 1,
+    "http_error": 1,
+    "zero_crawled_without_explicit_error": 5,
+    "crawled_but_no_scholarship_matched_item": 427,
+    "selector_or_config_mismatch_possible": 5,
+    "likely_no_recent_scholarship_notice": null,
+    "unknown_reason": 427,
+    "source_type_unsupported_or_not_meaningfully_parsed": 0,
+    "potential_false_negative_risk": 434,
+    "note": "The run observed at most one list item per source, so zero-match sources cannot be treated as proof that a source had no scholarship notice deeper in pagination.",
+    "zero_matched_by_parser": [
+      {
+        "key": "A_CONFIGURED_SELECTOR",
+        "count": 219
+      },
+      {
+        "key": "B_COMMON_BOARD",
+        "count": 163
+      },
+      {
+        "key": "C_HEURISTIC_ANCHOR",
+        "count": 37
+      },
+      {
+        "key": "ADAPTER:yonsei_uic",
+        "count": 4
+      },
+      {
+        "key": "ADAPTER:cau_artech",
+        "count": 1
+      },
+      {
+        "key": "ADAPTER:hanyang_is",
+        "count": 1
+      },
+      {
+        "key": "ADAPTER:korea_medicine",
+        "count": 1
+      },
+      {
+        "key": "ADAPTER:yonsei_communication",
+        "count": 1
+      }
+    ],
+    "matched_by_parser": [
+      {
+        "key": "B_COMMON_BOARD",
+        "count": 92
+      },
+      {
+        "key": "A_CONFIGURED_SELECTOR",
+        "count": 65
+      },
+      {
+        "key": "C_HEURISTIC_ANCHOR",
+        "count": 16
+      },
+      {
+        "key": "ADAPTER:cau_portal",
+        "count": 6
+      }
+    ]
+  },
+  "reduction_179_to_84": {
+    "total_reduced_out": 95,
+    "duplicate_review_candidates": 82,
+    "quality_review_candidates": 13,
+    "clean_new_candidates_not_selected": 6,
+    "blocked_quality_operations": 26,
+    "missing_required_field": 0,
+    "schema_issue": 0,
+    "missing_source": 0,
+    "missing_source_target": 0,
+    "missing_org_unit": 0,
+    "unchanged_candidates": 0,
+    "changed_candidates": 0,
+    "top_quality_flags": {
+      "short_body": 13
+    },
+    "top_provenance_flags": {
+      "cross_source_candidate": 91,
+      "duplicate_title_published_at_group": 91,
+      "duplicate_canonical_url_within_input": 82,
+      "duplicate_discovered_url_within_input": 82
+    }
+  },
+  "decision": {
+    "recommendation": "CONDITIONAL PROCEED",
+    "main_reason": "The 84 candidates are clean, source/target/org-unit ready, and distributed across 84 distinct source keys, so they are meaningful for guarded ingest-path validation; however, Phase 4's one-item-per-source observation and 434 zero-match sources leave coverage and false-negative risks for Phase 7/Post-Phase.",
+    "phase6_mechanics_valid": true,
+    "national_coverage_completeness_proven": false,
+    "blocking_risks_for_phase6": [],
+    "carry_forward_risks": [
+      "Phase 4 used CRAWL_MAX_ITEMS_PER_SOURCE=1, so pagination depth and older-notice discovery remain unproven.",
+      "434 of 613 sources produced zero matched scholarship items; 427 were crawled but no matched item was detected.",
+      "2 explicit failures and 5 zero-crawled/no-error sources must not be used for deletion or missing-notice judgments.",
+      "82 duplicate/review items and shared-board provenance require occurrence-policy review outside Phase 6 mechanics validation.",
+      "13 quality-review items, including short body cases, should remain excluded until extraction quality is improved.",
+      "103 no-assets items, including 48 clean candidates, are acceptable under the current policy but remain a product-quality tracking risk."
+    ]
+  },
+  "samples": {
+    "explicit_failures": [
+      {
+        "source_key": "cau_017",
+        "error": "HTTP 404"
+      },
+      {
+        "source_key": "cau_025",
+        "error": "This operation was aborted"
+      }
+    ],
+    "zero_crawled_without_error": [
+      {
+        "source_key": "hanyang_017",
+        "parser_strategy": "B_COMMON_BOARD",
+        "parser_recovered": false
+      },
+      {
+        "source_key": "khu_058",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false
+      },
+      {
+        "source_key": "khu_059",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false
+      },
+      {
+        "source_key": "khu_060",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false
+      },
+      {
+        "source_key": "khu_061",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false
+      }
+    ],
+    "matched_no_candidate_sample": [
+      "cau_002",
+      "cau_020",
+      "cau_026",
+      "cau_041",
+      "cau_042",
+      "cau_043",
+      "cau_044",
+      "cau_045",
+      "cau_046",
+      "cau_047",
+      "cau_048",
+      "cau_049",
+      "cau_050",
+      "cau_051",
+      "cau_052",
+      "cau_053",
+      "cau_054",
+      "cau_055",
+      "cau_056",
+      "cau_057"
+    ]
+  }
+}
