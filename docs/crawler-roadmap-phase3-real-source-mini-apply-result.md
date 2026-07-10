@@ -4,11 +4,16 @@
 
 Roadmap Phase 3 status: HOLD.
 
-Roadmap Phase 3 Real source mini apply did not execute because no candidate received PASS in the read-only gate. Under the updated no-assets policy, `no_assets` alone is not an automatic blocker. The remaining blocker is that personal-dev read-only DB comparison was attempted, but the guard rejected before any DB client could be created because `SUPABASE_URL` was not present in the current shell environment.
+Personal-dev read-only DB comparison executed successfully for the exact Roadmap Phase 3 candidate fixture. No mini apply executed because no candidate received PASS. Under the updated no-assets policy, `no_assets` alone was not treated as an automatic HOLD. The remaining blockers are:
+
+- both candidates are `blocked_by_schema`
+- both candidates have `missing_published_at`
+- both source-level diagnostics include `missing_db_source`
+- personal-dev DB comparison reports `db_check.missing_sources=2`
 
 ## Candidate Selection
 
-Limited real source output was generated from two previously supported public official sources:
+Limited real source output was generated earlier from two previously supported public official sources:
 
 ```text
 CRAWL_SOURCE_ID_ALLOWLIST=ewha_001,hongik_007
@@ -31,24 +36,18 @@ Crawler result:
 - full crawl executed: false
 - production/main Supabase accessed: false
 
-The output was adapted into:
+The exact candidate fixture remains:
 
 ```text
 fixtures/crawler-ingest-dry-run/roadmap-phase3-real-source-candidates.json
 ```
 
-Adapter safety flags:
-
-- `db_write_executed=false`
-- `supabase_sql_executed=false`
-- `crawler_executed=false`
-
 ## Candidate Status
 
-| Source key | Title | Canonical key | Body quality | Asset status | Source health | Source target coverage | Duplicate / DB comparison state | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `ewha_001` | `[공지] 2026학년도 2학기 교직원 이화나눔장학금 신청 안내 [기간연장 ~7.15.(수)]` | `ewha_001:url:863db3acd018ed830784` | body length 646, non-empty detail body | no assets, risk note only | partial, safe for change/missing detection | org unit `674` | read-only DB comparison not executed; local-only has `unknown_without_db_check` | HOLD |
-| `hongik_007` | `[2026-2학기 선발 기준 적용] 2026년 산업데이터공학과 교내 성적 장학금 내규 개편안` | `hongik_007:url:c497bce5b9553ead9d3b` | body length 308, non-empty detail body | no assets, risk note only | partial, safe for change/missing detection | org unit `1083` | read-only DB comparison not executed; local-only has `unknown_without_db_check` | HOLD |
+| Source key | Canonical key | Body quality | Asset status | DB comparison state | Status |
+| --- | --- | --- | --- | --- | --- |
+| `ewha_001` | `ewha_001:url:863db3acd018ed830784` | body length 646, non-empty detail body | no assets, risk note only | `blocked_by_schema`; `missing_published_at`; source diagnostic `missing_db_source`; DB match none | HOLD |
+| `hongik_007` | `hongik_007:url:c497bce5b9553ead9d3b` | body length 308, non-empty detail body | no assets, risk note only | `blocked_by_schema`; `missing_published_at`; source diagnostic `missing_db_source`; DB match none | HOLD |
 
 No candidate is PASS.
 
@@ -85,33 +84,65 @@ Safety flags:
 
 ## Personal-Dev Read-Only DB Comparison
 
-Command attempted:
+Command:
 
 ```text
 PERSONAL_DEV_SUPABASE_CONFIRM=1 node scripts/plan-crawler-pre-apply-safety-dry-run.mjs --input fixtures/crawler-ingest-dry-run/roadmap-phase3-real-source-candidates.json --check-db --yes-i-am-using-personal-dev-db --out reports/roadmap-phase3-real-source-candidates.readonly-db.verify.json --json
 ```
 
-Result:
+Report:
 
 ```text
-Refusing DB check: SUPABASE_URL is required.
+reports/roadmap-phase3-real-source-candidates.readonly-db.verify.json
 ```
 
-Read-only DB comparison status:
+Summary:
 
-- `db_check.executed=false`
-- DB writes executed: false
-- Supabase SQL executed: false
+| Metric | Value |
+| --- | ---: |
+| mode | read_only_db_check |
+| ok | true |
+| sources | 2 |
+| input_items | 2 |
+| new_candidates | 0 |
+| needs_quality_review | 0 |
+| blocked_by_schema | 2 |
+| unknown_without_db_check | 0 |
+| no_assets | 2 |
+| missing_sources | 0 |
+| missing_source_targets | 0 |
+| db_check.executed | true |
+| db_check.sources_checked | 2 |
+| db_check.source_targets_checked | 0 |
+| db_check.notices_checked | 0 |
+| db_check.missing_sources | 2 |
+| write_plan_operations | 12 |
+| blocked_write_plan_operations | 0 |
+| review_required_operations | 6 |
+
+Safety flags:
+
+- `db_write_executed=false`
+- `supabase_sql_executed=false`
+- `crawler_executed=false`
 - Supabase URL or service role key printed: false
 - `.env` contents read or printed: false
 
-Because DB comparison did not execute, duplicate state, alias state, existing notice state, occurrence state, and asset state are not known for the exact candidate set.
+## No-Assets Policy
+
+`no_assets` was not treated as an automatic blocker.
+
+Both candidates remained HOLD despite the updated policy because the read-only gate produced non-asset blockers:
+
+- `missing_published_at`
+- `blocked_by_schema`
+- `missing_db_source`
 
 ## Mini Apply
 
 Mini apply executed: false.
 
-No guarded apply command was run because both candidates remained HOLD due to DB comparison uncertainty.
+No guarded apply command was run because both candidates remained HOLD.
 
 DB write scope:
 
@@ -130,31 +161,32 @@ Cleanup / rollback identifiers:
   - `ewha_001:url:863db3acd018ed830784`
   - `hongik_007:url:c497bce5b9553ead9d3b`
 
-## Risks And Follow-Up
-
-High-impact blockers:
-
-- personal-dev read-only DB comparison could not run because `SUPABASE_URL` was missing from the current shell environment.
-- both real source candidates have useful detail body text and no assets; asset absence is now recorded as a risk note, not an automatic blocker.
-- local-only write plan remains blocked because DB state is unknown.
-
-Follow-up:
-
-- rerun the personal-dev read-only DB comparison in a shell with the required personal-dev Supabase environment variables already set.
-- if read-only DB comparison is clean, these two candidates can be reconsidered for PASS under the updated no-assets policy.
-- do not run mini apply until at least one real source candidate receives PASS.
-
 ## Roadmap Phase 4
 
 Roadmap Phase 4 Full crawl dry-run can begin next: no.
 
-Roadmap Phase 3 remains HOLD, so Roadmap Phase 4 should not begin yet.
+Roadmap Phase 3 remains HOLD, so Roadmap Phase 4 did not run.
+
+## Risks And Follow-Up
+
+High-impact blockers:
+
+- The personal-dev DB comparison succeeded, but both crawler source keys are absent from personal-dev `crawler_notice_sources` according to the read-only comparison.
+- Both candidate notices are missing `published_at`, which triggers the current schema gate.
+- Because no candidate passed, there is no safe mini-apply set in this phase.
+
+Follow-up:
+
+- Resolve personal-dev source registration or source-key alignment before reconsidering mini apply.
+- Decide whether undated public notices should remain blocked by schema, receive an explicit fallback publication date policy, or be excluded from apply candidates.
+- Re-run the same read-only gate after the source/schema blockers are resolved.
 
 ## Safety Confirmation
 
 - Supabase SQL executed: false
 - cleanup SQL executed: false
-- full crawl executed: false
+- DB write executed: false
+- full crawl dry-run executed: false
 - production/main Supabase accessed: false
 - batch apply executed: false
 - delete/deprecate/inactive/lifecycle judgment operations executed: false
