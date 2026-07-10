@@ -1,0 +1,928 @@
+{
+  "roadmap_phase": "Phase 6",
+  "result": "PASS",
+  "generated_at": "2026-07-10T06:10:12.125Z",
+  "input_candidate_plan_path": "fixtures/crawler-ingest-dry-run/roadmap-phase5-phase6-candidate-plan.json",
+  "apply_input_path": "fixtures/crawler-ingest-dry-run/roadmap-phase6-clean84-apply-input.json",
+  "rehearsal_label": "roadmap-phase6-guarded-batch-apply-20260710-clean84",
+  "candidate_count_requested": 84,
+  "candidate_count_applied": 84,
+  "candidate_count_skipped": 0,
+  "candidate_count_failed": 0,
+  "distinct_source_key_count_applied": 84,
+  "no_assets_among_applied": 48,
+  "run_id_summary": {
+    "count": 84,
+    "first": "b143088e-cc90-4e66-a4d9-4d248f86c9dc",
+    "last": "5aeba907-f49d-4bdc-a647-cbddaa826e15"
+  },
+  "run_ids": [
+    "b143088e-cc90-4e66-a4d9-4d248f86c9dc",
+    "11bf16f1-5c77-494c-a8bc-a7a1e522a689",
+    "cce4e128-c078-459c-90d0-4faacd9fc244",
+    "6ac1ffea-c906-4d8a-a210-d02b0da004bc",
+    "1e968359-1324-47dd-ac77-66d24a38b9de",
+    "ff85fafe-adea-45e3-a3e7-3f4ce5e7727a",
+    "1492b713-90af-488c-9e8d-1c91cf703d89",
+    "e37a4b24-9f3b-4e9b-ab70-3eaac0383211",
+    "95bbd854-4a0f-442f-8dc0-c8b19b2c874f",
+    "c49a5240-c090-4513-aace-7ce974c6c806",
+    "5d4c1ba7-84a3-4362-8f75-1d283edfe766",
+    "a9dfe5a3-3d30-4ac3-9c5a-568722dfd713",
+    "5ce42b5d-976b-4612-949e-77274c775ae3",
+    "5da3aaea-d72e-4eea-aae7-11e9a4a528b3",
+    "40afcaa7-bc9d-4324-a25b-10ba24b6c955",
+    "a7552ae6-4363-49cf-acd8-58efee553eb7",
+    "ed598c00-7724-459a-b26b-13e903faaa30",
+    "864575fa-ff9d-4ba7-ae06-9137e2dd0bb2",
+    "f64fa82f-e9e4-4a82-8f9b-1d70440eba06",
+    "8c2c95e2-fed7-4a85-9763-de14d6cff767",
+    "36577b3d-f22b-4d2b-976d-f9b5944f022f",
+    "e5c4b879-41e9-4ac3-854b-0bd5af059775",
+    "84e401dd-9862-444e-b564-c85e92d70c39",
+    "f44753e1-873f-4a23-8094-8b9ed836e6b6",
+    "9209e32c-9e70-4499-b12f-68f75e9fa418",
+    "61935b1d-3769-4c04-bcca-e90d5e1e8b98",
+    "73f7fef0-c9ee-4cf8-9388-54dd5fa6461a",
+    "0c56b1e9-ebbe-44b3-8b9f-0b759e1583ae",
+    "3894dbc7-0b6e-4f8d-8fab-1fb365742474",
+    "c6f5bac0-844c-42b1-8051-628986a73455",
+    "a2839760-4963-4ddf-b1e8-49f582268f64",
+    "79b9b058-de96-4ecf-b3b8-126f7fa58302",
+    "7f14a946-66d1-4816-b84a-e045dff45706",
+    "9e3d1683-c759-4c9d-9b7b-c4a60b409129",
+    "8c07a331-86ff-4460-b87e-bc0dba06fe3f",
+    "c8f9058d-827f-4420-9262-9fbcabc8273d",
+    "be2d33f9-075f-498c-937e-b18853351395",
+    "36e1c7c8-157d-4c4b-911d-f76e3fe11907",
+    "a5332039-f0dd-4741-9722-10973d426095",
+    "f95764b7-7869-4b75-ae44-ea45f99d508c",
+    "d3133b87-ac40-4fe9-b4b7-7634593ab552",
+    "30564b4c-4588-4403-9966-144fc1aded62",
+    "53110190-7aee-4376-9fb8-4bab697c3bce",
+    "133ebda2-64fc-45e7-9157-502cdc73b211",
+    "680b87e0-a151-4c8b-8a6f-7e8fdb33838a",
+    "072098ef-ef3c-4e9a-92c6-4b34364ff7fe",
+    "362ca29a-427d-47c8-a74a-8d78914f182b",
+    "03db8926-358f-4c1c-bc0b-529a12933c03",
+    "ff91f863-5be5-49c7-9a13-ad0ccb6c3545",
+    "dfe112cd-90b1-4d9d-82cc-e05a1147e1e8",
+    "6dbb3d26-3cd8-4fa7-9c20-145a53f13432",
+    "6c018263-0c62-4ccb-8447-83138e5303a5",
+    "5e5e0803-6640-4e58-a3be-1605966e25eb",
+    "2739af51-d224-4dcc-a51e-1acca09ccbc6",
+    "05fc75ff-962c-49fc-bcfb-55e9917612ad",
+    "16b43075-5ac8-4efd-9567-3a5552ab322b",
+    "5b435707-e341-461a-a7f9-054c2ddb9598",
+    "07ee25e4-f99d-4a64-a12e-4eae6c5c0815",
+    "2c6a2557-516c-4b0a-9a8e-0dcab351b6f9",
+    "7324b99a-9435-4904-80ca-39dfeb0b5416",
+    "c75b752d-8049-4940-bfab-278c31b2f453",
+    "03569001-2e31-4c7c-b9d7-d7baa9039d92",
+    "ed3db06e-e208-4a12-9f0a-512c20c79d60",
+    "3a6523a0-a4dd-4ea2-abc8-0629b5d28cfb",
+    "d672fbf1-db49-46e3-b0b7-dc152cf01b6f",
+    "1b5c3022-dc87-41c3-a08d-9a4ac136d7a9",
+    "2bcd95d1-78c2-461f-806f-ef1f1b18831d",
+    "be873617-b557-49b1-931d-91abe3ed1fbe",
+    "4e70bbca-178f-4012-9448-c2e56399287d",
+    "8affed6b-fe8b-4de5-89af-a3951e07d1f4",
+    "effc6c51-e233-485d-9100-06bb373e4345",
+    "c047079e-ed8b-4c77-914f-0bc4c6250248",
+    "3c0c514a-680c-41c5-a7b2-a2dccda7fabc",
+    "7c1e1f31-cd8d-4764-8c97-472cae26e867",
+    "e9100295-eeda-4e9e-822a-005ab3397bfd",
+    "cb76999b-9a73-4035-868b-892b7eceff81",
+    "c9ac2741-dbb2-4afc-830e-564cfa7c93fc",
+    "4fc6c08d-dbab-4f9c-95ac-5ebb7a94ba63",
+    "21f023a5-d2df-4b92-a493-c0148a3c056c",
+    "ecfcfc9a-6d10-4617-a8fe-8dbe9aa6893d",
+    "635581b2-6f2f-4700-b217-42555e476794",
+    "f2ac1c48-2221-422e-a338-98ecc0334b7b",
+    "56692b81-d270-49a4-bbbb-18c301b3de47",
+    "5aeba907-f49d-4bdc-a647-cbddaa826e15"
+  ],
+  "row_counts_by_table": {
+    "crawler_runs": 84,
+    "crawler_source_results": 84,
+    "crawler_notices": 84,
+    "crawler_notice_url_aliases": 84,
+    "crawler_notice_occurrences": 84,
+    "crawler_notice_targets": 84,
+    "crawler_notice_assets": 96,
+    "crawler_errors": 0,
+    "crawler_keyword_matches": 141
+  },
+  "created_vs_updated_counts": {
+    "executor_returned_created_vs_updated": false,
+    "inferred_from_preflight": {
+      "crawler_notices_created": 84,
+      "crawler_notices_updated": 0,
+      "note": "The executor uses upsert and does not return insert-vs-update action per row. Pre-apply read-only classification reported 84 new candidates, 0 unchanged, 0 changed; final sanity found 84 canonical notice rows."
+    }
+  },
+  "pre_apply_validation": {
+    "candidate_count_requested": 84,
+    "distinct_source_key_count": 84,
+    "missing_source": 0,
+    "missing_source_target": 0,
+    "missing_org_unit": 0,
+    "excluded_review_selected": 0,
+    "duplicate_review_selected": 0,
+    "unsafe_selected": 0,
+    "blocked_selected": 0,
+    "no_assets_among_selected": 48,
+    "local_plan_only_failed": 0,
+    "readonly_db_ok": true,
+    "readonly_db_summary": {
+      "sources": 84,
+      "input_items": 84,
+      "new_candidates": 84,
+      "unchanged_candidates": 0,
+      "changed_candidates": 0,
+      "url_alias_candidates": 0,
+      "duplicates_within_input": 0,
+      "needs_quality_review": 0,
+      "blocked_by_missing_required_field": 0,
+      "blocked_by_schema": 0,
+      "unknown_without_db_check": 0,
+      "missing_sources": 0,
+      "missing_source_targets": 0,
+      "empty_body": 0,
+      "short_body": 0,
+      "no_assets": 48,
+      "source_health_unsafe": 0,
+      "potentially_missing": 0,
+      "needs_recheck": 0,
+      "do_not_mark_deleted": 0,
+      "write_plan_operations": 600,
+      "blocked_write_plan_operations": 0,
+      "review_required_operations": 252,
+      "item_warnings": 0,
+      "item_errors": 0
+    }
+  },
+  "post_apply_sanity_check": {
+    "ok": true,
+    "run_statuses": {
+      "succeeded": 84
+    },
+    "source_result_decisions": {
+      "succeeded": 84
+    },
+    "checks": {
+      "run_count_ok": true,
+      "run_status_ok": true,
+      "source_results_ok": true,
+      "notice_count_ok": true,
+      "occurrence_count_ok": true,
+      "target_count_ok": true,
+      "duplicate_notices_ok": true,
+      "duplicate_aliases_ok": true,
+      "duplicate_occurrences_ok": true,
+      "duplicate_targets_ok": true,
+      "duplicate_assets_ok": true,
+      "orphan_occurrences_ok": true,
+      "orphan_targets_ok": true,
+      "orphan_aliases_ok": true,
+      "orphan_assets_ok": true
+    }
+  },
+  "duplicate_check": {
+    "ok": true,
+    "duplicate_notices": [],
+    "duplicate_aliases": [],
+    "duplicate_occurrences": [],
+    "duplicate_targets": [],
+    "duplicate_assets": []
+  },
+  "orphan_check": {
+    "ok": true,
+    "orphan_occurrences_count": 0,
+    "orphan_targets_count": 0,
+    "orphan_aliases_count": 0,
+    "orphan_assets_count": 0
+  },
+  "partial_write_risk": {
+    "risk": "low",
+    "assessment": "All 84 source-scoped guarded apply runs succeeded, every run is traceable by run_id and rehearsal_label, and post-apply duplicate/orphan checks passed.",
+    "failed_scope": []
+  },
+  "cleanup_rollback_identifiers": {
+    "rehearsal_label": "roadmap-phase6-guarded-batch-apply-20260710-clean84",
+    "run_ids": [
+      "b143088e-cc90-4e66-a4d9-4d248f86c9dc",
+      "11bf16f1-5c77-494c-a8bc-a7a1e522a689",
+      "cce4e128-c078-459c-90d0-4faacd9fc244",
+      "6ac1ffea-c906-4d8a-a210-d02b0da004bc",
+      "1e968359-1324-47dd-ac77-66d24a38b9de",
+      "ff85fafe-adea-45e3-a3e7-3f4ce5e7727a",
+      "1492b713-90af-488c-9e8d-1c91cf703d89",
+      "e37a4b24-9f3b-4e9b-ab70-3eaac0383211",
+      "95bbd854-4a0f-442f-8dc0-c8b19b2c874f",
+      "c49a5240-c090-4513-aace-7ce974c6c806",
+      "5d4c1ba7-84a3-4362-8f75-1d283edfe766",
+      "a9dfe5a3-3d30-4ac3-9c5a-568722dfd713",
+      "5ce42b5d-976b-4612-949e-77274c775ae3",
+      "5da3aaea-d72e-4eea-aae7-11e9a4a528b3",
+      "40afcaa7-bc9d-4324-a25b-10ba24b6c955",
+      "a7552ae6-4363-49cf-acd8-58efee553eb7",
+      "ed598c00-7724-459a-b26b-13e903faaa30",
+      "864575fa-ff9d-4ba7-ae06-9137e2dd0bb2",
+      "f64fa82f-e9e4-4a82-8f9b-1d70440eba06",
+      "8c2c95e2-fed7-4a85-9763-de14d6cff767",
+      "36577b3d-f22b-4d2b-976d-f9b5944f022f",
+      "e5c4b879-41e9-4ac3-854b-0bd5af059775",
+      "84e401dd-9862-444e-b564-c85e92d70c39",
+      "f44753e1-873f-4a23-8094-8b9ed836e6b6",
+      "9209e32c-9e70-4499-b12f-68f75e9fa418",
+      "61935b1d-3769-4c04-bcca-e90d5e1e8b98",
+      "73f7fef0-c9ee-4cf8-9388-54dd5fa6461a",
+      "0c56b1e9-ebbe-44b3-8b9f-0b759e1583ae",
+      "3894dbc7-0b6e-4f8d-8fab-1fb365742474",
+      "c6f5bac0-844c-42b1-8051-628986a73455",
+      "a2839760-4963-4ddf-b1e8-49f582268f64",
+      "79b9b058-de96-4ecf-b3b8-126f7fa58302",
+      "7f14a946-66d1-4816-b84a-e045dff45706",
+      "9e3d1683-c759-4c9d-9b7b-c4a60b409129",
+      "8c07a331-86ff-4460-b87e-bc0dba06fe3f",
+      "c8f9058d-827f-4420-9262-9fbcabc8273d",
+      "be2d33f9-075f-498c-937e-b18853351395",
+      "36e1c7c8-157d-4c4b-911d-f76e3fe11907",
+      "a5332039-f0dd-4741-9722-10973d426095",
+      "f95764b7-7869-4b75-ae44-ea45f99d508c",
+      "d3133b87-ac40-4fe9-b4b7-7634593ab552",
+      "30564b4c-4588-4403-9966-144fc1aded62",
+      "53110190-7aee-4376-9fb8-4bab697c3bce",
+      "133ebda2-64fc-45e7-9157-502cdc73b211",
+      "680b87e0-a151-4c8b-8a6f-7e8fdb33838a",
+      "072098ef-ef3c-4e9a-92c6-4b34364ff7fe",
+      "362ca29a-427d-47c8-a74a-8d78914f182b",
+      "03db8926-358f-4c1c-bc0b-529a12933c03",
+      "ff91f863-5be5-49c7-9a13-ad0ccb6c3545",
+      "dfe112cd-90b1-4d9d-82cc-e05a1147e1e8",
+      "6dbb3d26-3cd8-4fa7-9c20-145a53f13432",
+      "6c018263-0c62-4ccb-8447-83138e5303a5",
+      "5e5e0803-6640-4e58-a3be-1605966e25eb",
+      "2739af51-d224-4dcc-a51e-1acca09ccbc6",
+      "05fc75ff-962c-49fc-bcfb-55e9917612ad",
+      "16b43075-5ac8-4efd-9567-3a5552ab322b",
+      "5b435707-e341-461a-a7f9-054c2ddb9598",
+      "07ee25e4-f99d-4a64-a12e-4eae6c5c0815",
+      "2c6a2557-516c-4b0a-9a8e-0dcab351b6f9",
+      "7324b99a-9435-4904-80ca-39dfeb0b5416",
+      "c75b752d-8049-4940-bfab-278c31b2f453",
+      "03569001-2e31-4c7c-b9d7-d7baa9039d92",
+      "ed3db06e-e208-4a12-9f0a-512c20c79d60",
+      "3a6523a0-a4dd-4ea2-abc8-0629b5d28cfb",
+      "d672fbf1-db49-46e3-b0b7-dc152cf01b6f",
+      "1b5c3022-dc87-41c3-a08d-9a4ac136d7a9",
+      "2bcd95d1-78c2-461f-806f-ef1f1b18831d",
+      "be873617-b557-49b1-931d-91abe3ed1fbe",
+      "4e70bbca-178f-4012-9448-c2e56399287d",
+      "8affed6b-fe8b-4de5-89af-a3951e07d1f4",
+      "effc6c51-e233-485d-9100-06bb373e4345",
+      "c047079e-ed8b-4c77-914f-0bc4c6250248",
+      "3c0c514a-680c-41c5-a7b2-a2dccda7fabc",
+      "7c1e1f31-cd8d-4764-8c97-472cae26e867",
+      "e9100295-eeda-4e9e-822a-005ab3397bfd",
+      "cb76999b-9a73-4035-868b-892b7eceff81",
+      "c9ac2741-dbb2-4afc-830e-564cfa7c93fc",
+      "4fc6c08d-dbab-4f9c-95ac-5ebb7a94ba63",
+      "21f023a5-d2df-4b92-a493-c0148a3c056c",
+      "ecfcfc9a-6d10-4617-a8fe-8dbe9aa6893d",
+      "635581b2-6f2f-4700-b217-42555e476794",
+      "f2ac1c48-2221-422e-a338-98ecc0334b7b",
+      "56692b81-d270-49a4-bbbb-18c301b3de47",
+      "5aeba907-f49d-4bdc-a647-cbddaa826e15"
+    ],
+    "canonical_keys": [
+      "cau_010:url:04d1476e9e9013172740",
+      "cau_065:url:bd38a512f055feb1c602",
+      "cau_066:url:0833e4584c2a6c0cf739",
+      "cau_068:url:d38d8fd2d3bb8ed7e792",
+      "cau_076:url:b6fec21a48017bec7147",
+      "cau_079:url:60282bbe3d7c37f78955",
+      "cau_080:url:d576e8c0c5325c2e1166",
+      "cau_081:url:0d7988f28ce2c30a037c",
+      "ewha_004:url:94582130e91c46ed6524",
+      "ewha_008:url:c69b0be64d85f5fd49ff",
+      "ewha_012:url:40f13ff3947016c3d001",
+      "ewha_013:url:2e0e438ec38ce5f4d64b",
+      "ewha_019:url:cecde7ea334110cd77cf",
+      "ewha_033:url:c7d1a8c106bd51cffafb",
+      "ewha_050:url:c565477064e8d09739e3",
+      "hanyang_004:url:023da03921651f64b3e0",
+      "hanyang_008:url:83dbc85b8e5b69aa913a",
+      "hanyang_011:url:548352dcd7f9f00f89c2",
+      "hanyang_013:url:6cc0dfe909689112558b",
+      "hanyang_015:url:8bdbd998c595a2ac56c8",
+      "hanyang_020:url:540489e52faf19a2e09c",
+      "hanyang_024:url:0ebef8866730de8e2cdf",
+      "hanyang_025:url:db94ff0223112d6046e5",
+      "hanyang_040:url:a3188842a29bfadb4788",
+      "hanyang_061:url:e0e80f2c1ae9600c6d81",
+      "hanyang_063:url:cbbf1ee3bc8a78df5c88",
+      "hongik_006:url:63ee8bfa6091f508fd31",
+      "hongik_018:url:a3db0969376d1e989bc8",
+      "hongik_035:url:cbf50c9b708dfd778351",
+      "hongik_037:url:f1ee92cbfc7140f597d6",
+      "khu_011:url:d9269ded3f3018988283",
+      "khu_013:url:fd6555a447f086d63613",
+      "khu_014:url:0c2fd9bae12c32d16c0b",
+      "khu_020:url:0679c191de6907be59cf",
+      "khu_036:url:96a14c0365f2c9d08c35",
+      "khu_055:url:59f2ed0247461206edd2",
+      "khu_062:url:be73f01587b977703f9b",
+      "khu_064:url:3217b908cda0e2753fcc",
+      "khu_076:url:0c9f976ff870ca03fee1",
+      "khu_077:url:19d21f088876a9d6307a",
+      "khu_080:url:d3709586dfeea53a96e3",
+      "khu_082:url:05eec1f63c67f829985b",
+      "korea_010:url:ec4b01abefa7def81ba1",
+      "korea_011:url:2b7fe13a6f9a40306bba",
+      "korea_018:url:858c2740be9592f9f452",
+      "korea_030:url:6025e7d5cb80dd506ec0",
+      "korea_031:url:a450136493facda710c9",
+      "korea_032:url:ef14e4301ddbc94d2fc4",
+      "korea_034:url:17d03f0a20d901730d06",
+      "korea_036:url:737cea49dd70d8e85ed7",
+      "korea_037:url:36b7d21f68efcbc6607d",
+      "skku_004:url:7bee236a3bf4478624fe",
+      "skku_006:url:de23cd9c4bd003638d09",
+      "skku_012:url:66ea08261d208f5b6dd7",
+      "skku_013:url:fc773f2723e65fdc7731",
+      "skku_016:url:1762144a846a9870a1e9",
+      "skku_017:url:a2cae3bf8d20a4c1d77a",
+      "skku_018:url:210f4ee39831e164cbd3",
+      "skku_020:url:5021dc1108c48f908d3b",
+      "skku_021:url:186dfc583294324330d2",
+      "skku_030:url:e93b5e9c7e3164f0d76a",
+      "skku_039:url:d3a55a06e29af91341db",
+      "skku_047:url:6405c8b611a3da7fb224",
+      "skku_054:url:33105d0f72264ace44b0",
+      "skku_055:url:ff70b8fcfa5d503743da",
+      "uos_005:url:5763b6cc483ecddddd02",
+      "uos_007:url:edf3ad47cae6dbd19141",
+      "uos_008:url:20094fa0a4388d2d832d",
+      "uos_014:url:fb09bb53d63a617a5755",
+      "uos_019:url:71068617c0f2a643e038",
+      "yonsei_002:url:cf8a4eaaf9498373cdb3",
+      "yonsei_004:url:413a909d9204e213d090",
+      "yonsei_005:url:17e2887dcdb52ca71463",
+      "yonsei_016:url:9b0bf5cd460083ae5163",
+      "yonsei_022:url:278eac0dffecbe1bbe73",
+      "yonsei_023:url:2b78cae42fe158f3368b",
+      "yonsei_027:url:e1508f60220c3a59f774",
+      "yonsei_031:url:94ba361a73dcad0d4636",
+      "yonsei_035:url:3dd464f7720aa9dcc40a",
+      "yonsei_057:url:163b2c653921c019c9b2",
+      "yonsei_064:url:8091992d3142fedf31fc",
+      "yonsei_065:url:47e4dc2de660c2b28156",
+      "yonsei_068:url:93959809be4ab00bb46f",
+      "yonsei_071:url:08c96a1a697b6850e020"
+    ],
+    "source_keys": [
+      "cau_010",
+      "cau_065",
+      "cau_066",
+      "cau_068",
+      "cau_076",
+      "cau_079",
+      "cau_080",
+      "cau_081",
+      "ewha_004",
+      "ewha_008",
+      "ewha_012",
+      "ewha_013",
+      "ewha_019",
+      "ewha_033",
+      "ewha_050",
+      "hanyang_004",
+      "hanyang_008",
+      "hanyang_011",
+      "hanyang_013",
+      "hanyang_015",
+      "hanyang_020",
+      "hanyang_024",
+      "hanyang_025",
+      "hanyang_040",
+      "hanyang_061",
+      "hanyang_063",
+      "hongik_006",
+      "hongik_018",
+      "hongik_035",
+      "hongik_037",
+      "khu_011",
+      "khu_013",
+      "khu_014",
+      "khu_020",
+      "khu_036",
+      "khu_055",
+      "khu_062",
+      "khu_064",
+      "khu_076",
+      "khu_077",
+      "khu_080",
+      "khu_082",
+      "korea_010",
+      "korea_011",
+      "korea_018",
+      "korea_030",
+      "korea_031",
+      "korea_032",
+      "korea_034",
+      "korea_036",
+      "korea_037",
+      "skku_004",
+      "skku_006",
+      "skku_012",
+      "skku_013",
+      "skku_016",
+      "skku_017",
+      "skku_018",
+      "skku_020",
+      "skku_021",
+      "skku_030",
+      "skku_039",
+      "skku_047",
+      "skku_054",
+      "skku_055",
+      "uos_005",
+      "uos_007",
+      "uos_008",
+      "uos_014",
+      "uos_019",
+      "yonsei_002",
+      "yonsei_004",
+      "yonsei_005",
+      "yonsei_016",
+      "yonsei_022",
+      "yonsei_023",
+      "yonsei_027",
+      "yonsei_031",
+      "yonsei_035",
+      "yonsei_057",
+      "yonsei_064",
+      "yonsei_065",
+      "yonsei_068",
+      "yonsei_071"
+    ]
+  },
+  "cleanup_sql_generated": false,
+  "cleanup_sql_executed": false,
+  "raw_or_arbitrary_supabase_sql_executed": false,
+  "production_main_supabase_accessed": false,
+  "phase7_can_begin_next": true,
+  "carry_forward_risks": [
+    "CRAWL_MAX_ITEMS_PER_SOURCE=1 shallow observation remains a coverage risk.",
+    "434 zero-match sources remain unresolved observation-performance risk.",
+    "National coverage completeness is not proven by Phase 6.",
+    "Duplicate/review and quality-review backlog remains outside this clean84 apply.",
+    "no_assets quality risk remains for 48 applied candidates."
+  ],
+  "applied_scope": [
+    {
+      "source_key": "cau_010",
+      "canonical_key": "cau_010:url:04d1476e9e9013172740",
+      "no_assets": false
+    },
+    {
+      "source_key": "cau_065",
+      "canonical_key": "cau_065:url:bd38a512f055feb1c602",
+      "no_assets": true
+    },
+    {
+      "source_key": "cau_066",
+      "canonical_key": "cau_066:url:0833e4584c2a6c0cf739",
+      "no_assets": true
+    },
+    {
+      "source_key": "cau_068",
+      "canonical_key": "cau_068:url:d38d8fd2d3bb8ed7e792",
+      "no_assets": true
+    },
+    {
+      "source_key": "cau_076",
+      "canonical_key": "cau_076:url:b6fec21a48017bec7147",
+      "no_assets": false
+    },
+    {
+      "source_key": "cau_079",
+      "canonical_key": "cau_079:url:60282bbe3d7c37f78955",
+      "no_assets": false
+    },
+    {
+      "source_key": "cau_080",
+      "canonical_key": "cau_080:url:d576e8c0c5325c2e1166",
+      "no_assets": true
+    },
+    {
+      "source_key": "cau_081",
+      "canonical_key": "cau_081:url:0d7988f28ce2c30a037c",
+      "no_assets": true
+    },
+    {
+      "source_key": "ewha_004",
+      "canonical_key": "ewha_004:url:94582130e91c46ed6524",
+      "no_assets": false
+    },
+    {
+      "source_key": "ewha_008",
+      "canonical_key": "ewha_008:url:c69b0be64d85f5fd49ff",
+      "no_assets": true
+    },
+    {
+      "source_key": "ewha_012",
+      "canonical_key": "ewha_012:url:40f13ff3947016c3d001",
+      "no_assets": false
+    },
+    {
+      "source_key": "ewha_013",
+      "canonical_key": "ewha_013:url:2e0e438ec38ce5f4d64b",
+      "no_assets": true
+    },
+    {
+      "source_key": "ewha_019",
+      "canonical_key": "ewha_019:url:cecde7ea334110cd77cf",
+      "no_assets": true
+    },
+    {
+      "source_key": "ewha_033",
+      "canonical_key": "ewha_033:url:c7d1a8c106bd51cffafb",
+      "no_assets": false
+    },
+    {
+      "source_key": "ewha_050",
+      "canonical_key": "ewha_050:url:c565477064e8d09739e3",
+      "no_assets": true
+    },
+    {
+      "source_key": "hanyang_004",
+      "canonical_key": "hanyang_004:url:023da03921651f64b3e0",
+      "no_assets": false
+    },
+    {
+      "source_key": "hanyang_008",
+      "canonical_key": "hanyang_008:url:83dbc85b8e5b69aa913a",
+      "no_assets": false
+    },
+    {
+      "source_key": "hanyang_011",
+      "canonical_key": "hanyang_011:url:548352dcd7f9f00f89c2",
+      "no_assets": false
+    },
+    {
+      "source_key": "hanyang_013",
+      "canonical_key": "hanyang_013:url:6cc0dfe909689112558b",
+      "no_assets": false
+    },
+    {
+      "source_key": "hanyang_015",
+      "canonical_key": "hanyang_015:url:8bdbd998c595a2ac56c8",
+      "no_assets": false
+    },
+    {
+      "source_key": "hanyang_020",
+      "canonical_key": "hanyang_020:url:540489e52faf19a2e09c",
+      "no_assets": true
+    },
+    {
+      "source_key": "hanyang_024",
+      "canonical_key": "hanyang_024:url:0ebef8866730de8e2cdf",
+      "no_assets": true
+    },
+    {
+      "source_key": "hanyang_025",
+      "canonical_key": "hanyang_025:url:db94ff0223112d6046e5",
+      "no_assets": true
+    },
+    {
+      "source_key": "hanyang_040",
+      "canonical_key": "hanyang_040:url:a3188842a29bfadb4788",
+      "no_assets": false
+    },
+    {
+      "source_key": "hanyang_061",
+      "canonical_key": "hanyang_061:url:e0e80f2c1ae9600c6d81",
+      "no_assets": true
+    },
+    {
+      "source_key": "hanyang_063",
+      "canonical_key": "hanyang_063:url:cbbf1ee3bc8a78df5c88",
+      "no_assets": true
+    },
+    {
+      "source_key": "hongik_006",
+      "canonical_key": "hongik_006:url:63ee8bfa6091f508fd31",
+      "no_assets": true
+    },
+    {
+      "source_key": "hongik_018",
+      "canonical_key": "hongik_018:url:a3db0969376d1e989bc8",
+      "no_assets": false
+    },
+    {
+      "source_key": "hongik_035",
+      "canonical_key": "hongik_035:url:cbf50c9b708dfd778351",
+      "no_assets": true
+    },
+    {
+      "source_key": "hongik_037",
+      "canonical_key": "hongik_037:url:f1ee92cbfc7140f597d6",
+      "no_assets": true
+    },
+    {
+      "source_key": "khu_011",
+      "canonical_key": "khu_011:url:d9269ded3f3018988283",
+      "no_assets": true
+    },
+    {
+      "source_key": "khu_013",
+      "canonical_key": "khu_013:url:fd6555a447f086d63613",
+      "no_assets": false
+    },
+    {
+      "source_key": "khu_014",
+      "canonical_key": "khu_014:url:0c2fd9bae12c32d16c0b",
+      "no_assets": false
+    },
+    {
+      "source_key": "khu_020",
+      "canonical_key": "khu_020:url:0679c191de6907be59cf",
+      "no_assets": false
+    },
+    {
+      "source_key": "khu_036",
+      "canonical_key": "khu_036:url:96a14c0365f2c9d08c35",
+      "no_assets": false
+    },
+    {
+      "source_key": "khu_055",
+      "canonical_key": "khu_055:url:59f2ed0247461206edd2",
+      "no_assets": true
+    },
+    {
+      "source_key": "khu_062",
+      "canonical_key": "khu_062:url:be73f01587b977703f9b",
+      "no_assets": false
+    },
+    {
+      "source_key": "khu_064",
+      "canonical_key": "khu_064:url:3217b908cda0e2753fcc",
+      "no_assets": false
+    },
+    {
+      "source_key": "khu_076",
+      "canonical_key": "khu_076:url:0c9f976ff870ca03fee1",
+      "no_assets": false
+    },
+    {
+      "source_key": "khu_077",
+      "canonical_key": "khu_077:url:19d21f088876a9d6307a",
+      "no_assets": false
+    },
+    {
+      "source_key": "khu_080",
+      "canonical_key": "khu_080:url:d3709586dfeea53a96e3",
+      "no_assets": false
+    },
+    {
+      "source_key": "khu_082",
+      "canonical_key": "khu_082:url:05eec1f63c67f829985b",
+      "no_assets": false
+    },
+    {
+      "source_key": "korea_010",
+      "canonical_key": "korea_010:url:ec4b01abefa7def81ba1",
+      "no_assets": true
+    },
+    {
+      "source_key": "korea_011",
+      "canonical_key": "korea_011:url:2b7fe13a6f9a40306bba",
+      "no_assets": true
+    },
+    {
+      "source_key": "korea_018",
+      "canonical_key": "korea_018:url:858c2740be9592f9f452",
+      "no_assets": true
+    },
+    {
+      "source_key": "korea_030",
+      "canonical_key": "korea_030:url:6025e7d5cb80dd506ec0",
+      "no_assets": true
+    },
+    {
+      "source_key": "korea_031",
+      "canonical_key": "korea_031:url:a450136493facda710c9",
+      "no_assets": false
+    },
+    {
+      "source_key": "korea_032",
+      "canonical_key": "korea_032:url:ef14e4301ddbc94d2fc4",
+      "no_assets": false
+    },
+    {
+      "source_key": "korea_034",
+      "canonical_key": "korea_034:url:17d03f0a20d901730d06",
+      "no_assets": true
+    },
+    {
+      "source_key": "korea_036",
+      "canonical_key": "korea_036:url:737cea49dd70d8e85ed7",
+      "no_assets": true
+    },
+    {
+      "source_key": "korea_037",
+      "canonical_key": "korea_037:url:36b7d21f68efcbc6607d",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_004",
+      "canonical_key": "skku_004:url:7bee236a3bf4478624fe",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_006",
+      "canonical_key": "skku_006:url:de23cd9c4bd003638d09",
+      "no_assets": false
+    },
+    {
+      "source_key": "skku_012",
+      "canonical_key": "skku_012:url:66ea08261d208f5b6dd7",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_013",
+      "canonical_key": "skku_013:url:fc773f2723e65fdc7731",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_016",
+      "canonical_key": "skku_016:url:1762144a846a9870a1e9",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_017",
+      "canonical_key": "skku_017:url:a2cae3bf8d20a4c1d77a",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_018",
+      "canonical_key": "skku_018:url:210f4ee39831e164cbd3",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_020",
+      "canonical_key": "skku_020:url:5021dc1108c48f908d3b",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_021",
+      "canonical_key": "skku_021:url:186dfc583294324330d2",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_030",
+      "canonical_key": "skku_030:url:e93b5e9c7e3164f0d76a",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_039",
+      "canonical_key": "skku_039:url:d3a55a06e29af91341db",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_047",
+      "canonical_key": "skku_047:url:6405c8b611a3da7fb224",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_054",
+      "canonical_key": "skku_054:url:33105d0f72264ace44b0",
+      "no_assets": true
+    },
+    {
+      "source_key": "skku_055",
+      "canonical_key": "skku_055:url:ff70b8fcfa5d503743da",
+      "no_assets": true
+    },
+    {
+      "source_key": "uos_005",
+      "canonical_key": "uos_005:url:5763b6cc483ecddddd02",
+      "no_assets": false
+    },
+    {
+      "source_key": "uos_007",
+      "canonical_key": "uos_007:url:edf3ad47cae6dbd19141",
+      "no_assets": false
+    },
+    {
+      "source_key": "uos_008",
+      "canonical_key": "uos_008:url:20094fa0a4388d2d832d",
+      "no_assets": false
+    },
+    {
+      "source_key": "uos_014",
+      "canonical_key": "uos_014:url:fb09bb53d63a617a5755",
+      "no_assets": false
+    },
+    {
+      "source_key": "uos_019",
+      "canonical_key": "uos_019:url:71068617c0f2a643e038",
+      "no_assets": false
+    },
+    {
+      "source_key": "yonsei_002",
+      "canonical_key": "yonsei_002:url:cf8a4eaaf9498373cdb3",
+      "no_assets": true
+    },
+    {
+      "source_key": "yonsei_004",
+      "canonical_key": "yonsei_004:url:413a909d9204e213d090",
+      "no_assets": true
+    },
+    {
+      "source_key": "yonsei_005",
+      "canonical_key": "yonsei_005:url:17e2887dcdb52ca71463",
+      "no_assets": true
+    },
+    {
+      "source_key": "yonsei_016",
+      "canonical_key": "yonsei_016:url:9b0bf5cd460083ae5163",
+      "no_assets": false
+    },
+    {
+      "source_key": "yonsei_022",
+      "canonical_key": "yonsei_022:url:278eac0dffecbe1bbe73",
+      "no_assets": false
+    },
+    {
+      "source_key": "yonsei_023",
+      "canonical_key": "yonsei_023:url:2b78cae42fe158f3368b",
+      "no_assets": true
+    },
+    {
+      "source_key": "yonsei_027",
+      "canonical_key": "yonsei_027:url:e1508f60220c3a59f774",
+      "no_assets": true
+    },
+    {
+      "source_key": "yonsei_031",
+      "canonical_key": "yonsei_031:url:94ba361a73dcad0d4636",
+      "no_assets": false
+    },
+    {
+      "source_key": "yonsei_035",
+      "canonical_key": "yonsei_035:url:3dd464f7720aa9dcc40a",
+      "no_assets": false
+    },
+    {
+      "source_key": "yonsei_057",
+      "canonical_key": "yonsei_057:url:163b2c653921c019c9b2",
+      "no_assets": true
+    },
+    {
+      "source_key": "yonsei_064",
+      "canonical_key": "yonsei_064:url:8091992d3142fedf31fc",
+      "no_assets": true
+    },
+    {
+      "source_key": "yonsei_065",
+      "canonical_key": "yonsei_065:url:47e4dc2de660c2b28156",
+      "no_assets": true
+    },
+    {
+      "source_key": "yonsei_068",
+      "canonical_key": "yonsei_068:url:93959809be4ab00bb46f",
+      "no_assets": false
+    },
+    {
+      "source_key": "yonsei_071",
+      "canonical_key": "yonsei_071:url:08c96a1a697b6850e020",
+      "no_assets": true
+    }
+  ],
+  "safety": {
+    "db_write_executed": true,
+    "raw_or_arbitrary_supabase_sql_executed": false,
+    "cleanup_sql_generated": false,
+    "cleanup_sql_executed": false,
+    "production_main_supabase_accessed": false,
+    "candidate_plan_modified_to_inflate_count": false,
+    "all_179_items_applied": false,
+    "review_or_excluded_items_applied": false
+  },
+  "commands_run": [
+    "git status --branch --short",
+    "git log -1 --oneline",
+    "node --check scripts/apply-normalized-ingest-v2-guarded.mjs",
+    "node --check scripts/plan-crawler-pre-apply-safety-dry-run.mjs",
+    "node --check work/build-phase6-clean84-input.mjs",
+    "node work/build-phase6-clean84-input.mjs",
+    "node work/phase6-local-preflight.mjs",
+    "Git Bash source env bridge; node scripts/plan-crawler-pre-apply-safety-dry-run.mjs --input fixtures/crawler-ingest-dry-run/roadmap-phase6-clean84-apply-input.json --check-db --yes-i-am-using-personal-dev-db --out reports/roadmap-phase6-readonly-preflight.json",
+    "Git Bash source env bridge; node work/phase6-guarded-batch-apply.mjs",
+    "Git Bash source env bridge; node work/phase6-post-apply-sanity.mjs"
+  ]
+}
