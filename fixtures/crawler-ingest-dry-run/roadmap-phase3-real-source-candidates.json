@@ -1,0 +1,113 @@
+{
+  "adapter_note": "Adapted local collector/report output for crawler ingest dry-run only. No DB write, SQL, or crawler execution occurred.",
+  "adapter": {
+    "input_path": "exports\\notices\\roadmap-phase3-candidate\\scholarship-notices-latest.json",
+    "requested_format": "auto",
+    "detected_format": "collector-report",
+    "generated_at": "2026-07-10T00:38:25.265Z",
+    "source_key_filter_or_fallback": null,
+    "input_items_seen": 2,
+    "matching_items_seen": 2,
+    "limit_applied": 2,
+    "output_items": 2,
+    "skipped": [],
+    "warnings": [],
+    "adapter_errors": [],
+    "source_diagnostics": [],
+    "db_write_executed": false,
+    "supabase_sql_executed": false,
+    "crawler_executed": false
+  },
+  "run": {
+    "run_key": "adapted-collector-output-8b1788253e4e",
+    "started_at": "2026-07-10T00:38:25.265Z",
+    "mode": "manual",
+    "parser_version": "ingest-dry-run-v1"
+  },
+  "sources": [
+    {
+      "source_key": "ewha_001",
+      "items": [
+        {
+          "title": "[공지] 2026학년도 2학기 교직원 이화나눔장학금 신청 안내 [기간연장 ~7.15.(수)]",
+          "discovered_url": "https://nursing.ewha.ac.kr/nursing/intro/nursing-undergraduate-news.do?mode=view&articleNo=783164&article.offset=0&articleLimit=10",
+          "canonical_url": "https://nursing.ewha.ac.kr/nursing/intro/nursing-undergraduate-news.do?mode=view&articleNo=783164&article.offset=0&articleLimit=10",
+          "published_at": "",
+          "body_text": "2026학년도 2학기 교직원 이화나눔장학금 신청 안내가. 신청자격 1) 2026학년도 2학기 간호대학 소속 학부 정규등록 예정자 2) 직전학기 성적 2.00이상(4.30만점) 3) 가정형편이 어려운 학생(가계곤란자 우선 선정)나. 장학금액/지급방식: 등록금전액/고지서감면다. 신청기간: 2026. 7. 15.(수) 23:59 (기한엄수)라. 신청방법: 간호대학 이메일(nursing@ewha.ac.kr)로 제출 라. 제출서류 1) 장학금 지급신청서 1부(붙임) 2) 2025년 지방세 세목별 과세증명서 부, 모 각 1부 * 지역: 전국자치단체 / 세목: 토지, 주택, 건축물에 한함(주민세, 자동차세 등 기재된 서류 접수 불가) * 재산세 없는 경우:“과세사실 없음”기재된 서류 제출 3) 건강보험증 사본(또는 건강보험자격확인서) 및 건강보험료 납부확인서(2026년 1~6월) 부, 모 각 1부 * 건강보험증 사본에 부, 모가 기재되어야 함 * 1개의 건강보험증에 부,모가 등록되어 있지 않은 경우 '건강보험료납부확인서'로 각각 납부확인 필요 4) 주민등록등본 1부(가족관계가 모두 나타나지 않는 경우 가족관계증명서 추가 제출) 5) 기타 가계곤란 증빙서류(해당자에 한함): 부채증명원 등 * 부채증명원은 최근 1달 이내 금융기관에서 발급한 서류만 유효함",
+          "body_html": "",
+          "body_quality": "adapted",
+          "raw_list_text": "공지 [공지] 2026학년도 2학기 교직원 이화나눔장학금 신청 안내 [기간연장 ~7.15.(수)] 공지 조회수 1050 간호대학 관리자 26.06.19 첨부파일 1050 간호대학 관리자 2026-06-19 첨부파일",
+          "assets": [],
+          "warnings": [],
+          "metadata": {
+            "adapter_format": "collector-report:newNotices",
+            "source_name": "이화여대 간호학부",
+            "raw": {
+              "sourceId": "ewha_001",
+              "universitySlug": "ewha",
+              "universityId": "8",
+              "collegeId": "127",
+              "departmentId": "463",
+              "collegeName": "",
+              "departmentName": "간호학부",
+              "sourceLevel": "department",
+              "sourceName": "이화여대 간호학부",
+              "listUrl": "https://nursing.ewha.ac.kr/nursing/intro/nursing-undergraduate-news.do",
+              "noticeUrl": "https://nursing.ewha.ac.kr/nursing/intro/nursing-undergraduate-news.do?mode=view&articleNo=783164&article.offset=0&articleLimit=10",
+              "title": "[공지] 2026학년도 2학기 교직원 이화나눔장학금 신청 안내 [기간연장 ~7.15.(수)]",
+              "listTitle": "[공지] 2026학년도 2학기 교직원 이화나눔장학금 신청 안내 [기간연장 ~7.15.(수)]",
+              "rawListText": "공지 [공지] 2026학년도 2학기 교직원 이화나눔장학금 신청 안내 [기간연장 ~7.15.(수)] 공지 조회수 1050 간호대학 관리자 26.06.19 첨부파일 1050 간호대학 관리자 2026-06-19 첨부파일",
+              "listTitleQuality": "clean",
+              "titleExtractionEvidence": "title_selector:a[href]",
+              "dateText": "첨부파일",
+              "parsedDate": "",
+              "boardEvidence": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "hongik_007",
+      "items": [
+        {
+          "title": "[2026-2학기 선발 기준 적용] 2026년 산업데이터공학과 교내 성적 장학금 내규 개편안",
+          "discovered_url": "https://ie.hongik.ac.kr/ie/0401.do?mode=view&articleNo=148285&article.offset=0&articleLimit=10",
+          "canonical_url": "https://ie.hongik.ac.kr/ie/0401.do?mode=view&articleNo=148285&article.offset=0&articleLimit=10",
+          "published_at": "",
+          "body_text": "2026년 2월 5일부터 적용되는 산업데이터공학과 교내 성적장학금 학과 기준입니다.2026년 개편된 내규 참고 바랍니다.(본 내규는 2026-2학기 교내 성적 장학금 선발 기준부터 적용됩니다.)*2026-1학기 기준 사회봉사시간은 15시간 이상 인정 -> 10시간 이상 인정으로 적용 변경되었습니다.*학술 활동 점수 인정 가능 여부는 사전에 지도 교수에게 문의할 것.※ 학부생은 매학기 컴퓨터공학과 또는 산업데이터공학과 학과기준에 따라 선정이 됩니다.(매 2학기에 받는 교내성적장학금은 산업데이터공학과에서 선정하므로 산업데이터공학과 학과기준을 적용함)",
+          "body_html": "",
+          "body_quality": "adapted",
+          "raw_list_text": "공지 [2026-2학기 선발 기준 적용] 2026년 산업데이터공학과 교내 성적 장학금 내규 개편안 공지 조회수 1803 2026.02.06 첨부파일 1803 2026.02.06 첨부파일",
+          "assets": [],
+          "warnings": [],
+          "metadata": {
+            "adapter_format": "collector-report:newNotices",
+            "source_name": "홍익대 산업·데이터공학과",
+            "raw": {
+              "sourceId": "hongik_007",
+              "universitySlug": "hongik",
+              "universityId": "14",
+              "collegeId": "211",
+              "departmentId": "872",
+              "collegeName": "",
+              "departmentName": "산업·데이터공학과",
+              "sourceLevel": "department",
+              "sourceName": "홍익대 산업·데이터공학과",
+              "listUrl": "https://ie.hongik.ac.kr/ie/0401.do?mode=list",
+              "noticeUrl": "https://ie.hongik.ac.kr/ie/0401.do?mode=view&articleNo=148285&article.offset=0&articleLimit=10",
+              "title": "[2026-2학기 선발 기준 적용] 2026년 산업데이터공학과 교내 성적 장학금 내규 개편안",
+              "listTitle": "[2026-2학기 선발 기준 적용] 2026년 산업데이터공학과 교내 성적 장학금 내규 개편안",
+              "rawListText": "공지 [2026-2학기 선발 기준 적용] 2026년 산업데이터공학과 교내 성적 장학금 내규 개편안 공지 조회수 1803 2026.02.06 첨부파일 1803 2026.02.06 첨부파일",
+              "listTitleQuality": "clean",
+              "titleExtractionEvidence": "title_selector:a[href]",
+              "dateText": "첨부파일",
+              "parsedDate": "",
+              "boardEvidence": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
