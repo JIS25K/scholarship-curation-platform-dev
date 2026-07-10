@@ -1,0 +1,2521 @@
+{
+  "roadmap_phase": "Phase 5 follow-up",
+  "result": "PASS",
+  "generated_at": "2026-07-10T05:27:35.791Z",
+  "input": {
+    "phase4_report": "docs/crawler-roadmap-phase4-full-crawl-dry-run-result.md",
+    "phase4_output": "exports/notices/roadmap-phase4-full-crawl-dry-run/scholarship-notices-20260710.json",
+    "adapted_fixture": "fixtures/crawler-ingest-dry-run/roadmap-phase5-full-output-adapted.json",
+    "local_report": "reports/roadmap-phase5-full-output-pre-apply.post-remediation.local.json",
+    "readonly_db_report": "reports/roadmap-phase5-full-output-pre-apply.post-remediation.readonly-db.json",
+    "source_target_check": "reports/roadmap-phase5-source-targets.post-remediation.check-db.json"
+  },
+  "safety": {
+    "metadata_sync_executed": true,
+    "metadata_sync_personal_dev_only": true,
+    "notice_data_db_write_executed": false,
+    "phase6_batch_apply_executed": false,
+    "raw_or_arbitrary_supabase_sql_executed": false,
+    "cleanup_sql_executed": false,
+    "production_main_supabase_accessed": false,
+    "full_crawl_rerun_executed": false
+  },
+  "root_cause": {
+    "summary": "The initial zero-candidate Phase 5 result was caused by a personal-dev source metadata baseline gap, not by a Phase 4 output incompatibility or candidate planner bug.",
+    "previous_zero_candidates_expected": true,
+    "phase4_source_keys": 179,
+    "canonical_inventory_found": 179,
+    "missing_sources_before_remediation": 178,
+    "present_sources_before_remediation": [
+      "cau_002"
+    ],
+    "missing_sources_before_remediation_sample": [
+      "cau_010",
+      "cau_020",
+      "cau_026",
+      "cau_041",
+      "cau_042",
+      "cau_043",
+      "cau_044",
+      "cau_045",
+      "cau_046",
+      "cau_047",
+      "cau_048",
+      "cau_049",
+      "cau_050",
+      "cau_051",
+      "cau_052",
+      "cau_053",
+      "cau_054",
+      "cau_055",
+      "cau_056",
+      "cau_057"
+    ]
+  },
+  "remediation": {
+    "executed": true,
+    "allowed_scope": "guarded metadata-only sync",
+    "affected_tables": [
+      "crawler_notice_sources",
+      "crawler_source_targets"
+    ],
+    "crawler_notice_sources_rows_requested": 178,
+    "crawler_source_targets_rows_requested": 179,
+    "source_batches": 18,
+    "source_target_batches": 18,
+    "post_remediation_missing_sources": 0,
+    "post_remediation_missing_source_targets": 0,
+    "cleanup_or_rollback_identifier_scope": {
+      "source_keys_file": "fixtures/crawler-ingest-dry-run/roadmap-phase5-source-baseline-diagnostics.json",
+      "crawler_notice_sources_source_keys": "source_keys.phase4 minus personal_dev_db_before_remediation.present_sources",
+      "crawler_source_targets_source_keys": "source_keys.phase4"
+    }
+  },
+  "phase4_coverage": {
+    "source_count": 613,
+    "crawled_count": 606,
+    "matched_item_count": 179,
+    "new_item_count": 179
+  },
+  "local_only_summary": {
+    "sources": 179,
+    "input_items": 179,
+    "new_candidates": 90,
+    "unchanged_candidates": 0,
+    "changed_candidates": 0,
+    "url_alias_candidates": 0,
+    "duplicates_within_input": 82,
+    "needs_quality_review": 7,
+    "blocked_by_missing_required_field": 0,
+    "blocked_by_schema": 0,
+    "unknown_without_db_check": 179,
+    "missing_sources": 0,
+    "missing_source_targets": 0,
+    "empty_body": 0,
+    "short_body": 13,
+    "no_assets": 103,
+    "source_health_unsafe": 0,
+    "potentially_missing": 0,
+    "needs_recheck": 0,
+    "do_not_mark_deleted": 0,
+    "write_plan_operations": 1248,
+    "blocked_write_plan_operations": 1248,
+    "review_required_operations": 1248,
+    "item_warnings": 0,
+    "item_errors": 0
+  },
+  "readonly_db_summary": {
+    "sources": 179,
+    "input_items": 179,
+    "new_candidates": 90,
+    "unchanged_candidates": 0,
+    "changed_candidates": 0,
+    "url_alias_candidates": 0,
+    "duplicates_within_input": 82,
+    "needs_quality_review": 7,
+    "blocked_by_missing_required_field": 0,
+    "blocked_by_schema": 0,
+    "unknown_without_db_check": 0,
+    "missing_sources": 0,
+    "missing_source_targets": 0,
+    "empty_body": 0,
+    "short_body": 13,
+    "no_assets": 103,
+    "source_health_unsafe": 0,
+    "potentially_missing": 0,
+    "needs_recheck": 0,
+    "do_not_mark_deleted": 0,
+    "write_plan_operations": 1248,
+    "blocked_write_plan_operations": 26,
+    "review_required_operations": 550,
+    "item_warnings": 0,
+    "item_errors": 0
+  },
+  "source_target_summary": {
+    "ok": true,
+    "selected_rows": 179,
+    "candidate_targets": 179,
+    "ready_csv_only": 179,
+    "ready_to_sync": 179,
+    "missing_sources": 0,
+    "missing_org_units": 0,
+    "invalid_org_unit_ids": 0,
+    "duplicate_source_org_pairs": 0,
+    "shared_board_groups": 45,
+    "shared_board_multi_org_groups": 43
+  },
+  "classification_summary": {
+    "total_input_items": 179,
+    "source_keys_count": 179,
+    "classifications": {
+      "duplicate_within_input": 82,
+      "needs_quality_review": 7,
+      "new_candidate": 90
+    },
+    "recommended_actions": {
+      "review_body_assets_and_source_health": 7,
+      "review_provenance_and_occurrence_policy": 82,
+      "review_write_plan_before_guarded_apply_design": 90
+    },
+    "new_candidates": 90,
+    "unchanged_candidates": 0,
+    "changed_candidates": 0,
+    "duplicate_review_candidates": 82,
+    "quality_review_candidates": 13,
+    "excluded_or_review_candidates": 95,
+    "phase6_batch_apply_candidates": 84
+  },
+  "no_assets_policy": {
+    "treated_as_automatic_blocker": false,
+    "total_no_assets_items": 103,
+    "phase6_candidate_no_assets_items": 48
+  },
+  "write_plan_summary": {
+    "operations_total": 1248,
+    "operations_by_type": {
+      "insert_asset": 161,
+      "insert_keyword_match": 179,
+      "insert_notice": 179,
+      "insert_notice_target": 179,
+      "insert_occurrence": 179,
+      "insert_run": 179,
+      "insert_source_result": 179,
+      "skip_update_due_to_low_quality": 13
+    },
+    "blocked_operations": 26,
+    "blocked_reasons": {
+      "needs_quality_review": 26
+    },
+    "review_required_operations": 550,
+    "db_write_executed": false
+  },
+  "top_flags": {
+    "quality_flags": {
+      "short_body": 13
+    },
+    "provenance_flags": {
+      "cross_source_candidate": 91,
+      "duplicate_title_published_at_group": 91,
+      "duplicate_canonical_url_within_input": 82,
+      "duplicate_discovered_url_within_input": 82
+    }
+  },
+  "phase6_candidates": [
+    {
+      "source_key": "cau_010",
+      "canonical_key": "cau_010:url:04d1476e9e9013172740",
+      "title": "2026학년도 2학기 수강신청(학부) 일정 안내",
+      "canonical_url": "http://archicau.com/wordpress/%ea%b3%b5%ec%a7%80%ec%82%ac%ed%95%ad/?uid=1608&mod=document&pageid=1",
+      "discovered_url": "http://archicau.com/wordpress/%ea%b3%b5%ec%a7%80%ec%82%ac%ed%95%ad/?uid=1608&mod=document&pageid=1",
+      "published_at": "2026-07-06",
+      "target_org_unit_ids": [
+        732
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 295,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "cau_065",
+      "canonical_key": "cau_065:url:bd38a512f055feb1c602",
+      "title": "2026 중앙사랑 A 장학 계획서 심사 결과 발표 및 연구 결과물 제출 안내 (10월 12일 24:00까지)",
+      "canonical_url": "https://koll.cau.ac.kr/board/u-notice/?vid=178",
+      "discovered_url": "https://koll.cau.ac.kr/board/u-notice/?vid=178",
+      "published_at": "2026-07-08",
+      "target_org_unit_ids": [
+        697
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1078,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "cau_066",
+      "canonical_key": "cau_066:url:0833e4584c2a6c0cf739",
+      "title": "2026년 8월 학부 졸업대상자 졸업사정 및 학사학위취득 유예 신청 안내",
+      "canonical_url": "https://germania.cau.ac.kr/cm/cm_1.php?s_scroll=all&p_page=1&code=b_1&p_mode=view&p_pgfile=%2Fcm%2Fcm_1.php&p_idx=481",
+      "discovered_url": "https://germania.cau.ac.kr/cm/cm_1.php?s_scroll=all&p_page=1&code=b_1&p_mode=view&p_pgfile=%2Fcm%2Fcm_1.php&p_idx=481",
+      "published_at": "2026-06-26",
+      "target_org_unit_ids": [
+        698
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1577,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "cau_068",
+      "canonical_key": "cau_068:url:d38d8fd2d3bb8ed7e792",
+      "title": "[한국고등교육재단] 제5기 동아시아연구장학생 모집안...",
+      "canonical_url": "https://history.cau.ac.kr/01_notice/notice_04a.asp?page=VIEW&IDX=40&add_idx=&tb=b_8&search=&searchkey=&List_BD_GUBUN=&start=",
+      "discovered_url": "https://history.cau.ac.kr/01_notice/notice_04a.asp?page=VIEW&IDX=40&add_idx=&tb=b_8&search=&searchkey=&List_BD_GUBUN=&start=",
+      "published_at": "2026-06-19",
+      "target_org_unit_ids": [
+        700
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 529,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "cau_076",
+      "canonical_key": "cau_076:url:b6fec21a48017bec7147",
+      "title": "[대한수학회-대의원] 2026년 제23기 순득장학재단 장학생 추천 안내",
+      "canonical_url": "https://math.cau.ac.kr/notice/notice.php?keyfield=&keyword=&page=1&board_table=notice_student&work=view&No=992",
+      "discovered_url": "https://math.cau.ac.kr/notice/notice.php?keyfield=&keyword=&page=1&board_table=notice_student&work=view&No=992",
+      "published_at": "2026-07-10",
+      "target_org_unit_ids": [
+        729
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 1523,
+      "operation_count": 11,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "cau_079",
+      "canonical_key": "cau_079:url:60282bbe3d7c37f78955",
+      "title": "2026년 8월 학부 졸업대상자 졸업사정 및 학사학위취득 유예 신청 안내",
+      "canonical_url": "https://ie.cau.ac.kr/sch_5/notice.php?s_scroll=subject&s_scroll3=%ED%95%99%EB%B6%80&p_page=1&code=M15&PageId=1634697137&p_idx=2454&p_mode=view",
+      "discovered_url": "https://ie.cau.ac.kr/sch_5/notice.php?s_scroll=subject&s_scroll3=%ED%95%99%EB%B6%80&p_page=1&code=M15&PageId=1634697137&p_idx=2454&p_mode=view",
+      "published_at": "2026-07-10",
+      "target_org_unit_ids": [
+        740
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 1612,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "cau_080",
+      "canonical_key": "cau_080:url:d576e8c0c5325c2e1166",
+      "title": "2026학년도 2학기 재학생 등록기간 안내(분할납부지침포함)New",
+      "canonical_url": "https://isemi.cau.ac.kr/fm/fm_1.php?s_search=subject&p_page=1&code=M15&PageId=1734931282&p_idx=100&p_mode=view",
+      "discovered_url": "https://isemi.cau.ac.kr/fm/fm_1.php?s_search=subject&p_page=1&code=M15&PageId=1734931282&p_idx=100&p_mode=view",
+      "published_at": "2026-07-07",
+      "target_org_unit_ids": [
+        742
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 924,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "cau_081",
+      "canonical_key": "cau_081:url:0d7988f28ce2c30a037c",
+      "title": "2026학년도 2학기 재학생 등록기간 안내",
+      "canonical_url": "https://e3home.cau.ac.kr/em/em_1.php?p_page=1&code=b_1&p_mode=view&p_pgfile=%2Fem%2Fem_1.php&p_idx=1832",
+      "discovered_url": "https://e3home.cau.ac.kr/em/em_1.php?p_page=1&code=b_1&p_mode=view&p_pgfile=%2Fem%2Fem_1.php&p_idx=1832",
+      "published_at": "2026-07-07",
+      "target_org_unit_ids": [
+        741
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 793,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "ewha_004",
+      "canonical_key": "ewha_004:url:94582130e91c46ed6524",
+      "title": "[공지] 2026년 한국기술교육대학교 행정직원 공정채용 공고",
+      "canonical_url": "https://ea.ewha.ac.kr/en/sj/2026%eb%85%84-%ed%95%9c%ea%b5%ad%ea%b8%b0%ec%88%a0%ea%b5%90%ec%9c%a1%eb%8c%80%ed%95%99%ea%b5%90-%ed%96%89%ec%a0%95%ec%a7%81%ec%9b%90-%ea%b3%b5%ec%a0%95%ec%b1%84%ec%9a%a9-%ea%b3%b5%ea%b3%a0",
+      "discovered_url": "https://ea.ewha.ac.kr/en/sj/2026%eb%85%84-%ed%95%9c%ea%b5%ad%ea%b8%b0%ec%88%a0%ea%b5%90%ec%9c%a1%eb%8c%80%ed%95%99%ea%b5%90-%ed%96%89%ec%a0%95%ec%a7%81%ec%9b%90-%ea%b3%b5%ec%a0%95%ec%b1%84%ec%9a%a9-%ea%b3%b5%ea%b3%a0",
+      "published_at": "2026-05-22",
+      "target_org_unit_ids": [
+        649
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 2567,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "ewha_008",
+      "canonical_key": "ewha_008:url:c69b0be64d85f5fd49ff",
+      "title": "[대학원] 2026학년도 석사우수장학금(이공계) 신청 안내 (5.28(목) 24:00까지)",
+      "canonical_url": "https://chems.ewha.ac.kr/scholarship/?mod=document&uid=309",
+      "discovered_url": "https://chems.ewha.ac.kr/scholarship/?mod=document&uid=309",
+      "published_at": "2026-05-13",
+      "target_org_unit_ids": [
+        653
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 4769,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "ewha_012",
+      "canonical_key": "ewha_012:url:40f13ff3947016c3d001",
+      "title": "[대학원] 2026-2학기 일반대학원 신입생 '최우수이화인 장학금' 신청 안내",
+      "canonical_url": "https://cms.ewha.ac.kr/user/boardList.action?command=view&page=1&boardId=5844498&boardSeq=91110758&year=2026&month=7&startDate=&endDate=",
+      "discovered_url": "https://cms.ewha.ac.kr/user/boardList.action?command=view&page=1&boardId=5844498&boardSeq=91110758&year=2026&month=7&startDate=&endDate=",
+      "published_at": "2026-06-02",
+      "target_org_unit_ids": [
+        664
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 2233,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "ewha_013",
+      "canonical_key": "ewha_013:url:2e0e438ec38ce5f4d64b",
+      "title": "[학부] 2026년 2학기 농촌출신대학생 학자금대출(무이자) 신청 안내",
+      "canonical_url": "https://www.ewha.ac.kr/ewha/bachelor/scholarship-notice.do?mode=view&articleNo=365414&article.offset=0&articleLimit=10",
+      "discovered_url": "https://www.ewha.ac.kr/ewha/bachelor/scholarship-notice.do?mode=view&articleNo=365414&article.offset=0&articleLimit=10",
+      "published_at": "2026-07-01",
+      "target_org_unit_ids": [
+        665
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1637,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "ewha_019",
+      "canonical_key": "ewha_019:url:cecde7ea334110cd77cf",
+      "title": "[기타] 2026학년도 2학기 한국장학재단 학자금대출 기본계획",
+      "canonical_url": "https://eee.ewha.ac.kr/eee/board/undergraduate.do?mode=view&articleNo=784384&article.offset=0&articleLimit=10",
+      "discovered_url": "https://eee.ewha.ac.kr/eee/board/undergraduate.do?mode=view&articleNo=784384&article.offset=0&articleLimit=10",
+      "published_at": "2026-07-06",
+      "target_org_unit_ids": [
+        671
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 804,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "ewha_033",
+      "canonical_key": "ewha_033:url:c7d1a8c106bd51cffafb",
+      "title": "2023학년도 2학기 본부관리 기탁장학금 및 선배라면 장학금 안내",
+      "canonical_url": "https://publichealth.ewha.ac.kr/publichealth/board/graduation.do?mode=view&articleNo=697117&article.offset=0&articleLimit=10",
+      "discovered_url": "https://publichealth.ewha.ac.kr/publichealth/board/graduation.do?mode=view&articleNo=697117&article.offset=0&articleLimit=10",
+      "published_at": "2023-10-23",
+      "target_org_unit_ids": [
+        659
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 799,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "ewha_050",
+      "canonical_key": "ewha_050:url:c565477064e8d09739e3",
+      "title": "[공지] ※철학과 학부 내규(2020. 01. 22. 개정)",
+      "canonical_url": "https://philos.ewha.ac.kr/philos/board/scholarship.do?mode=view&articleNo=747454&article.offset=0&articleLimit=10",
+      "discovered_url": "https://philos.ewha.ac.kr/philos/board/scholarship.do?mode=view&articleNo=747454&article.offset=0&articleLimit=10",
+      "published_at": "2020-01-22",
+      "target_org_unit_ids": [
+        633
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 939,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hanyang_004",
+      "canonical_key": "hanyang_004:url:023da03921651f64b3e0",
+      "title": "[한국금융연구원] 석사급 연구원 채용공고",
+      "canonical_url": "https://econ.hanyang.ac.kr/sub/sub05_01.php?boardid=notice&mode=view&idx=1212&sk=&sw=&offset=&category=%ED%95%99%EB%B6%80",
+      "discovered_url": "https://econ.hanyang.ac.kr/sub/sub05_01.php?boardid=notice&mode=view&idx=1212&sk=&sw=&offset=&category=%ED%95%99%EB%B6%80",
+      "published_at": "2026-07-09",
+      "target_org_unit_ids": [
+        598
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 689,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hanyang_008",
+      "canonical_key": "hanyang_008:url:83dbc85b8e5b69aa913a",
+      "title": "◆공지◆ [학부] 장학캘린더 서비스 안내",
+      "canonical_url": "https://me.hanyang.ac.kr/kor/notice/scholarship.html?bmain=view&uid=12&search=%26page%3D1",
+      "discovered_url": "https://me.hanyang.ac.kr/kor/notice/scholarship.html?bmain=view&uid=12&search=%26page%3D1",
+      "published_at": "2025-11-18",
+      "target_org_unit_ids": [
+        561
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 573,
+      "operation_count": 8,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hanyang_011",
+      "canonical_key": "hanyang_011:url:548352dcd7f9f00f89c2",
+      "title": "[학부] 2026-2학기 남정장학재단 신규장학생 선발 안내[~7.13(월...",
+      "canonical_url": "https://ie.hanyang.ac.kr/index.php?page=view&pg=&idx=2983&hCode=BOARD&bo_idx=1&sfl=&stx=",
+      "discovered_url": "https://ie.hanyang.ac.kr/index.php?page=view&pg=&idx=2983&hCode=BOARD&bo_idx=1&sfl=&stx=",
+      "published_at": "2026-07-09",
+      "target_org_unit_ids": [
+        566
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 625,
+      "operation_count": 13,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hanyang_013",
+      "canonical_key": "hanyang_013:url:6cc0dfe909689112558b",
+      "title": "[학사공지] 2026-1학기 제적자/영구수료자 재입학 안내",
+      "canonical_url": "https://mse.hanyang.ac.kr/index.php?page=view&pg=&idx=1311&hCode=BOARD&bo_idx=1&sfl=&stx=",
+      "discovered_url": "https://mse.hanyang.ac.kr/index.php?page=view&pg=&idx=1311&hCode=BOARD&bo_idx=1&sfl=&stx=",
+      "published_at": "2026-01-05",
+      "target_org_unit_ids": [
+        568
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 1758,
+      "operation_count": 14,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hanyang_015",
+      "canonical_key": "hanyang_015:url:8bdbd998c595a2ac56c8",
+      "title": "[학부] 2026-2학기 남정장학재단 신규장학생 선발 안내[~7.13(월) 11:00]",
+      "canonical_url": "http://nuclear.hanyang.ac.kr/boards/notice.php?ptype=view&idx=13549&page=&code=notice",
+      "discovered_url": "http://nuclear.hanyang.ac.kr/boards/notice.php?ptype=view&idx=13549&page=&code=notice",
+      "published_at": "2026-07-09",
+      "target_org_unit_ids": [
+        570
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 194,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hanyang_020",
+      "canonical_key": "hanyang_020:url:540489e52faf19a2e09c",
+      "title": "[교외장학] 2026년 하반기 롯데 43기 희망장학생 신청 안내",
+      "canonical_url": "https://chemeng.hanyang.ac.kr/bbs/board.php?bo_table=sub5_4&wr_id=44",
+      "discovered_url": "https://chemeng.hanyang.ac.kr/bbs/board.php?bo_table=sub5_4&wr_id=44",
+      "published_at": "2026-06-05",
+      "target_org_unit_ids": [
+        578
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 911,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hanyang_024",
+      "canonical_key": "hanyang_024:url:0ebef8866730de8e2cdf",
+      "title": "교외 장학금 신청서류 직인 날인 요청 관련 안내",
+      "canonical_url": "https://ae.hanyang.ac.kr/-8?p_p_id=kr_ac_hanyang_bbs_web_portlet_BbsPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_action=view_message&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_sCategoryId=38228103&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_sDisplayType=1&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_messageId=187303",
+      "discovered_url": "https://ae.hanyang.ac.kr/-8?p_p_id=kr_ac_hanyang_bbs_web_portlet_BbsPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_action=view_message&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_sCategoryId=38228103&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_sDisplayType=1&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_messageId=187303",
+      "published_at": "2026-05-15",
+      "target_org_unit_ids": [
+        564
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 287,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hanyang_025",
+      "canonical_key": "hanyang_025:url:db94ff0223112d6046e5",
+      "title": "2026년 1학기 연구활동종사자 정기(온라인) 안전교육 이수안내(~4.17)",
+      "canonical_url": "https://cs.hanyang.ac.kr/board/info_board.php?ptype=view&idx=30725&page=1&code=notice&searchopt=subject&searchkey=%EC%9E%A5%ED%95%99",
+      "discovered_url": "https://cs.hanyang.ac.kr/board/info_board.php?ptype=view&idx=30725&page=1&code=notice&searchopt=subject&searchkey=%EC%9E%A5%ED%95%99",
+      "published_at": "2026-03-11",
+      "target_org_unit_ids": [
+        577
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 716,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hanyang_040",
+      "canonical_key": "hanyang_040:url:a3188842a29bfadb4788",
+      "title": "2026년 제15회 전북특화소재 섬유산업 디자인대전 참가자 추가 모집 (~7.8)",
+      "canonical_url": "https://fashion.hanyang.ac.kr/notice?p_p_id=kr_ac_hanyang_bbs_web_portlet_BbsPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_action=view_message&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_messageId=203802",
+      "discovered_url": "https://fashion.hanyang.ac.kr/notice?p_p_id=kr_ac_hanyang_bbs_web_portlet_BbsPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_action=view_message&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_messageId=203802",
+      "published_at": "2026-06-29",
+      "target_org_unit_ids": [
+        610
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 687,
+      "operation_count": 11,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hanyang_061",
+      "canonical_key": "hanyang_061:url:e0e80f2c1ae9600c6d81",
+      "title": "2026학년도 1학기 학부생 교육봉사 장학생 선발",
+      "canonical_url": "https://physics.hanyang.ac.kr/announcements?p_p_id=kr_ac_hanyang_bbs_web_portlet_BbsPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_action=view_message&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_messageId=163201",
+      "discovered_url": "https://physics.hanyang.ac.kr/announcements?p_p_id=kr_ac_hanyang_bbs_web_portlet_BbsPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_action=view_message&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_messageId=163201",
+      "published_at": "2026-01-30",
+      "target_org_unit_ids": [
+        592
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 769,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hanyang_063",
+      "canonical_key": "hanyang_063:url:cbbf1ee3bc8a78df5c88",
+      "title": "[생명과학과/수학과] 2026년 하반기 롯데 43기 희망장학생 추천 요청(~06.17)",
+      "canonical_url": "https://math.hanyang.ac.kr/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD?p_p_id=kr_ac_hanyang_bbs_web_portlet_BbsPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_action=view_message&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_messageId=191603",
+      "discovered_url": "https://math.hanyang.ac.kr/%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD?p_p_id=kr_ac_hanyang_bbs_web_portlet_BbsPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_action=view_message&_kr_ac_hanyang_bbs_web_portlet_BbsPortlet_messageId=191603",
+      "published_at": "2026-06-09",
+      "target_org_unit_ids": [
+        594
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 463,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hongik_006",
+      "canonical_key": "hongik_006:url:63ee8bfa6091f508fd31",
+      "title": "2026-2학기 교내장학금 신청 안내(필독)",
+      "canonical_url": "https://mse.hongik.ac.kr/mse/0501.do?mode=view&articleNo=152184&article.offset=0&articleLimit=10",
+      "discovered_url": "https://mse.hongik.ac.kr/mse/0501.do?mode=view&articleNo=152184&article.offset=0&articleLimit=10",
+      "published_at": "2026-05-26",
+      "target_org_unit_ids": [
+        1084
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 697,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hongik_018",
+      "canonical_key": "hongik_018:url:a3db0969376d1e989bc8",
+      "title": "교내장학생 선발을 위한 사회봉사시간 기준 변경",
+      "canonical_url": "https://german.hongik.ac.kr/german/0401.do?mode=view&articleNo=150631&article.offset=0&articleLimit=10",
+      "discovered_url": "https://german.hongik.ac.kr/german/0401.do?mode=view&articleNo=150631&article.offset=0&articleLimit=10",
+      "published_at": "2026-04-10",
+      "target_org_unit_ids": [
+        1097
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 83,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hongik_035",
+      "canonical_key": "hongik_035:url:cbf50c9b708dfd778351",
+      "title": "교육학과 장학생 추천 기준(26.4.14. 개정)",
+      "canonical_url": "https://edu.hongik.ac.kr/edu/0401.do?mode=view&articleNo=97771&article.offset=0&articleLimit=10",
+      "discovered_url": "https://edu.hongik.ac.kr/edu/0401.do?mode=view&articleNo=97771&article.offset=0&articleLimit=10",
+      "published_at": "2026-04-14",
+      "target_org_unit_ids": [
+        1090
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 816,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "hongik_037",
+      "canonical_key": "hongik_037:url:f1ee92cbfc7140f597d6",
+      "title": "수학교육과 교내 장학금 선정 기준(2026.04.13)",
+      "canonical_url": "https://math.hongik.ac.kr/math/0401.do?mode=view&articleNo=150736&article.offset=0&articleLimit=10",
+      "discovered_url": "https://math.hongik.ac.kr/math/0401.do?mode=view&articleNo=150736&article.offset=0&articleLimit=10",
+      "published_at": "2026-04-13",
+      "target_org_unit_ids": [
+        1092
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 264,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_011",
+      "canonical_key": "khu_011:url:d9269ded3f3018988283",
+      "title": "공통 (추가모집)[학생지원센터(장학)] 2026-2학기 현송교육문화재단 신규장학생 모집",
+      "canonical_url": "https://amie.khu.ac.kr/amie/user/bbs/BMSR00040/view.do?menuNo=17700015&boardId=545188",
+      "discovered_url": "https://amie.khu.ac.kr/amie/user/bbs/BMSR00040/view.do?menuNo=17700015&boardId=545188",
+      "published_at": "2026-06-26",
+      "target_org_unit_ids": [
+        831
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 835,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_013",
+      "canonical_key": "khu_013:url:fd6555a447f086d63613",
+      "title": "공통 2025학년도 후기(2026년 8월) 졸업사정 실시안내",
+      "canonical_url": "https://env.khu.ac.kr/env/user/bbs/BMSR00040/view.do?menuNo=18000015&boardId=546434",
+      "discovered_url": "https://env.khu.ac.kr/env/user/bbs/BMSR00040/view.do?menuNo=18000015&boardId=546434",
+      "published_at": "2026-07-08",
+      "target_org_unit_ids": [
+        835
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 1512,
+      "operation_count": 8,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_014",
+      "canonical_key": "khu_014:url:0c2fd9bae12c32d16c0b",
+      "title": "공통 [학생지원센터(장학)] 2026-2학기 교내장학(우정장학 포함) 신청 안내(~7/13)",
+      "canonical_url": "https://kic.khu.ac.kr/kic_kor/user/bbs/BMSR00040/view.do?menuNo=5000032&boardId=545053",
+      "discovered_url": "https://kic.khu.ac.kr/kic_kor/user/bbs/BMSR00040/view.do?menuNo=5000032&boardId=545053",
+      "published_at": "2026-06-25",
+      "target_org_unit_ids": [
+        804
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 86,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_020",
+      "canonical_key": "khu_020:url:0679c191de6907be59cf",
+      "title": "공통 [문과대학] 2026학년도 2학기 전과 모집 안내",
+      "canonical_url": "https://com.khu.ac.kr/sophia/user/bbs/BMSR00040/view.do?menuNo=16200007&boardId=546450",
+      "discovered_url": "https://com.khu.ac.kr/sophia/user/bbs/BMSR00040/view.do?menuNo=16200007&boardId=546450",
+      "published_at": "2026-07-08",
+      "target_org_unit_ids": [
+        787
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 174,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_036",
+      "canonical_key": "khu_036:url:96a14c0365f2c9d08c35",
+      "title": "공통 2026학년도 1학기 식품영양학과 미래인재 특성화장학 선발 공지 (~ 7/17, 정오)",
+      "canonical_url": "https://che.khu.ac.kr/che/user/bbs/BMSR00040/view.do?menuNo=12700079&boardId=546526",
+      "discovered_url": "https://che.khu.ac.kr/che/user/bbs/BMSR00040/view.do?menuNo=12700079&boardId=546526",
+      "published_at": "2026-07-08",
+      "target_org_unit_ids": [
+        815
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 123,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_055",
+      "canonical_key": "khu_055:url:59f2ed0247461206edd2",
+      "title": "공통 2025학년도 후기(2026년 8월) 학사학위취득유예 신청 안내",
+      "canonical_url": "https://com.khu.ac.kr/korean/user/bbs/BMSR00040/view.do?menuNo=4500009&boardId=546281",
+      "discovered_url": "https://com.khu.ac.kr/korean/user/bbs/BMSR00040/view.do?menuNo=4500009&boardId=546281",
+      "published_at": "2026-07-06",
+      "target_org_unit_ids": [
+        795
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 465,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_062",
+      "canonical_key": "khu_062:url:be73f01587b977703f9b",
+      "title": "공통 2026-2학기 교내장학(우정장학 포함) 신청안내",
+      "canonical_url": "https://applsci.khu.ac.kr/space/user/bbs/BMSR00040/view.do?menuNo=2800023&boardId=545015",
+      "discovered_url": "https://applsci.khu.ac.kr/space/user/bbs/BMSR00040/view.do?menuNo=2800023&boardId=545015",
+      "published_at": "2026-06-25",
+      "target_org_unit_ids": [
+        842
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 102,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_064",
+      "canonical_key": "khu_064:url:3217b908cda0e2753fcc",
+      "title": "공통 2026학년도 1차 AI·빅데이터 전문가 초청특강 개최",
+      "canonical_url": "https://com.khu.ac.kr/math/user/bbs/BMSR00040/view.do?menuNo=3100018&boardId=546092",
+      "discovered_url": "https://com.khu.ac.kr/math/user/bbs/BMSR00040/view.do?menuNo=3100018&boardId=546092",
+      "published_at": "2026-07-03",
+      "target_org_unit_ids": [
+        844
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 433,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_076",
+      "canonical_key": "khu_076:url:0c9f976ff870ca03fee1",
+      "title": "공통 [안내] 2025학년도 후기(2026.08월) 학사학위취득유예제도 신청 안내(~07.17(금))",
+      "canonical_url": "https://ee.khu.ac.kr/ee25/user/bbs/BMSR00040/view.do?menuNo=21700019&boardId=546243",
+      "discovered_url": "https://ee.khu.ac.kr/ee25/user/bbs/BMSR00040/view.do?menuNo=21700019&boardId=546243",
+      "published_at": "2026-07-06",
+      "target_org_unit_ids": [
+        838
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 267,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_077",
+      "canonical_key": "khu_077:url:19d21f088876a9d6307a",
+      "title": "공통 [졸업] 2025학년도 후기(2026년 8월) 졸업사정 실시안내",
+      "canonical_url": "https://bme.khu.ac.kr/bme25/user/bbs/BMSR00040/view.do?menuNo=21800017&boardId=546469",
+      "discovered_url": "https://bme.khu.ac.kr/bme25/user/bbs/BMSR00040/view.do?menuNo=21800017&boardId=546469",
+      "published_at": "2026-07-08",
+      "target_org_unit_ids": [
+        837
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 236,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_080",
+      "canonical_key": "khu_080:url:d3709586dfeea53a96e3",
+      "title": "공통 2026학년도 2학기 학부생의 일반대학원 강좌 수강신청 안내(~8.7.(금))",
+      "canonical_url": "https://com.khu.ac.kr/soc/user/bbs/BMSR00040/view.do?menuNo=1100015&boardId=546552",
+      "discovered_url": "https://com.khu.ac.kr/soc/user/bbs/BMSR00040/view.do?menuNo=1100015&boardId=546552",
+      "published_at": "2026-07-09",
+      "target_org_unit_ids": [
+        801
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 169,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "khu_082",
+      "canonical_key": "khu_082:url:05eec1f63c67f829985b",
+      "title": "학사ㅣ2026학년도 2학기 학부생의 일반대학원 강좌 수강신청 안내(~8.7.(금))",
+      "canonical_url": "http://trade.khu.ac.kr/trade/index.php?mid=Notice&document_srl=41758",
+      "discovered_url": "http://trade.khu.ac.kr/trade/index.php?mid=Notice&document_srl=41758",
+      "published_at": "2026-07-09",
+      "target_org_unit_ids": [
+        799
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 2647,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "korea_010",
+      "canonical_key": "korea_010:url:ec4b01abefa7def81ba1",
+      "title": "[학부/대학원] 장학금 학장 추천서 발급 절차 안내(학과장 추천서 포함)",
+      "canonical_url": "https://kufra.korea.ac.kr/kufra/board/notice.do?mode=view&articleNo=798503&article.offset=0&articleLimit=10&totalNoticeYn=N&totalBoardNo=",
+      "discovered_url": "https://kufra.korea.ac.kr/kufra/board/notice.do?mode=view&articleNo=798503&article.offset=0&articleLimit=10&totalNoticeYn=N&totalBoardNo=",
+      "published_at": "2026-01-14",
+      "target_org_unit_ids": [
+        218
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1223,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "korea_011",
+      "canonical_key": "korea_011:url:2b7fe13a6f9a40306bba",
+      "title": "교내외 장학금 학장/학과장 추천서 발급 절차 안내",
+      "canonical_url": "https://kuchinese.korea.ac.kr/kuchinese/under/notice.do?mode=view&articleNo=798508&article.offset=0&articleLimit=10&totalNoticeYn=N&totalBoardNo=",
+      "discovered_url": "https://kuchinese.korea.ac.kr/kuchinese/under/notice.do?mode=view&articleNo=798508&article.offset=0&articleLimit=10&totalNoticeYn=N&totalBoardNo=",
+      "published_at": "2026-01-14",
+      "target_org_unit_ids": [
+        225
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1223,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "korea_018",
+      "canonical_key": "korea_018:url:858c2740be9592f9f452",
+      "title": "[장학] 교외장학재단 총장/학장 추천서 직인 요청 방법 안내",
+      "canonical_url": "https://foodscience.korea.ac.kr/foodscience/news/notice.do?mode=view&articleNo=748390&article.offset=0&articleLimit=10&totalNoticeYn=N&totalBoardNo=",
+      "discovered_url": "https://foodscience.korea.ac.kr/foodscience/news/notice.do?mode=view&articleNo=748390&article.offset=0&articleLimit=10&totalNoticeYn=N&totalBoardNo=",
+      "published_at": "2025-02-12",
+      "target_org_unit_ids": [
+        231
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 664,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "korea_030",
+      "canonical_key": "korea_030:url:6025e7d5cb80dd506ec0",
+      "title": "[장학] 2026-1학기 진리장학금 합격자 안내사항",
+      "canonical_url": "https://ace.korea.ac.kr/bbs/board.php?bo_table=sub5_2&wr_id=446&sca=%EC%9E%A5%ED%95%99",
+      "discovered_url": "https://ace.korea.ac.kr/bbs/board.php?bo_table=sub5_2&wr_id=446&sca=%EC%9E%A5%ED%95%99",
+      "published_at": "2026-03-20",
+      "target_org_unit_ids": [
+        242
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 860,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "korea_031",
+      "canonical_key": "korea_031:url:a450136493facda710c9",
+      "title": "2587.공지 [학사] 2026학년도 2학기 일반대학원 학적변동 및 수료연구생 등록 안내",
+      "canonical_url": "https://archi.korea.ac.kr/notices/notice_view.html?no=2516&page=1",
+      "discovered_url": "https://archi.korea.ac.kr/notices/notice_view.html?no=2516&page=1",
+      "published_at": "2026-07-09",
+      "target_org_unit_ids": [
+        243
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 851,
+      "operation_count": 10,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "korea_032",
+      "canonical_key": "korea_032:url:ef14e4301ddbc94d2fc4",
+      "title": "[공지]학사 2026학년도 2학기 일반대학원 학적변동 및 수료연구생 등록 안내",
+      "canonical_url": "https://me.korea.ac.kr/community/undernotice_gd_view.html?no=734&page=1&",
+      "discovered_url": "https://me.korea.ac.kr/community/undernotice_gd_view.html?no=734&page=1&",
+      "published_at": "2026-07-03",
+      "target_org_unit_ids": [
+        244
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 433,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "korea_034",
+      "canonical_key": "korea_034:url:17d03f0a20d901730d06",
+      "title": "[공지][장학] 장학금 추천서 및 직인 요청 방법 안내",
+      "canonical_url": "https://ee.korea.ac.kr/community/undernotice_view.html?no=1735&page=1",
+      "discovered_url": "https://ee.korea.ac.kr/community/undernotice_view.html?no=1735&page=1",
+      "published_at": "2026-06-09",
+      "target_org_unit_ids": [
+        249
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 547,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "korea_036",
+      "canonical_key": "korea_036:url:737cea49dd70d8e85ed7",
+      "title": "고려대학교 반도체공학과 2026학년도 신입생 학번대장",
+      "canonical_url": "https://se.korea.ac.kr/sub05/sub05_10_view.html?no=5&page=1",
+      "discovered_url": "https://se.korea.ac.kr/sub05/sub05_10_view.html?no=5&page=1",
+      "published_at": "2026-02-20",
+      "target_org_unit_ids": [
+        245
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 453,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "korea_037",
+      "canonical_key": "korea_037:url:36b7d21f68efcbc6607d",
+      "title": "공지2026년 NEXTERS 차세대통신 연구장학 프로그램 모집 안내",
+      "canonical_url": "http://ce.korea.ac.kr/community/notice_view.html?no=37&page=1",
+      "discovered_url": "http://ce.korea.ac.kr/community/notice_view.html?no=37&page=1",
+      "published_at": "2026-04-09",
+      "target_org_unit_ids": [
+        250
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 956,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_004",
+      "canonical_key": "skku_004:url:7bee236a3bf4478624fe",
+      "title": "[필독] 글로벌경제학과 교환학생 장학금 신청 및 지급 절차 안내(2025.10.22.수정)",
+      "canonical_url": "https://globalecon.skku.edu/gecon/notice.do?mode=view&articleNo=208224&article.offset=0&articleLimit=10",
+      "discovered_url": "https://globalecon.skku.edu/gecon/notice.do?mode=view&articleNo=208224&article.offset=0&articleLimit=10",
+      "published_at": "2025-10-22",
+      "target_org_unit_ids": [
+        513
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1434,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_006",
+      "canonical_key": "skku_006:url:de23cd9c4bd003638d09",
+      "title": "[모집] 2026 그린리모델링 서포터즈 모집(~17일(금))",
+      "canonical_url": "https://cal.skku.edu/index.php?page=view&pg=&idx=1363&hCode=BOARD&bo_idx=17&sfl=&stx=&category=",
+      "discovered_url": "https://cal.skku.edu/index.php?page=view&pg=&idx=1363&hCode=BOARD&bo_idx=17&sfl=&stx=&category=",
+      "published_at": "2026-07-07",
+      "target_org_unit_ids": [
+        538
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 1432,
+      "operation_count": 13,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_012",
+      "canonical_key": "skku_012:url:66ea08261d208f5b6dd7",
+      "title": "2026학년도 2학기 학부·대학원 연계과정(학석사연계과정) 신청 안내(예비 학부·대학원 연계과정 포함)",
+      "canonical_url": "https://amse.skku.edu/AMSE/notice.do?mode=view&articleNo=221463&article.offset=0&articleLimit=10",
+      "discovered_url": "https://amse.skku.edu/AMSE/notice.do?mode=view&articleNo=221463&article.offset=0&articleLimit=10",
+      "published_at": "2026-06-29",
+      "target_org_unit_ids": [
+        543
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 7876,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_013",
+      "canonical_key": "skku_013:url:fc773f2723e65fdc7731",
+      "title": "[학부]2026년도 제2회 화공기사 실기시험 대비 실험실 대여 수요조사(~7/2(목) 오전 10시까지)",
+      "canonical_url": "https://cheme.skku.edu/2026/06/30/%ED%95%99%EB%B6%802026%EB%85%84%EB%8F%84-%EC%A0%9C2%ED%9A%8C-%ED%99%94%EA%B3%B5%EA%B8%B0%EC%82%AC-%EC%8B%A4%EA%B8%B0%EC%8B%9C%ED%97%98-%EB%8C%80%EB%B9%84-%EC%8B%A4%ED%97%98%EC%8B%A4-%EB%8C%80/",
+      "discovered_url": "https://cheme.skku.edu/2026/06/30/%ED%95%99%EB%B6%802026%EB%85%84%EB%8F%84-%EC%A0%9C2%ED%9A%8C-%ED%99%94%EA%B3%B5%EA%B8%B0%EC%82%AC-%EC%8B%A4%EA%B8%B0%EC%8B%9C%ED%97%98-%EB%8C%80%EB%B9%84-%EC%8B%A4%ED%97%98%EC%8B%A4-%EB%8C%80/",
+      "published_at": "2026-06-30",
+      "target_org_unit_ids": [
+        545
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1316,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_016",
+      "canonical_key": "skku_016:url:1762144a846a9870a1e9",
+      "title": "2026학년도 2학기 학부·대학원 연계과정(학석사연계과정) 선발 안내",
+      "canonical_url": "https://lis.skku.edu/lis/community/under_notice.do?mode=view&articleNo=221412&article.offset=0&articleLimit=10",
+      "discovered_url": "https://lis.skku.edu/lis/community/under_notice.do?mode=view&articleNo=221412&article.offset=0&articleLimit=10",
+      "published_at": "2026-06-29",
+      "target_org_unit_ids": [
+        496
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 2796,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_017",
+      "canonical_key": "skku_017:url:a2cae3bf8d20a4c1d77a",
+      "title": "(~7/31) 2026년 성균관대학교 사학과 GREP 해외답사 프로그램 참가자 모집 안내",
+      "canonical_url": "https://skb.skku.edu/history/community/under_notice.do?mode=view&articleNo=221644&article.offset=0&articleLimit=10",
+      "discovered_url": "https://skb.skku.edu/history/community/under_notice.do?mode=view&articleNo=221644&article.offset=0&articleLimit=10",
+      "published_at": "2026-07-02",
+      "target_org_unit_ids": [
+        497
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1924,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_018",
+      "canonical_key": "skku_018:url:210f4ee39831e164cbd3",
+      "title": "2026학년도 2학기 학부·대학원 연계과정(학석사연계과정) 선발 안내(2026.6.29.(월) ~ 7.10.(금))",
+      "canonical_url": "https://skb.skku.edu/english/notice.do?mode=view&articleNo=221459&article.offset=0&articleLimit=10",
+      "discovered_url": "https://skb.skku.edu/english/notice.do?mode=view&articleNo=221459&article.offset=0&articleLimit=10",
+      "published_at": "2026-06-29",
+      "target_org_unit_ids": [
+        498
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1036,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_020",
+      "canonical_key": "skku_020:url:5021dc1108c48f908d3b",
+      "title": "2026-1 외국인 유학생 한국법령이해 교육 이수 안내",
+      "canonical_url": "https://skb.skku.edu/german/04_Community/notice.do?mode=view&articleNo=216726&article.offset=0&articleLimit=10",
+      "discovered_url": "https://skb.skku.edu/german/04_Community/notice.do?mode=view&articleNo=216726&article.offset=0&articleLimit=10",
+      "published_at": "2026-04-22",
+      "target_org_unit_ids": [
+        494
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 552,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_021",
+      "canonical_key": "skku_021:url:186dfc583294324330d2",
+      "title": "2026학년도 2학기 학부·대학원 연계과정(학석사연계과정) 신청 안내(예비 학부·대학원 연계과정 포함)(~7.10)",
+      "canonical_url": "https://skb.skku.edu/chinese/undergraduate_notice.do?mode=view&articleNo=221614&article.offset=0&articleLimit=10",
+      "discovered_url": "https://skb.skku.edu/chinese/undergraduate_notice.do?mode=view&articleNo=221614&article.offset=0&articleLimit=10",
+      "published_at": "2026-07-01",
+      "target_org_unit_ids": [
+        499
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 8074,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_030",
+      "canonical_key": "skku_030:url:e93b5e9c7e3164f0d76a",
+      "title": "HUSS] 인문사회융합인재양성사업 융합트랙 및 마이크로디그리 신청 안내(1학기 2차)",
+      "canonical_url": "https://skb.skku.edu/welfare/community/notice.do?mode=view&articleNo=221820&article.offset=0&articleLimit=10",
+      "discovered_url": "https://skb.skku.edu/welfare/community/notice.do?mode=view&articleNo=221820&article.offset=0&articleLimit=10",
+      "published_at": "2026-07-07",
+      "target_org_unit_ids": [
+        505
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 3351,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_039",
+      "canonical_key": "skku_039:url:d3a55a06e29af91341db",
+      "title": "(학부생) 교내외 장학금 신청 등 \"교수 추천(단순 서명 포함)\" 요청 방식 안내",
+      "canonical_url": "https://skb.skku.edu/gene/community/under_notice.do?mode=view&articleNo=211811&article.offset=0&articleLimit=10",
+      "discovered_url": "https://skb.skku.edu/gene/community/under_notice.do?mode=view&articleNo=211811&article.offset=0&articleLimit=10",
+      "published_at": "2026-01-12",
+      "target_org_unit_ids": [
+        533
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 132,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_047",
+      "canonical_key": "skku_047:url:6405c8b611a3da7fb224",
+      "title": "2026학년도 1학기 정용지 창의 장학금/학생성공 창의장학금 신청 접수 안내(지원서 접수 : ~05월15일까지)",
+      "canonical_url": "https://sport.skku.edu/sports/community/under_notice.do?mode=view&link=null&viewBoardId=138884&itemId=158874&article.offset=0&articleLimit=10&boardId=138884",
+      "discovered_url": "https://sport.skku.edu/sports/community/under_notice.do?mode=view&link=null&viewBoardId=138884&itemId=158874&article.offset=0&articleLimit=10&boardId=138884",
+      "published_at": "2026-05-04",
+      "target_org_unit_ids": [
+        553
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1183,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_054",
+      "canonical_key": "skku_054:url:33105d0f72264ace44b0",
+      "title": "[예술대학] 2026학년도 1학기 학생성공 창의장학생 추천 신청 안내",
+      "canonical_url": "https://fashion.skku.edu/fashion/notice.do?mode=view&articleNo=217866&srCategoryId1=267&article.offset=0&articleLimit=10",
+      "discovered_url": "https://fashion.skku.edu/fashion/notice.do?mode=view&articleNo=217866&srCategoryId1=267&article.offset=0&articleLimit=10",
+      "published_at": "2026-05-18",
+      "target_org_unit_ids": [
+        526
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 601,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "skku_055",
+      "canonical_key": "skku_055:url:ff70b8fcfa5d503743da",
+      "title": "2026학년도 1학기 창의/정용지 창의장학금",
+      "canonical_url": "https://scos.skku.edu/scos/community/under_notice.do?mode=view&link=null&viewBoardId=138884&itemId=158903&article.offset=0&articleLimit=10&boardId=138884",
+      "discovered_url": "https://scos.skku.edu/scos/community/under_notice.do?mode=view&link=null&viewBoardId=138884&itemId=158903&article.offset=0&articleLimit=10&boardId=138884",
+      "published_at": "2026-05-06",
+      "target_org_unit_ids": [
+        492
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1310,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "uos_005",
+      "canonical_key": "uos_005:url:5763b6cc483ecddddd02",
+      "title": "[공학인증] 2026.2학기 학업계획서 상담(온라인) 안내 (신청기간 : 7.1~7.24)",
+      "canonical_url": "https://www.uos.ac.kr/engineering/korNotice/view.do?list_id=20013DA1&cate_id2=000010382&sort=1&seq=16146&identified=anonymous",
+      "discovered_url": "https://www.uos.ac.kr/engineering/korNotice/view.do?list_id=20013DA1&cate_id2=000010382&sort=1&seq=16146&identified=anonymous",
+      "published_at": "2026-06-22",
+      "target_org_unit_ids": [
+        894
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 2160,
+      "operation_count": 12,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "uos_007",
+      "canonical_key": "uos_007:url:edf3ad47cae6dbd19141",
+      "title": "[학부] 2026-2학기 학부 교수지원장학 신청 안내",
+      "canonical_url": "https://www.uos.ac.kr/urbansciences/urban/korNotice/view.do?list_id=urbansciences01&sort=1&seq=4069&identified=anonymous",
+      "discovered_url": "https://www.uos.ac.kr/urbansciences/urban/korNotice/view.do?list_id=urbansciences01&sort=1&seq=4069&identified=anonymous",
+      "published_at": "2026-07-07",
+      "target_org_unit_ids": [
+        911
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 1237,
+      "operation_count": 12,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "uos_008",
+      "canonical_key": "uos_008:url:20094fa0a4388d2d832d",
+      "title": "2026학년도 2학기 학부 교내장학 2차 신청공고",
+      "canonical_url": "https://www.uos.ac.kr/engineering/korNotice/view.do?list_id=20013DA1&cate_id2=000010085&sort=1&seq=16177&identified=anonymous",
+      "discovered_url": "https://www.uos.ac.kr/engineering/korNotice/view.do?list_id=20013DA1&cate_id2=000010085&sort=1&seq=16177&identified=anonymous",
+      "published_at": "2026-07-09",
+      "target_org_unit_ids": [
+        891
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 1074,
+      "operation_count": 14,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "uos_014",
+      "canonical_key": "uos_014:url:fb09bb53d63a617a5755",
+      "title": "2026학년도 2학기 복학 및 휴학 신청 안내",
+      "canonical_url": "https://klcp.uos.ac.kr/social/korNotice/view.do?list_id=econo01&cate_id2=000100002&sort=1&seq=3230&identified=anonymous",
+      "discovered_url": "https://klcp.uos.ac.kr/social/korNotice/view.do?list_id=econo01&cate_id2=000100002&sort=1&seq=3230&identified=anonymous",
+      "published_at": "2026-06-18",
+      "target_org_unit_ids": [
+        887
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 2035,
+      "operation_count": 11,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "uos_019",
+      "canonical_key": "uos_019:url:71068617c0f2a643e038",
+      "title": "덕산장학금 수여식 행사 기념 사진첩(2002~ )",
+      "canonical_url": "https://www.uos.ac.kr/urbansciences/env/korNotice/view.do?list_id=urbansciences01&sort=1&seq=3093&identified=anonymous",
+      "discovered_url": "https://www.uos.ac.kr/urbansciences/env/korNotice/view.do?list_id=urbansciences01&sort=1&seq=3093&identified=anonymous",
+      "published_at": "2023-09-19",
+      "target_org_unit_ids": [
+        915
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 1023,
+      "operation_count": 13,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_002",
+      "canonical_key": "yonsei_002:url:cf8a4eaaf9498373cdb3",
+      "title": "[공지] [학부/학적] 2026학년도 1학기 학부 휴학 및 복학 신청 일정 안내",
+      "canonical_url": "https://ysenglish.yonsei.ac.kr/ysenglish/process/process.do?mode=view&articleNo=462423&article.offset=0&articleLimit=10",
+      "discovered_url": "https://ysenglish.yonsei.ac.kr/ysenglish/process/process.do?mode=view&articleNo=462423&article.offset=0&articleLimit=10",
+      "published_at": "2026-01-09",
+      "target_org_unit_ids": [
+        289
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 575,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_004",
+      "canonical_key": "yonsei_004:url:413a909d9204e213d090",
+      "title": "[공지] 불어불문학과 대학배정장학금 추천 기준 개정",
+      "canonical_url": "https://franys.yonsei.ac.kr/franys/notice.do?mode=view&articleNo=190527&article.offset=0&articleLimit=10",
+      "discovered_url": "https://franys.yonsei.ac.kr/franys/notice.do?mode=view&articleNo=190527&article.offset=0&articleLimit=10",
+      "published_at": "2024-06-03",
+      "target_org_unit_ids": [
+        286
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 892,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_005",
+      "canonical_key": "yonsei_005:url:17e2887dcdb52ca71463",
+      "title": "[한국고등교육재단] 2026년 제5기 동아시아연구장학생 모집",
+      "canonical_url": "https://ycll.yonsei.ac.kr/yonseicll/board03.do?mode=view&articleNo=473572&article.offset=0&articleLimit=10",
+      "discovered_url": "https://ycll.yonsei.ac.kr/yonseicll/board03.do?mode=view&articleNo=473572&article.offset=0&articleLimit=10",
+      "published_at": "2026-06-19",
+      "target_org_unit_ids": [
+        290
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 492,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_016",
+      "canonical_key": "yonsei_016:url:9b0bf5cd460083ae5163",
+      "title": "[학부] 2026학년도 2학기 일반사회교육론 교직이수자 사전 신청 공지",
+      "canonical_url": "https://sociology.yonsei.ac.kr/elementor-2080/?uid=470&mod=document&pageid=1",
+      "discovered_url": "https://sociology.yonsei.ac.kr/elementor-2080/?uid=470&mod=document&pageid=1",
+      "published_at": "2026-07-01",
+      "target_org_unit_ids": [
+        323
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 889,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_022",
+      "canonical_key": "yonsei_022:url:278eac0dffecbe1bbe73",
+      "title": "학점인정 및 대체교과목 신청 안내(편입/국내,국외교환/소속변경 등)",
+      "canonical_url": "https://physicsyonsei.kr/notice/board/?type=view&return_url=%2Fnotice%2Fboard&idx=327",
+      "discovered_url": "https://physicsyonsei.kr/notice/board/?type=view&return_url=%2Fnotice%2Fboard&idx=327",
+      "published_at": "2023-02-22",
+      "target_org_unit_ids": [
+        296
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 469,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_023",
+      "canonical_key": "yonsei_023:url:2b78cae42fe158f3368b",
+      "title": "학년별 담당 교수님 (26학년도)",
+      "canonical_url": "https://chemyonsei.kr/board/notice/100263",
+      "discovered_url": "https://chemyonsei.kr/board/notice/100263",
+      "published_at": "2026-03-17",
+      "target_org_unit_ids": [
+        300
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 232,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_027",
+      "canonical_key": "yonsei_027:url:e1508f60220c3a59f774",
+      "title": "[대학원](6/22(월) 까지) 2026학년도 2학기 RISE-Y 첨단·미래산업 외국인 인재 장학생 선발 신청서 제출 안내",
+      "canonical_url": "https://chemeng.yonsei.ac.kr/?c=211&s=210&gp=1&gbn=view&ix=2996",
+      "discovered_url": "https://chemeng.yonsei.ac.kr/?c=211&s=210&gp=1&gbn=view&ix=2996",
+      "published_at": "2026-06-17",
+      "target_org_unit_ids": [
+        310
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 641,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_031",
+      "canonical_key": "yonsei_031:url:94ba361a73dcad0d4636",
+      "title": "2026학년도 2학기 공학연구원 연구원·연구보조원 임용 신청 안내2026-07-10",
+      "canonical_url": "https://arch.yonsei.ac.kr/notice/2026%ed%95%99%eb%85%84%eb%8f%84-2%ed%95%99%ea%b8%b0-%ea%b3%b5%ed%95%99%ec%97%b0%ea%b5%ac%ec%9b%90-%ec%97%b0%ea%b5%ac%ec%9b%90%c2%b7%ec%97%b0%ea%b5%ac%eb%b3%b4%ec%a1%b0%ec%9b%90-%ec%9e%84%ec%9a%a9",
+      "discovered_url": "https://arch.yonsei.ac.kr/notice/2026%ed%95%99%eb%85%84%eb%8f%84-2%ed%95%99%ea%b8%b0-%ea%b3%b5%ed%95%99%ec%97%b0%ea%b5%ac%ec%9b%90-%ec%97%b0%ea%b5%ac%ec%9b%90%c2%b7%ec%97%b0%ea%b5%ac%eb%b3%b4%ec%a1%b0%ec%9b%90-%ec%9e%84%ec%9a%a9",
+      "published_at": "2026-07-10",
+      "target_org_unit_ids": [
+        301
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 1261,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_035",
+      "canonical_key": "yonsei_035:url:3dd464f7720aa9dcc40a",
+      "title": "[학부] 대학배정장학금 (진리/자유) 신청 불가능 안내",
+      "canonical_url": "https://system.yonsei.ac.kr/bbs/board.php?bo_table=sub5_2_a&wr_id=149",
+      "discovered_url": "https://system.yonsei.ac.kr/bbs/board.php?bo_table=sub5_2_a&wr_id=149",
+      "published_at": "2026-06-30",
+      "target_org_unit_ids": [
+        307
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 422,
+      "operation_count": 8,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_057",
+      "canonical_key": "yonsei_057:url:163b2c653921c019c9b2",
+      "title": "[학과] 2025학년도 2학기 롯데장학재단 42기 희망 장학생 선발",
+      "canonical_url": "http://ped.yonsei.ac.kr/board/departmentnews/article/261877",
+      "discovered_url": "http://ped.yonsei.ac.kr/board/departmentnews/article/261877",
+      "published_at": "2025-05-29",
+      "target_org_unit_ids": [
+        339
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 838,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_064",
+      "canonical_key": "yonsei_064:url:8091992d3142fedf31fc",
+      "title": "2026학년도 2학기 연세대학교 글로벌인재대학 강사 채용공고",
+      "canonical_url": "https://glc.yonsei.ac.kr/notice/?mod=document&uid=2115",
+      "discovered_url": "https://glc.yonsei.ac.kr/notice/?mod=document&uid=2115",
+      "published_at": "2026-07-01",
+      "target_org_unit_ids": [
+        47
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 2124,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_065",
+      "canonical_key": "yonsei_065:url:47e4dc2de660c2b28156",
+      "title": "의료선교실습 관련 프로그램 신청 안내 (~7.30까지, 의료선교센터)",
+      "canonical_url": "https://medicine.yonsei.ac.kr/medicine/news/notice.do?mode=view&articleNo=130174&article.offset=0&articleLimit=12",
+      "discovered_url": "https://medicine.yonsei.ac.kr/medicine/news/notice.do?mode=view&articleNo=130174&article.offset=0&articleLimit=12",
+      "published_at": "2026-07-07",
+      "target_org_unit_ids": [
+        48
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 1546,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_068",
+      "canonical_key": "yonsei_068:url:93959809be4ab00bb46f",
+      "title": "[공지] 첨단약과학과 교육과정 안내",
+      "canonical_url": "https://pharmacy.yonsei.ac.kr/pharmacy/community/notice.do?mode=view&articleNo=471124&article.offset=0&articleLimit=10",
+      "discovered_url": "https://pharmacy.yonsei.ac.kr/pharmacy/community/notice.do?mode=view&articleNo=471124&article.offset=0&articleLimit=10",
+      "published_at": "2026-05-16",
+      "target_org_unit_ids": [
+        367
+      ],
+      "body_quality": "adapted",
+      "no_assets": false,
+      "body_text_length": 85,
+      "operation_count": 7,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_asset",
+        "insert_keyword_match"
+      ]
+    },
+    {
+      "source_key": "yonsei_071",
+      "canonical_key": "yonsei_071:url:08c96a1a697b6850e020",
+      "title": "[공지] 2026학년도 2학기 학부 휴학 및 복학 신청 일정 안내",
+      "canonical_url": "https://engineering.yonsei.ac.kr/engineering/board/notice.do?mode=view&articleNo=474668&article.offset=0&articleLimit=10",
+      "discovered_url": "https://engineering.yonsei.ac.kr/engineering/board/notice.do?mode=view&articleNo=474668&article.offset=0&articleLimit=10",
+      "published_at": "2026-07-08",
+      "target_org_unit_ids": [
+        38
+      ],
+      "body_quality": "adapted",
+      "no_assets": true,
+      "body_text_length": 618,
+      "operation_count": 6,
+      "planned_operations": [
+        "insert_run",
+        "insert_source_result",
+        "insert_notice",
+        "insert_occurrence",
+        "insert_notice_target",
+        "insert_keyword_match"
+      ]
+    }
+  ],
+  "review_or_excluded_samples": [
+    {
+      "source_key": "cau_002",
+      "canonical_key": "cau_002:url:e93a2b573a92e5c2d205",
+      "title": "[학부] 2026-2학기 교내장학금(보훈/국가시험지원/가족/중앙나래) 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [
+        "short_body"
+      ],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_020",
+      "canonical_key": "cau_020:url:e93a2b573a92e5c2d205",
+      "title": "[학부] 2026-2학기 교내장학금(보훈/국가시험지원/가족/중앙나래) 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [
+        "short_body"
+      ],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_026",
+      "canonical_key": "cau_026:url:edd211bc1f172c258d39",
+      "title": "[공지] 사회과학대학 국가시험지원(II) 장학 선발 기준 변경…",
+      "classification": "needs_quality_review",
+      "quality_flags": [
+        "short_body"
+      ],
+      "provenance_flags": [],
+      "recommended_action": "review_body_assets_and_source_health"
+    },
+    {
+      "source_key": "cau_041",
+      "canonical_key": "cau_041:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_042",
+      "canonical_key": "cau_042:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_043",
+      "canonical_key": "cau_043:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_044",
+      "canonical_key": "cau_044:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_045",
+      "canonical_key": "cau_045:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_046",
+      "canonical_key": "cau_046:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_047",
+      "canonical_key": "cau_047:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_048",
+      "canonical_key": "cau_048:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_049",
+      "canonical_key": "cau_049:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_050",
+      "canonical_key": "cau_050:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_051",
+      "canonical_key": "cau_051:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_052",
+      "canonical_key": "cau_052:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_053",
+      "canonical_key": "cau_053:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_054",
+      "canonical_key": "cau_054:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_055",
+      "canonical_key": "cau_055:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_056",
+      "canonical_key": "cau_056:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    },
+    {
+      "source_key": "cau_057",
+      "canonical_key": "cau_057:url:5475c2d0a42b6bbe2eff",
+      "title": "2026학년도 1학기 예술대학 예체능특기자 장학금 신청 안내",
+      "classification": "duplicate_within_input",
+      "quality_flags": [],
+      "provenance_flags": [
+        "duplicate_discovered_url_within_input",
+        "duplicate_canonical_url_within_input",
+        "duplicate_title_published_at_group",
+        "cross_source_candidate"
+      ],
+      "recommended_action": "review_provenance_and_occurrence_policy"
+    }
+  ],
+  "next_step": {
+    "roadmap_phase6_guarded_batch_apply_can_begin_next": true,
+    "suggested_scope": "Apply only phase6_candidates from this plan; do not apply duplicate/review/quality-blocked items.",
+    "max_candidate_count": 84
+  }
+}
