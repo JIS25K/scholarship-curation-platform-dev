@@ -10,7 +10,7 @@ Current sample source reading:
 
 - `cau_001`: not a sample apply candidate because `input_items=0` and no matched scholarship notices.
 - `cau_002`: not an automatic notice insert candidate because all 3 items have `short_body` and `no_assets`.
-- `yonsei_060`: has detail body, but `no_assets` still keeps automatic notice insert/update out of scope until policy review.
+- `yonsei_060`: has detail body and `no_assets`; under the updated Roadmap Phase 3 policy, no-assets alone is not an automatic blocker, but read-only DB comparison and remaining candidate gates are still required.
 
 Real guarded sample apply remains NO-GO until the user explicitly approves a later step.
 
@@ -79,7 +79,7 @@ For a real write rehearsal, child operations must be reviewed with their parent 
 
 Default blocked operation types:
 
-- `insert_notice`, until body/assets quality gates pass.
+- `insert_notice`, until body quality, read-only DB comparison, and source/duplicate gates pass; absent assets are risk evidence, not an automatic blocker by themselves.
 - `update_notice_metadata`, until read-only DB comparison and user review pass.
 - `update_notice_body`, blocked for the first rehearsal.
 - `insert_asset`, until asset URL and metadata validation are reviewed.
@@ -241,7 +241,7 @@ NO-GO for real apply when:
 - deletion/inactive operation appears.
 - user has not explicitly approved a separate sample apply step.
 
-The current real sample source output remains NO-GO for real apply because `cau_001` has no input item, `cau_002` has short bodies and no assets, and `yonsei_060` still has `no_assets`. The first future DB write rehearsal should use the controlled fixture strategy in `docs/crawler-guarded-apply-readiness-review.md`.
+The older real sample source output remains NO-GO for real apply because `cau_001` has no input item, `cau_002` has short bodies, and no exact candidate set had passed read-only DB comparison. `no_assets` alone is no longer an automatic blocker under the updated Roadmap Phase 3 policy. The first future DB write rehearsal should still use the controlled fixture strategy in `docs/crawler-guarded-apply-readiness-review.md` unless a real source candidate passes all gates.
 
 ## Current Recommendation
 

@@ -316,12 +316,14 @@ function qualityFlagsFor(item) {
   const flags = [];
   const bodyText = cleanText(item.body_text ?? item.body);
   const bodyQuality = cleanText(item.body_quality).toLowerCase();
-  const assets = Array.isArray(item.assets) ? item.assets : [];
 
   if (!bodyText || bodyQuality === "empty") flags.push("empty_body");
   else if (bodyText.length < SHORT_BODY_THRESHOLD || bodyQuality.includes("short")) flags.push("short_body");
-  if (assets.length === 0) flags.push("no_assets");
   return flags;
+}
+
+function hasNoAssets(item) {
+  return !Array.isArray(item.assets) || item.assets.length === 0;
 }
 
 function missingRequiredFields(item) {
@@ -419,7 +421,7 @@ function deriveSourceHealth(fixture, options) {
       detail_fetch_failure_count: Number(explicitRow?.counts?.detail_fetch_failure_count ?? explicitRow?.detail_fetch_failure_count ?? 0),
       empty_body_count: Number(explicitRow?.counts?.empty_body_count ?? explicitRow?.empty_body_count ?? bodyFlags.filter((flag) => flag === "empty_body").length),
       short_body_count: Number(explicitRow?.counts?.short_body_count ?? explicitRow?.short_body_count ?? bodyFlags.filter((flag) => flag === "short_body").length),
-      no_assets_count: Number(explicitRow?.counts?.no_assets_count ?? explicitRow?.no_assets_count ?? bodyFlags.filter((flag) => flag === "no_assets").length),
+      no_assets_count: Number(explicitRow?.counts?.no_assets_count ?? explicitRow?.no_assets_count ?? items.filter((item) => hasNoAssets(item)).length),
       asset_extraction_count: Number(explicitRow?.counts?.asset_extraction_count ?? explicitRow?.asset_extraction_count ?? items.reduce((sum, item) => sum + (Array.isArray(item.assets) ? item.assets.length : 0), 0)),
       timeout_count: Number(explicitRow?.counts?.timeout_count ?? explicitRow?.timeout_count ?? 0),
       http_error_count: Number(explicitRow?.counts?.http_error_count ?? explicitRow?.http_error_count ?? 0),
@@ -901,7 +903,7 @@ function buildSourceSummaries(fixture, items, sourceHealth) {
     summary.unknown_without_db_check = sourceItems.filter((item) => item.change_flags.includes("unknown_without_db_check")).length;
     summary.empty_body = sourceItems.filter((item) => item.quality_flags.includes("empty_body")).length;
     summary.short_body = sourceItems.filter((item) => item.quality_flags.includes("short_body")).length;
-    summary.no_assets = sourceItems.filter((item) => item.quality_flags.includes("no_assets")).length;
+    summary.no_assets = sourceItems.filter((item) => item.asset_count === 0).length;
     summary.source_health_unsafe = health && (!health.safe_for_change_detection || !health.safe_for_missing_detection) ? 1 : 0;
     summary.item_warnings = sourceItems.reduce((sum, item) => sum + item.warnings.length, 0);
     summary.item_errors = sourceItems.reduce((sum, item) => sum + item.errors.length, 0);
@@ -958,7 +960,7 @@ function buildReport(fixture, options) {
   summary.unknown_without_db_check = items.filter((item) => item.change_flags.includes("unknown_without_db_check")).length;
   summary.empty_body = items.filter((item) => item.quality_flags.includes("empty_body")).length;
   summary.short_body = items.filter((item) => item.quality_flags.includes("short_body")).length;
-  summary.no_assets = items.filter((item) => item.quality_flags.includes("no_assets")).length;
+  summary.no_assets = items.filter((item) => item.asset_count === 0).length;
   summary.source_health_unsafe = sourceHealth.filter((source) => !source.safe_for_change_detection || !source.safe_for_missing_detection).length;
   summary.potentially_missing = missingVisibilityDiagnostics.potentially_missing.length;
   summary.needs_recheck = missingVisibilityDiagnostics.needs_recheck.length;

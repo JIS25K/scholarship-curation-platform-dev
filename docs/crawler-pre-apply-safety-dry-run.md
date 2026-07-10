@@ -288,7 +288,7 @@ GO for the next dry-run-only design phase:
 
 NO-GO for real ingest apply:
 
-- sample source body/assets quality is still insufficient.
+- sample source body quality can still be insufficient; absent assets are reported as risk evidence, not an automatic blocker when body text and DB comparison are clean.
 - source health can be unsafe.
 - local-only mode cannot prove DB unchanged/changed/alias state.
 - missing/deletion detection is conservative report-only.
@@ -380,11 +380,11 @@ The follow-up readiness review is documented in:
 docs/crawler-guarded-apply-readiness-review.md
 ```
 
-Current real sample source output remains insufficient for real apply:
+Current real sample source output remains insufficient for real apply under the older sample review:
 
 - `cau_001` has no input item.
 - `cau_002` has short bodies and no assets.
-- `yonsei_060` has detail body but still has no assets.
+- `yonsei_060` has detail body and no assets; under the updated Roadmap Phase 3 policy, no-assets alone is not an automatic blocker, but the exact candidate still needs read-only DB comparison and remaining gate checks.
 
 The first future DB write rehearsal should prefer a controlled fixture strategy so dependency completeness, rollback scoping, and audit trail checks can be reviewed before any real source-output apply.
 

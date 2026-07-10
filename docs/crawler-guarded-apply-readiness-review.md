@@ -28,7 +28,7 @@ This means the dry-run planner found operations worth reviewing. It does not mea
 
 `cau_002` has real source-like sample items, but the current bodies are short and assets are missing. Those items are useful for quality-gate diagnostics, not for the first notice lifecycle write rehearsal.
 
-`yonsei_060` has a usable detail body, but it still has `no_assets`. The planner can select provenance/error-style operations, but automatic notice insert remains blocked by quality review.
+`yonsei_060` has a usable detail body and `no_assets`. Under the updated Roadmap Phase 3 policy, no-assets alone is not an automatic blocker, but the exact candidate still needs read-only DB comparison and the remaining candidate gates before any notice insert.
 
 Across the current real sample output, no item cleanly passes the automatic notice insert criteria. A real write using only occurrence/target/error operations would not prove the full notice lifecycle and may run into parent-row or FK assumptions.
 
@@ -63,7 +63,7 @@ Strategy A is a real source output minimum sample. It is closer to real collecti
 
 Strategy B is a controlled fixture minimum sample. It is less representative of adapter quality, but it is better for validating FK dependencies, unique-key behavior, rollback scoping, audit trail checks, and fail-closed apply guards.
 
-Recommendation: use Strategy B for the first future personal-dev DB write rehearsal, then expand to Strategy A after a real source item passes body/assets quality review.
+Recommendation: use Strategy B for the first future personal-dev DB write rehearsal, then expand to Strategy A after a real source item passes body quality, read-only DB comparison, and remaining source/duplicate gates. Missing assets should be reported as risk evidence rather than treated as an automatic blocker.
 
 ## Controlled Fixture
 

@@ -63,7 +63,7 @@ The current committed sample source fixture is useful for diagnostics, but it is
 | --- | --- | --- |
 | `cau_001` | no matched sample items | HOLD |
 | `cau_002` | three matched items, short bodies, no assets | HOLD |
-| `yonsei_060` | one item with detail body, no assets | HOLD until candidate policy accepts no-asset real items and DB read-only comparison passes |
+| `yonsei_060` | one item with detail body, no assets | no-assets alone is no longer an automatic blocker; still HOLD until DB read-only comparison and remaining candidate checks pass |
 
 Current source output should continue to be used for read-only diagnostics and gate design. It should not be used for real source mini apply yet.
 
@@ -77,7 +77,7 @@ Required candidate evidence:
 - source does not require login, CAPTCHA bypass, access-control bypass, or robots.txt avoidance.
 - source health is not blocked, degraded, network-failed, selector-mismatch, pagination-incomplete, or unsafe for lifecycle judgment.
 - item has a meaningful title, discovered URL, canonical URL, publication date when available, and non-empty body text.
-- body quality is sufficient for a notice insert or explicitly classified as review-only if assets are absent.
+- body quality is sufficient for a notice insert; absent assets are recorded as risk evidence, not an automatic blocker.
 - canonical key is deterministic and does not collide within the candidate set.
 - discovered URL and canonical URL alias behavior is explainable without collapsing shared-board evidence.
 - source target coverage is present for the selected source and org unit.

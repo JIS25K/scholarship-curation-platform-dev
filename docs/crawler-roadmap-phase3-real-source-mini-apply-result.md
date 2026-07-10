@@ -4,7 +4,7 @@
 
 Roadmap Phase 3 status: HOLD.
 
-Roadmap Phase 3 Real source mini apply did not execute because no candidate received PASS in the read-only gate. The personal-dev read-only DB comparison was attempted, but the guard rejected before any DB client could be created because `SUPABASE_URL` was not present in the current shell environment.
+Roadmap Phase 3 Real source mini apply did not execute because no candidate received PASS in the read-only gate. Under the updated no-assets policy, `no_assets` alone is not an automatic blocker. The remaining blocker is that personal-dev read-only DB comparison was attempted, but the guard rejected before any DB client could be created because `SUPABASE_URL` was not present in the current shell environment.
 
 ## Candidate Selection
 
@@ -47,8 +47,8 @@ Adapter safety flags:
 
 | Source key | Title | Canonical key | Body quality | Asset status | Source health | Source target coverage | Duplicate / DB comparison state | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `ewha_001` | `[공지] 2026학년도 2학기 교직원 이화나눔장학금 신청 안내 [기간연장 ~7.15.(수)]` | `ewha_001:url:863db3acd018ed830784` | body length 646, non-empty detail body | no assets | partial, safe for change/missing detection | org unit `674` | read-only DB comparison not executed; local-only has `unknown_without_db_check` | HOLD |
-| `hongik_007` | `[2026-2학기 선발 기준 적용] 2026년 산업데이터공학과 교내 성적 장학금 내규 개편안` | `hongik_007:url:c497bce5b9553ead9d3b` | body length 308, non-empty detail body | no assets | partial, safe for change/missing detection | org unit `1083` | read-only DB comparison not executed; local-only has `unknown_without_db_check` | HOLD |
+| `ewha_001` | `[공지] 2026학년도 2학기 교직원 이화나눔장학금 신청 안내 [기간연장 ~7.15.(수)]` | `ewha_001:url:863db3acd018ed830784` | body length 646, non-empty detail body | no assets, risk note only | partial, safe for change/missing detection | org unit `674` | read-only DB comparison not executed; local-only has `unknown_without_db_check` | HOLD |
+| `hongik_007` | `[2026-2학기 선발 기준 적용] 2026년 산업데이터공학과 교내 성적 장학금 내규 개편안` | `hongik_007:url:c497bce5b9553ead9d3b` | body length 308, non-empty detail body | no assets, risk note only | partial, safe for change/missing detection | org unit `1083` | read-only DB comparison not executed; local-only has `unknown_without_db_check` | HOLD |
 
 No candidate is PASS.
 
@@ -66,15 +66,16 @@ Summary:
 | --- | ---: |
 | sources | 2 |
 | input_items | 2 |
-| needs_quality_review | 2 |
+| new_candidates | 2 |
+| needs_quality_review | 0 |
 | unknown_without_db_check | 2 |
 | empty_body | 0 |
 | short_body | 0 |
 | no_assets | 2 |
 | source_health_unsafe | 0 |
-| write_plan_operations | 14 |
-| blocked_write_plan_operations | 14 |
-| review_required_operations | 14 |
+| write_plan_operations | 12 |
+| blocked_write_plan_operations | 12 |
+| review_required_operations | 12 |
 
 Safety flags:
 
@@ -110,7 +111,7 @@ Because DB comparison did not execute, duplicate state, alias state, existing no
 
 Mini apply executed: false.
 
-No guarded apply command was run because both candidates remained HOLD.
+No guarded apply command was run because both candidates remained HOLD due to DB comparison uncertainty.
 
 DB write scope:
 
@@ -134,13 +135,13 @@ Cleanup / rollback identifiers:
 High-impact blockers:
 
 - personal-dev read-only DB comparison could not run because `SUPABASE_URL` was missing from the current shell environment.
-- both real source candidates have useful detail body text but no assets, so the current pre-apply gate classifies both as `needs_quality_review`.
-- local-only write plan remains blocked because DB state is unknown and quality review is required.
+- both real source candidates have useful detail body text and no assets; asset absence is now recorded as a risk note, not an automatic blocker.
+- local-only write plan remains blocked because DB state is unknown.
 
 Follow-up:
 
 - rerun the personal-dev read-only DB comparison in a shell with the required personal-dev Supabase environment variables already set.
-- either select a real source candidate with extractable assets or explicitly update the Roadmap Phase 3 policy to allow no-asset notices when the official body text is sufficient.
+- if read-only DB comparison is clean, these two candidates can be reconsidered for PASS under the updated no-assets policy.
 - do not run mini apply until at least one real source candidate receives PASS.
 
 ## Roadmap Phase 4
