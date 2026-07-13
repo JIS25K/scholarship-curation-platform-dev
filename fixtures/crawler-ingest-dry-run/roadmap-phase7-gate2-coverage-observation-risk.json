@@ -1,0 +1,793 @@
+{
+  "roadmap_phase": "Roadmap Phase 7 - Gate 2",
+  "result": "CONDITIONAL PASS",
+  "generated_at": "2026-07-13T00:31:52.943Z",
+  "latest_confirmed_pushed_commit_before_gate2": "24e76b7209c2ebe68da1585e209eefe4fe183a3f",
+  "inputs": {
+    "phase4_output": "exports/notices/roadmap-phase4-full-crawl-dry-run/scholarship-notices-20260710.json",
+    "funnel_json": "fixtures/crawler-ingest-dry-run/roadmap-phase4-5-funnel-accountability.json",
+    "gate1_json": "fixtures/crawler-ingest-dry-run/roadmap-phase7-gate1-production-readiness-inventory.json"
+  },
+  "safety": {
+    "db_write_executed": false,
+    "raw_or_arbitrary_supabase_sql_executed": false,
+    "cleanup_sql_executed": false,
+    "production_main_supabase_accessed": false,
+    "bounded_dry_run_executed": false,
+    "phase6_rerun_executed": false
+  },
+  "source_level_funnel": {
+    "canonical_sources": 613,
+    "covered_sources": 613,
+    "crawled_at_least_one_item": 606,
+    "explicit_failures": 2,
+    "zero_crawled_without_explicit_error": 5,
+    "matched_source_count": 179,
+    "zero_match_source_count": 434,
+    "phase6_candidate_source_count": 84
+  },
+  "zero_match_classification": {
+    "total_zero_match_sources": 434,
+    "confirmed_explicit_failure": 2,
+    "zero_crawled_without_explicit_error": 5,
+    "crawled_but_no_scholarship_match_observed": 427,
+    "confirmed_no_recent_scholarship_notice": 0,
+    "likely_no_recent_scholarship_notice": null,
+    "likely_selector_or_config_mismatch": {
+      "count": 5,
+      "confidence": "possible_not_proven",
+      "note": "Only zero-crawled/no-error sources can be queued as possible selector/config/source-health issues from existing artifacts."
+    },
+    "likely_matching_false_negative": {
+      "confirmed_count": 0,
+      "potential_risk_count": 434,
+      "note": "Existing artifacts cannot prove title/body keyword false negatives source-by-source."
+    },
+    "unsupported_or_weakly_supported_structure": {
+      "explicit_count": 0,
+      "weak_inspection_queue_count": 52,
+      "note": "No explicit unsupported-source label exists; heuristic, adapter, failure, and zero-crawled sources form a high-priority inspection queue."
+    },
+    "needs_deeper_inspection": 434,
+    "by_parser_strategy": {
+      "A_CONFIGURED_SELECTOR": 223,
+      "B_COMMON_BOARD": 164,
+      "C_HEURISTIC_ANCHOR": 37,
+      "ADAPTER:yonsei_uic": 4,
+      "none": 2,
+      "ADAPTER:cau_artech": 1,
+      "ADAPTER:hanyang_is": 1,
+      "ADAPTER:korea_medicine": 1,
+      "ADAPTER:yonsei_communication": 1
+    },
+    "crawled_but_no_match_by_parser_strategy": {
+      "A_CONFIGURED_SELECTOR": 219,
+      "B_COMMON_BOARD": 163,
+      "C_HEURISTIC_ANCHOR": 37,
+      "ADAPTER:yonsei_uic": 4,
+      "ADAPTER:cau_artech": 1,
+      "ADAPTER:hanyang_is": 1,
+      "ADAPTER:korea_medicine": 1,
+      "ADAPTER:yonsei_communication": 1
+    },
+    "explicit_failure_examples": [
+      {
+        "source_key": "cau_017",
+        "source_name": "중앙대 화학공학과",
+        "parser_strategy": "none",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": "HTTP 404"
+      },
+      {
+        "source_key": "cau_025",
+        "source_name": "중앙대 문헌정보학과",
+        "parser_strategy": "none",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": "This operation was aborted"
+      }
+    ],
+    "zero_crawled_without_error_examples": [
+      {
+        "source_key": "hanyang_017",
+        "source_name": "한양대 융합전자공학부",
+        "parser_strategy": "B_COMMON_BOARD",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "khu_058",
+        "source_name": "경희대 관현전공",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "khu_059",
+        "source_name": "경희대 성악과",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "khu_060",
+        "source_name": "경희대 작곡과",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "khu_061",
+        "source_name": "경희대 피아노전공",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": ""
+      }
+    ],
+    "representative_zero_match_examples": [
+      {
+        "source_key": "ewha_001",
+        "source_name": "이화여대 간호학부",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "ewha_002",
+        "source_name": "이화여대 경영학부",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "ewha_003",
+        "source_name": "이화여대 건축도시시스템공학과",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "ewha_005",
+        "source_name": "이화여대 기후에너지시스템공학과",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_001",
+        "source_name": "중앙대 경영학부",
+        "parser_strategy": "B_COMMON_BOARD",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_003",
+        "source_name": "중앙대 광고홍보학과",
+        "parser_strategy": "B_COMMON_BOARD",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_004",
+        "source_name": "중앙대 국제물류학과",
+        "parser_strategy": "B_COMMON_BOARD",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_005",
+        "source_name": "중앙대 글로벌금융전공",
+        "parser_strategy": "B_COMMON_BOARD",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_008",
+        "source_name": "중앙대 지식경영학부",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_009",
+        "source_name": "중앙대 건설환경플랜트공학전공",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_012",
+        "source_name": "중앙대 도시시스템공학전공",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_070",
+        "source_name": "중앙대 일본어문학전공",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "yonsei_060",
+        "source_name": "연세대 언더우드학부(UD)",
+        "parser_strategy": "ADAPTER:yonsei_uic",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "yonsei_061",
+        "source_name": "연세대 융합인문사회과학부(HASS)",
+        "parser_strategy": "ADAPTER:yonsei_uic",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "yonsei_062",
+        "source_name": "연세대 융합과학공학부(ISE)",
+        "parser_strategy": "ADAPTER:yonsei_uic",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "yonsei_063",
+        "source_name": "연세대 테크노아트학부(TA)",
+        "parser_strategy": "ADAPTER:yonsei_uic",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_017",
+        "source_name": "중앙대 화학공학과",
+        "parser_strategy": "none",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": "HTTP 404"
+      },
+      {
+        "source_key": "cau_025",
+        "source_name": "중앙대 문헌정보학과",
+        "parser_strategy": "none",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": "This operation was aborted"
+      },
+      {
+        "source_key": "cau_040",
+        "source_name": "중앙대 예술공학부",
+        "parser_strategy": "ADAPTER:cau_artech",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_023",
+        "source_name": "한양대 정보시스템학과",
+        "parser_strategy": "ADAPTER:hanyang_is",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "korea_038",
+        "source_name": "고려대 의학과",
+        "parser_strategy": "ADAPTER:korea_medicine",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "yonsei_020",
+        "source_name": "연세대 언론홍보영상학부",
+        "parser_strategy": "ADAPTER:yonsei_communication",
+        "parser_recovered": false,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      }
+    ],
+    "high_priority_inspection_queue_count": 52,
+    "high_priority_inspection_queue_examples": [
+      {
+        "source_key": "cau_017",
+        "source_name": "중앙대 화학공학과",
+        "parser_strategy": "none",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": "HTTP 404"
+      },
+      {
+        "source_key": "cau_025",
+        "source_name": "중앙대 문헌정보학과",
+        "parser_strategy": "none",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": "This operation was aborted"
+      },
+      {
+        "source_key": "hanyang_017",
+        "source_name": "한양대 융합전자공학부",
+        "parser_strategy": "B_COMMON_BOARD",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "khu_058",
+        "source_name": "경희대 관현전공",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "khu_059",
+        "source_name": "경희대 성악과",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "khu_060",
+        "source_name": "경희대 작곡과",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "khu_061",
+        "source_name": "경희대 피아노전공",
+        "parser_strategy": "A_CONFIGURED_SELECTOR",
+        "parser_recovered": false,
+        "crawled_count": 0,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_008",
+        "source_name": "중앙대 지식경영학부",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_009",
+        "source_name": "중앙대 건설환경플랜트공학전공",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_012",
+        "source_name": "중앙대 도시시스템공학전공",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "cau_070",
+        "source_name": "중앙대 일본어문학전공",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "ewha_057",
+        "source_name": "이화여대 인공지능전공",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_001",
+        "source_name": "한양대 간호학과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_022",
+        "source_name": "한양대 데이터사이언스학과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_027",
+        "source_name": "한양대 교육공학과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_028",
+        "source_name": "한양대 교육학과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_029",
+        "source_name": "한양대 국어교육과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_030",
+        "source_name": "한양대 수학교육과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_031",
+        "source_name": "한양대 영어교육과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_032",
+        "source_name": "한양대 응용미술교육과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_042",
+        "source_name": "한양대 무용학과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_043",
+        "source_name": "한양대 스포츠산업과학부(스포츠매니지먼트)",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_044",
+        "source_name": "한양대 스포츠산업과학부(스포츠사이언스)",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_045",
+        "source_name": "한양대 연극영화학과(연기)",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_046",
+        "source_name": "한양대 연극영화학과(연출및스탭)",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_047",
+        "source_name": "한양대 연극영화학과(영화)",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hanyang_066",
+        "source_name": "한양대 행정학과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hongik_001",
+        "source_name": "홍익대 건축학부",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "hongik_002",
+        "source_name": "홍익대 도시공학과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      },
+      {
+        "source_key": "khu_066",
+        "source_name": "경희대 의예과",
+        "parser_strategy": "C_HEURISTIC_ANCHOR",
+        "parser_recovered": true,
+        "crawled_count": 1,
+        "matched_count": 0,
+        "error": ""
+      }
+    ]
+  },
+  "observation_depth_analysis": {
+    "crawl_max_items_per_source": 1,
+    "max_1_proved": [
+      "The crawler could cover the 613-row source inventory locally.",
+      "606 sources yielded at least one crawled list/detail item.",
+      "The keyword/date matching and local report output path worked on shallow observed data.",
+      "179 sources produced at least one scholarship-matched item."
+    ],
+    "max_1_did_not_prove": [
+      "Absence of scholarship notices deeper in pagination.",
+      "False-negative rate across zero-match sources.",
+      "Lifecycle or deletion safety for failure and zero-crawled sources.",
+      "National coverage completeness."
+    ],
+    "expected_effect_of_max_3_or_5": "Increasing max items can reveal scholarship notices when the first observed list item is non-scholarship, increase duplicate/provenance groups, and expose parser/detail extraction weaknesses without requiring schema changes.",
+    "current_pipeline_supports_deeper_output_without_schema_changes": true,
+    "canonical_key_stability_risk": "low_to_moderate",
+    "duplicate_handling_risk": "moderate",
+    "source_result_reporting_risk": "low",
+    "ingest_executor_assumption_risk": "low_for_dry_run_and_planning"
+  },
+  "false_negative_risk_assessment": {
+    "overall_severity": "medium_high_for_coverage_claims",
+    "title_body_keyword_matching": "Existing artifacts cannot prove misses where the first crawled item used non-scholarship wording or where body extraction was weak.",
+    "shallow_observation": "High: max=1 is the largest known limitation for zero-match interpretation.",
+    "selector_content_extraction": "Medium: five zero-crawled/no-error sources are possible selector/config/source-health issues.",
+    "pagination": "High until max=3 or max=5 bounded dry-runs compare match lift.",
+    "source_structure_diversity": "Medium: zero-match sources span configured selector, common board, heuristic, and adapter paths.",
+    "no_assets_body_quality": "Operational/review risk, not a Gate 2 ingest-structure blocker."
+  },
+  "pipeline_structure_risk_assessment": {
+    "db_ingest_structure_blocker_found": false,
+    "remaining_risk_is_primarily_coverage_observation_quality": true,
+    "data_pipeline_structurally_validated_while_coverage_continues": "conditional_yes",
+    "rationale": "Phase 6 applied clean84 through the normalized personal-dev ingest path. Phase 4's conditional risk is explained by shallow observation and source-health uncertainty, not by schema/executor incompatibility."
+  },
+  "mitigation_performed": [
+    "Added a reproducible local-only Gate 2 analysis script.",
+    "Generated a machine-readable coverage/observation risk JSON fixture.",
+    "Generated a Gate 2 Markdown report that distinguishes no match observed from no scholarship exists.",
+    "Generated an ignored local source-health queue report for bounded deeper dry-run planning.",
+    "Documented bounded max=3/max=5 dry-run scopes instead of running an uncontrolled full deep crawl."
+  ],
+  "deeper_dry_run_recommendation": {
+    "recommended_before_gate3": false,
+    "recommended_before_final_production_readiness": true,
+    "recommended_after_phase7_as_post_phase_coverage_improvement": true,
+    "reason": "Gate 2 found no DB/ingest structural blocker, but max=1 cannot prove absence of scholarship notices deeper in source lists.",
+    "safe_scopes": [
+      {
+        "name": "failure-and-zero-crawled-probe",
+        "source_count": 7,
+        "source_keys": [
+          "cau_017",
+          "cau_025",
+          "hanyang_017",
+          "khu_058",
+          "khu_059",
+          "khu_060",
+          "khu_061"
+        ],
+        "suggested_max_items_per_source": 3,
+        "purpose": "Separate transient failures, dead URLs, selector/config issues, and empty-list behavior."
+      },
+      {
+        "name": "high-priority-zero-match-sample",
+        "source_count": 52,
+        "source_keys": [
+          "cau_017",
+          "cau_025",
+          "hanyang_017",
+          "khu_058",
+          "khu_059",
+          "khu_060",
+          "khu_061",
+          "cau_008",
+          "cau_009",
+          "cau_012",
+          "cau_070",
+          "ewha_057",
+          "hanyang_001",
+          "hanyang_022",
+          "hanyang_027",
+          "hanyang_028",
+          "hanyang_029",
+          "hanyang_030",
+          "hanyang_031",
+          "hanyang_032",
+          "hanyang_042",
+          "hanyang_043",
+          "hanyang_044",
+          "hanyang_045",
+          "hanyang_046",
+          "hanyang_047",
+          "hanyang_066",
+          "hongik_001",
+          "hongik_002",
+          "khu_066",
+          "khu_067",
+          "korea_028",
+          "korea_029",
+          "korea_033",
+          "korea_053",
+          "korea_054",
+          "korea_055",
+          "korea_056",
+          "skku_058",
+          "skku_059",
+          "skku_061",
+          "yonsei_032",
+          "yonsei_066",
+          "yonsei_067",
+          "cau_040",
+          "hanyang_023",
+          "korea_038",
+          "yonsei_020",
+          "yonsei_060",
+          "yonsei_061",
+          "yonsei_062",
+          "yonsei_063"
+        ],
+        "suggested_max_items_per_source": 5,
+        "purpose": "Inspect weak/heuristic/adapter and zero-crawled groups without crawling all 613 sources."
+      },
+      {
+        "name": "representative-parser-strategy-sample",
+        "source_count": 22,
+        "source_keys": [
+          "ewha_001",
+          "ewha_002",
+          "ewha_003",
+          "ewha_005",
+          "cau_001",
+          "cau_003",
+          "cau_004",
+          "cau_005",
+          "cau_008",
+          "cau_009",
+          "cau_012",
+          "cau_070",
+          "yonsei_060",
+          "yonsei_061",
+          "yonsei_062",
+          "yonsei_063",
+          "cau_017",
+          "cau_025",
+          "cau_040",
+          "hanyang_023",
+          "korea_038",
+          "yonsei_020"
+        ],
+        "suggested_max_items_per_source": 5,
+        "purpose": "Compare match lift across parser strategies before a broader crawl."
+      }
+    ],
+    "command_template_powershell": "$env:CRAWL_MAX_ITEMS_PER_SOURCE='5'; $env:CRAWL_SOURCE_CONCURRENCY='2'; $env:CRAWL_IGNORE_SEEN='true'; $env:CRAWL_LOOKBACK_DAYS='3650'; $env:CRAWL_SOURCE_ID_ALLOWLIST='<comma-separated-source-keys>'; node scripts/crawl-scholarship-notices.mjs data/notice-sources.csv exports/notices/roadmap-phase7-gate2-bounded-dry-run .crawler/roadmap-phase7-gate2-bounded-dry-run-state.json"
+  },
+  "carry_forward_risks": {
+    "gate3": [
+      "duplicate/review 82",
+      "quality-review 13",
+      "no_assets 48 applied candidates",
+      "cleanup/rollback procedure",
+      "aggregate batch observability",
+      "final production readiness decision"
+    ],
+    "post_phase": [
+      "Run bounded deeper dry-runs for failure/zero-crawled and high-priority zero-match samples.",
+      "Compare max=1 vs max=3/max=5 match lift before any national coverage claim.",
+      "Investigate 434 zero-match sources as no-match-observed, not no-scholarship-exists.",
+      "Improve source-health queues for repeated failures and selector/config drift."
+    ],
+    "hold": []
+  },
+  "decision": {
+    "gate2_can_close": true,
+    "phase7_gate3_can_begin_next": true,
+    "result_reason": "No DB/ingest structural blocker was found, but zero-match classification remains partial and deeper observation is required before final production readiness."
+  }
+}
