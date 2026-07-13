@@ -1,0 +1,416 @@
+{
+  "roadmap_phase": "Roadmap Phase 7 - Gate 3",
+  "gate3_result": "PASS",
+  "final_roadmap_phase7_result": "CONDITIONAL PASS",
+  "generated_at": "2026-07-13T00:40:44.706Z",
+  "latest_confirmed_pushed_commit_before_gate3": "9514c494685a0a644922fc9b87d01d369be3bcdb",
+  "inputs": {
+    "phase5_candidate_plan": "fixtures/crawler-ingest-dry-run/roadmap-phase5-phase6-candidate-plan.json",
+    "phase6_apply_result": "fixtures/crawler-ingest-dry-run/roadmap-phase6-guarded-batch-apply-result.json",
+    "gate1_inventory": "fixtures/crawler-ingest-dry-run/roadmap-phase7-gate1-production-readiness-inventory.json",
+    "gate2_coverage_risk": "fixtures/crawler-ingest-dry-run/roadmap-phase7-gate2-coverage-observation-risk.json"
+  },
+  "safety": {
+    "db_write_executed": false,
+    "raw_or_arbitrary_supabase_sql_executed": false,
+    "cleanup_sql_executed": false,
+    "production_main_supabase_accessed": false,
+    "phase6_rerun_executed": false,
+    "new_notice_or_review_apply_executed": false
+  },
+  "upstream_gate_status": {
+    "gate1_result": "PASS",
+    "gate2_result": "CONDITIONAL PASS",
+    "gate2_conclusion": {
+      "db_ingest_structure_blocker_found": false,
+      "remaining_risk_is_primarily_coverage_observation_quality": true,
+      "data_pipeline_structurally_validated_while_coverage_continues": "conditional_yes",
+      "rationale": "Phase 6 applied clean84 through the normalized personal-dev ingest path. Phase 4's conditional risk is explained by shallow observation and source-health uncertainty, not by schema/executor incompatibility."
+    }
+  },
+  "review_backlog_readiness": {
+    "total_input_items": 179,
+    "clean_phase6_candidates": 84,
+    "excluded_or_review_only": 95,
+    "duplicate_review": 82,
+    "quality_review": 13,
+    "unchanged_existing_review": 0,
+    "changed_candidate_review": 0,
+    "reason_distribution": {
+      "classifications": {
+        "duplicate_within_input": 82,
+        "needs_quality_review": 7,
+        "new_candidate": 90
+      },
+      "recommended_actions": {
+        "review_body_assets_and_source_health": 7,
+        "review_provenance_and_occurrence_policy": 82,
+        "review_write_plan_before_guarded_apply_design": 90
+      },
+      "quality_flags": {
+        "short_body": 13
+      },
+      "provenance_flags": {
+        "cross_source_candidate": 91,
+        "duplicate_title_published_at_group": 91,
+        "duplicate_canonical_url_within_input": 82,
+        "duplicate_discovered_url_within_input": 82
+      },
+      "review_required_operations": 550,
+      "blocked_operations": 26,
+      "blocked_reasons": {
+        "needs_quality_review": 26
+      }
+    },
+    "sample_count_available": 20,
+    "sample_distribution": {
+      "by_classification": {
+        "duplicate_within_input": 19,
+        "needs_quality_review": 1
+      },
+      "by_recommended_action": {
+        "review_provenance_and_occurrence_policy": 19,
+        "review_body_assets_and_source_health": 1
+      }
+    },
+    "structural_blocker": false,
+    "evidence_limitation": "The Phase 5 candidate plan contains full counts and sampled review items, not a complete item-level review backlog export for all 95 review/excluded items.",
+    "recommended_policy": [
+      "Do not auto-apply duplicate/review, quality-review, review-only, excluded, unsafe, or blocked items.",
+      "Route duplicate/provenance cases to an admin review queue that supports approve, reject, merge, or create occurrence.",
+      "Route short-body and extraction-quality cases to body/source-health review before eligibility for apply.",
+      "Preserve canonical_key, source_key, classification, quality_flags, provenance_flags, recommended_action, and source evidence.",
+      "Require a second guarded apply plan after review decisions rather than mutating the clean84 plan."
+    ],
+    "minimal_mvp_requirement": [
+      "A review queue fixture or admin table that stores source_key, canonical_key, title/url evidence, reason flags, decision, reviewer, and timestamp.",
+      "Manual approve/reject/merge decisions before any non-clean item can enter a guarded apply input.",
+      "A policy that shared-board duplicates are not auto-collapsed by URL without occurrence/target review."
+    ]
+  },
+  "no_assets_quality_readiness": {
+    "no_assets_total_phase5": 103,
+    "no_assets_among_phase6_candidates": 48,
+    "no_assets_among_applied": 48,
+    "asset_backed_applied_candidates": 36,
+    "no_assets_correctness_blocker": false,
+    "no_assets_quality_badge_signal": true,
+    "no_assets_manual_review_signal": true,
+    "traceable_by_source_key_and_canonical_key": true,
+    "distinguishable_in_artifacts": true,
+    "recommended_quality_policy": [
+      "Do not treat no_assets alone as an ingest correctness blocker when canonical URL/key, body quality, source target, and duplicate checks are clean.",
+      "Expose no_assets as a quality badge such as Attachment not observed or No attached file captured.",
+      "Require admin review when no_assets is combined with short_body, weak body extraction, or missing required eligibility detail.",
+      "Carry no_assets into Post-Phase quality reporting and UI/admin filters."
+    ],
+    "sample_no_assets_scope": [
+      {
+        "source_key": "cau_065",
+        "canonical_key": "cau_065:url:bd38a512f055feb1c602",
+        "body_quality": "adapted",
+        "body_text_length": 1078,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      },
+      {
+        "source_key": "cau_066",
+        "canonical_key": "cau_066:url:0833e4584c2a6c0cf739",
+        "body_quality": "adapted",
+        "body_text_length": 1577,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      },
+      {
+        "source_key": "cau_068",
+        "canonical_key": "cau_068:url:d38d8fd2d3bb8ed7e792",
+        "body_quality": "adapted",
+        "body_text_length": 529,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      },
+      {
+        "source_key": "cau_080",
+        "canonical_key": "cau_080:url:d576e8c0c5325c2e1166",
+        "body_quality": "adapted",
+        "body_text_length": 924,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      },
+      {
+        "source_key": "cau_081",
+        "canonical_key": "cau_081:url:0d7988f28ce2c30a037c",
+        "body_quality": "adapted",
+        "body_text_length": 793,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      },
+      {
+        "source_key": "ewha_008",
+        "canonical_key": "ewha_008:url:c69b0be64d85f5fd49ff",
+        "body_quality": "adapted",
+        "body_text_length": 4769,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      },
+      {
+        "source_key": "ewha_013",
+        "canonical_key": "ewha_013:url:2e0e438ec38ce5f4d64b",
+        "body_quality": "adapted",
+        "body_text_length": 1637,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      },
+      {
+        "source_key": "ewha_019",
+        "canonical_key": "ewha_019:url:cecde7ea334110cd77cf",
+        "body_quality": "adapted",
+        "body_text_length": 804,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      },
+      {
+        "source_key": "ewha_050",
+        "canonical_key": "ewha_050:url:c565477064e8d09739e3",
+        "body_quality": "adapted",
+        "body_text_length": 939,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      },
+      {
+        "source_key": "hanyang_020",
+        "canonical_key": "hanyang_020:url:540489e52faf19a2e09c",
+        "body_quality": "adapted",
+        "body_text_length": 911,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      },
+      {
+        "source_key": "hanyang_024",
+        "canonical_key": "hanyang_024:url:0ebef8866730de8e2cdf",
+        "body_quality": "adapted",
+        "body_text_length": 287,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      },
+      {
+        "source_key": "hanyang_025",
+        "canonical_key": "hanyang_025:url:db94ff0223112d6046e5",
+        "body_quality": "adapted",
+        "body_text_length": 716,
+        "planned_operations": [
+          "insert_run",
+          "insert_source_result",
+          "insert_notice",
+          "insert_occurrence",
+          "insert_notice_target",
+          "insert_keyword_match"
+        ]
+      }
+    ]
+  },
+  "cleanup_rollback_readiness": {
+    "rehearsal_label": "roadmap-phase6-guarded-batch-apply-20260710-clean84",
+    "run_id_count": 84,
+    "first_run_id": "b143088e-cc90-4e66-a4d9-4d248f86c9dc",
+    "last_run_id": "5aeba907-f49d-4bdc-a647-cbddaa826e15",
+    "canonical_key_count": 84,
+    "source_key_count": 84,
+    "cleanup_scope_identification_proven": true,
+    "cleanup_execution_proven": false,
+    "cleanup_sql_generated": false,
+    "cleanup_sql_executed": false,
+    "rollback_procedure_review_only": [
+      "Freeze writes for the affected rehearsal_label before rollback planning.",
+      "Use rehearsal_label and run_ids to identify Phase 6 crawler_runs and crawler_source_results.",
+      "Use canonical_keys and source_keys to identify notices, URL aliases, occurrences, targets, assets, and keyword matches that belong to the clean84 apply scope.",
+      "Run read-only counts and shared-reference checks before any destructive step.",
+      "Delete child rows before parent rows conceptually: keyword matches/assets/targets/occurrences/url aliases, then notices only if no non-Phase-6 references remain, then source results/runs.",
+      "Require explicit user approval and a separate reviewed cleanup plan before execution."
+    ],
+    "risks": [
+      "Shared notices or URL aliases may have references outside the Phase 6 rehearsal scope.",
+      "Cleanup execution has not been tested and must not be inferred from identifier availability.",
+      "A rollback should use read-only preflight counts and manual approval before any deletion."
+    ]
+  },
+  "aggregate_batch_observability": {
+    "model": "84 source-scoped runs grouped by one rehearsal_label and one machine-readable report",
+    "rehearsal_label": "roadmap-phase6-guarded-batch-apply-20260710-clean84",
+    "requested": 84,
+    "applied": 84,
+    "skipped": 0,
+    "failed": 0,
+    "run_id_count": 84,
+    "first_run_id": "b143088e-cc90-4e66-a4d9-4d248f86c9dc",
+    "last_run_id": "5aeba907-f49d-4bdc-a647-cbddaa826e15",
+    "row_counts_by_table": {
+      "crawler_runs": 84,
+      "crawler_source_results": 84,
+      "crawler_notices": 84,
+      "crawler_notice_url_aliases": 84,
+      "crawler_notice_occurrences": 84,
+      "crawler_notice_targets": 84,
+      "crawler_notice_assets": 96,
+      "crawler_errors": 0,
+      "crawler_keyword_matches": 141
+    },
+    "duplicate_check": {
+      "ok": true,
+      "duplicate_notices": [],
+      "duplicate_aliases": [],
+      "duplicate_occurrences": [],
+      "duplicate_targets": [],
+      "duplicate_assets": []
+    },
+    "orphan_check": {
+      "ok": true,
+      "orphan_occurrences_count": 0,
+      "orphan_targets_count": 0,
+      "orphan_aliases_count": 0,
+      "orphan_assets_count": 0
+    },
+    "post_apply_sanity_check": {
+      "ok": true,
+      "run_statuses": {
+        "succeeded": 84
+      },
+      "source_result_decisions": {
+        "succeeded": 84
+      },
+      "checks": {
+        "run_count_ok": true,
+        "run_status_ok": true,
+        "source_results_ok": true,
+        "notice_count_ok": true,
+        "occurrence_count_ok": true,
+        "target_count_ok": true,
+        "duplicate_notices_ok": true,
+        "duplicate_aliases_ok": true,
+        "duplicate_occurrences_ok": true,
+        "duplicate_targets_ok": true,
+        "duplicate_assets_ok": true,
+        "orphan_occurrences_ok": true,
+        "orphan_targets_ok": true,
+        "orphan_aliases_ok": true,
+        "orphan_assets_ok": true
+      }
+    },
+    "duplicate_check_status": "PASS",
+    "orphan_check_status": "PASS",
+    "post_apply_sanity_status": "PASS",
+    "report_layer_aggregate_sufficient_for_personal_dev_mvp": true,
+    "future_aggregate_batch_table_recommended": true,
+    "lack_of_aggregate_db_table_blocks_phase7": false,
+    "recommended_minimal_summary_now": [
+      "rehearsal_label",
+      "candidate_count_requested/applied/skipped/failed",
+      "run_id_count, first_run_id, last_run_id",
+      "row_counts_by_table",
+      "duplicate/orphan/post-apply sanity status",
+      "cleanup_rollback_identifiers path"
+    ]
+  },
+  "final_readiness_decision": {
+    "roadmap_phase1_to_7_db_ingest_pipeline_structurally_validated": true,
+    "post_phase_can_begin": true,
+    "mvp_beta_launch_immediately_possible": false,
+    "mvp_beta_launch_requires_post_phase_items": true,
+    "no_db_ingest_structural_blocker_remaining": true,
+    "reason": "Gate 3 found review, no_assets, rollback, and aggregate observability items to be operational/productization work rather than DB/ingest structural blockers. Phase 7 remains conditional overall because coverage and review/admin work must be completed before MVP/beta launch."
+  },
+  "post_phase_routing": {
+    "Post-Phase A: deeper crawl & coverage improvement": [
+      "Run bounded max=3/max=5 dry-runs from Gate 2 before national coverage claims.",
+      "Investigate 434 zero-match sources as no-match-observed, not no-scholarship-exists."
+    ],
+    "Post-Phase B: review backlog pipeline": [
+      "Build admin review queue for duplicate/review 82 and quality-review 13.",
+      "Preserve reason flags and reviewer decisions before any apply."
+    ],
+    "Post-Phase C: no_assets/body quality policy": [
+      "Add quality badge/filtering for no_assets and weak body extraction.",
+      "Define when no_assets requires manual review."
+    ],
+    "Post-Phase D: rollback/cleanup tooling": [
+      "Create reviewed read-only rollback preflight counts.",
+      "Only later draft executable cleanup with explicit approval."
+    ],
+    "Post-Phase E: aggregate run observability": [
+      "Consider a future batch_execution_id or crawler_batch_runs table.",
+      "Keep report-layer aggregation as the current minimum."
+    ],
+    "Post-Phase F: product/admin integration": [
+      "Expose review status, quality badges, source health, and traceability in admin views."
+    ],
+    "Post-Phase G: LLM-assisted parsing": [
+      "Evaluate LLM-assisted extraction only after deterministic source-health and review queues are stable."
+    ]
+  }
+}
